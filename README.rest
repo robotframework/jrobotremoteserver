@@ -1,0 +1,14 @@
+jrobotremoteserver - A Robot Framework Remote Server for Java
+====================================
+
+This is a fork that is in an early development stage.
+
+See the production version of jrobotremoteserver_
+
+.. _jrobotremoteserver: http://code.google.com/p/jrobotremoteserver/
+
+Planned features include:
+Mavenized
+Programmatic usage
+Multiple libraries
+Support for dynamic API libraries
