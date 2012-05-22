@@ -14,12 +14,13 @@ package org.robotframework.remoteserver;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.util.SortedMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
@@ -29,36 +30,30 @@ public class RemoteServerServlet extends XmlRpcServlet {
     private static String page = null;
 
     @Override
-    protected XmlRpcHandlerMapping newXmlRpcHandlerMapping()
-	    throws XmlRpcException {
+    protected XmlRpcHandlerMapping newXmlRpcHandlerMapping() throws XmlRpcException {
 	ReflectiveHandlerMapping map = new ReflectiveHandlerMapping();
-	map.addHandler("", ServerMethods.class);
+	map.addHandler("keywords", ServerMethods.class);
 	map.removePrefixes();
+	this.getXmlRpcServletServer().setTypeFactory(new TypeFactory(this.getXmlRpcServletServer()));
 	return map;
     }
 
     @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
-	    throws ServletException, IOException {
-	resp.setContentType("text/html");
-	PrintWriter out = resp.getWriter();
-	out.println(getPage());
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	Context.setPort(req.getServerPort());
+	super.service(req, resp);
     }
 
     @Override
-    public void doPost(HttpServletRequest pRequest,
-	    HttpServletResponse pResponse) throws IOException, ServletException {
-	port.set(pRequest.getServerPort());
-	this.getXmlRpcServletServer().execute(pRequest, pResponse);
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	resp.setContentType("text/html");
+	String body = getPage();
+	resp.setContentLength(body.length());
+	PrintWriter out = resp.getWriter();
+	out.print(body);
     }
 
-    private static final ThreadLocal<Integer> port = new ThreadLocal<Integer>();
-
-    protected static Integer getPort() {
-	return (Integer) port.get();
-    }
-
-    private String getPage() {
+    protected String getPage() {
 	if (page != null)
 	    return page;
 	else {
@@ -67,12 +62,12 @@ public class RemoteServerServlet extends XmlRpcServlet {
 		    + "<HTML><HEAD><TITLE>jrobotremoteserver</TITLE></HEAD><BODY>"
 		    + "<P>jrobotremoteserver serving:</P>"
 		    + "<TABLE border='1' cellspacing='0' cellpadding='5'><TR><TH>Port</TH><TH>Library</TH></TR>");
-	    Map<Integer, IRemoteLibrary> map = RemoteServer.getLibraryMap();
+	    SortedMap<Integer, IRemoteLibrary> map = Context.getRemoteServer().getLibraryMap();
 	    for (Integer port : map.keySet()) {
 		sb.append("<TR><TD>");
 		sb.append(port.toString());
 		sb.append("</TD><TD>");
-		sb.append(map.get(port).getName());
+		sb.append(StringEscapeUtils.escapeHtml(map.get(port).getName()));
 		sb.append("</TD></TR>");
 	    }
 	    sb.append("</TABLE></BODY></HTML>");

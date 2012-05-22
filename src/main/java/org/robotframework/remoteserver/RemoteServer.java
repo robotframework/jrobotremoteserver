@@ -14,7 +14,7 @@ package org.robotframework.remoteserver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
@@ -28,41 +28,88 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
+/**
+ * Remote server for Robot Framework implemented in Java. Takes one or more user libraries and exposes their methods via
+ * XML-RPC using an embedded web server.
+ * 
+ * @see <a href="http://code.google.com/p/robotframework/wiki/RemoteLibrary">Remote Library wiki page</a>
+ * @see <a href="http://code.google.com/p/robotframework/wiki/UserGuide">User Guide</a> for Robot Framework
+ * @see <a href="http://xmlrpc.scripting.com/spec.html">XML-RPC Specification</a>
+ */
 public class RemoteServer {
-    private static final Log log = LogFactory.getLog(RemoteServer.class);
-    private static Server server = new Server();
-    private static Map<Integer, IRemoteLibrary> libraryMap = new TreeMap<Integer, IRemoteLibrary>();
-    private static boolean shutdownAllowed = true;
-    private static List<SelectChannelConnector> connectors = new ArrayList<SelectChannelConnector>();
+    private static Log log = LogFactory.getLog(RemoteServer.class);
+    private Server server;
+    private SortedMap<Integer, IRemoteLibrary> libraryMap = new TreeMap<Integer, IRemoteLibrary>();
+    private boolean allowRemoteStop = true;
+    private List<SelectChannelConnector> connectors = new ArrayList<SelectChannelConnector>();
 
-    public static boolean getIsShutdownAllowed() {
-	return shutdownAllowed;
+    /**
+     * @return whether this server allows remote stopping
+     */
+    public boolean getAllowRemoteStop() {
+	return allowRemoteStop;
+    }
+
+    /**
+     * @param allowed
+     *            whether to allow stopping the server remotely
+     */
+    public void setAllowRemoteStop(boolean allowed) {
+	allowRemoteStop = allowed;
     }
 
     public static void main(String[] args) throws Exception {
-	configureLogger();
+	// TODO: proper argument parsing
+	configureLogging(false);
+	List<String> libs = new ArrayList<String>();
+	List<Integer> ports = new ArrayList<Integer>();
+	System.err.println(args.length);
+	for (int i = 0; i < args.length; i++) {
+	    if (args[i].equals("-library")) {
+		String[] parts = args[i + 1].split(":");
+		libs.add(parts[0].trim());
+		ports.add(new Integer(parts[1]));
+		i++;
+	    }
+	}
+	RemoteServer rs = new RemoteServer();
+	for (int i = 0; i < libs.size(); i++)
+	    rs.addLibrary(libs.get(i), ports.get(i));
+	rs.start();
     }
 
-    public static void addLibrary(String className, int port) {
+    /**
+     * Add the given test library to the remote server on the given port. The server must be stopped when calling this.
+     * 
+     * @param className
+     *            the test library's class name
+     * @param port
+     *            port to serve the test library from
+     */
+    public void addLibrary(String className, int port) {
 	Object library;
 	try {
 	    library = Class.forName(className).newInstance();
 	} catch (Exception e) {
-	    throw new RuntimeException(String.format(
-		    "Unable to create an instance of %s", className));
+	    throw new RuntimeException(String.format("Unable to create an instance of %s", className), e);
 	}
 	addLibrary(library, port);
     }
 
-    public static void addLibrary(Object library, int port) {
-	if (!server.isStopped())
-	    throw new RuntimeException(
-		    "Cannot add a library once the server is started");
+    /**
+     * Add the given test library to the remote server on the given port. The server must be stopped when calling this.
+     * 
+     * @param library
+     *            instance of the test library
+     * @param port
+     *            port to serve the test library from
+     */
+    public void addLibrary(Object library, int port) {
+	if (server != null && !server.isStopped())
+	    throw new RuntimeException("Cannot add a library once the server is started");
 	if (libraryMap.containsKey(port))
-	    throw new RuntimeException(String.format(
-		    "A library was already added for port %d", port));
-	IRemoteLibrary remoteLibrary = RemoteLibraryFactory
-		.newRemoteLibrary(library);
+	    throw new RuntimeException(String.format("A library was already added for port %d", port));
+	IRemoteLibrary remoteLibrary = RemoteLibraryFactory.newRemoteLibrary(library);
 	libraryMap.put(port, remoteLibrary);
 	SelectChannelConnector connector = new SelectChannelConnector();
 	connector.setPort(port);
@@ -71,25 +118,60 @@ public class RemoteServer {
 	connectors.add(connector);
     }
 
-    protected static Map<Integer, IRemoteLibrary> getLibraryMap() {
+    protected SortedMap<Integer, IRemoteLibrary> getLibraryMap() {
 	return libraryMap;
     }
 
-    protected static IRemoteLibrary getLibrary() {
-	return libraryMap.get(RemoteServerServlet.getPort());
+    protected IRemoteLibrary getLibrary(Integer port) {
+	return libraryMap.get(port);
     }
 
-    public static void stop() throws Exception {
-	server.stop();
+    protected void gracefulStop() {
+	log.info("Robot Framework remote server stopping");
+	server.setGracefulShutdown(2000);
+	Thread stopper = new Thread() {
+	    @Override
+	    public void run() {
+		try {
+		    server.stop();
+		} catch (Throwable e) {
+		    log.error("Failed to stop the webserver", e);
+		}
+	    }
+	};
+	stopper.start();
+	libraryMap.clear();
     }
 
-    public static void start() throws Exception {
+    /**
+     * Immediately stops the remote server. This will remove all test libraries.
+     * 
+     * @throws Exception
+     */
+    public void stop() throws Exception {
+	checkStarted();
+	log.info("Robot Framework remote server stopping");
+	try {
+	    server.stop();
+	    Context.removeRemoteServer(this);
+	} finally {
+	    libraryMap.clear();
+	}
+    }
+
+    /**
+     * Starts the remote server. Add test libraries first before calling this.
+     * 
+     * @throws Exception
+     */
+    public void start() throws Exception {
+	if (server == null)
+	    server = new Server();
 	if (connectors.isEmpty())
-	    throw new RuntimeException(
-		    "Cannot start the server without adding a library first");
+	    throw new RuntimeException("Cannot start the server without adding a library first");
+	Context.addRemoteServer(this, libraryMap.keySet());
 	server.setConnectors(connectors.toArray(new Connector[] {}));
-	ServletContextHandler servletContextHandler = new ServletContextHandler(
-		server, "/", true, false);
+	ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", true, false);
 	servletContextHandler.addServlet(RemoteServerServlet.class, "/");
 	log.info("Robot Framework remote server starting");
 	server.start();
@@ -102,14 +184,28 @@ public class RemoteServer {
 	return main.getClassName().equals(RemoteServer.class.getName());
     }
 
-    private static void configureLogger() {
-	if (!isMainClass())
+    /**
+     * Configure log4j to log messages of level INFO and above to the console and redirect the webserver's logging to
+     * log4j. This is convenient if you do not want to configure the logging yourself.
+     */
+    public static void configureLogging() {
+	configureLogging(true);
+    }
+
+    private static void configureLogging(boolean force) {
+	if (!force && !isMainClass())
 	    return;
 	Logger root = Logger.getRootLogger();
-	if (!root.getAllAppenders().hasMoreElements()) {
+	if (force || !root.getAllAppenders().hasMoreElements()) {
+	    root.removeAllAppenders();
 	    BasicConfigurator.configure();
 	    root.setLevel(Level.INFO);
-	    // TODO: configure Jetty's logging
+	    org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4j());
 	}
+    }
+
+    private void checkStarted() {
+	if (server == null)
+	    throw new RuntimeException("The server was never started");
     }
 }

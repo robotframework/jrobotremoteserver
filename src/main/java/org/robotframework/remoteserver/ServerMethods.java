@@ -12,186 +12,146 @@
  */
 package org.robotframework.remoteserver;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
- * XML-RPC server methods implementation for the Java generic remote server for
- * Robot Framework for calling remote libraries implemented Java.
- * 
- * Based on RobotFramework spec at
- * http://code.google.com/p/robotframework/wiki/RemoteLibrary
- * http://robotframework.googlecode
- * .com/svn/tags/robotframework-2.5.6/doc/userguide
- * /RobotFrameworkUserGuide.html#remote-library-interface http://robotframework
- * .googlecode.com/svn/tags/robotframework-2.5.6/doc/userguide/
- * RobotFrameworkUserGuide.html#dynamic-library-api
- * 
- * Uses Java reflection to serve the dynamically loaded remote Java class
- * library. You may alternatively modify this starting code base to natively
- * integrate your Java test library code into the server rather than load it
- * dynamically.
+ * Contains the XML-RPC methods that implement the remote library interface.
  * 
  * @author David Luu
  * 
  */
 public class ServerMethods {
 
+    private Log log;
+
+    public ServerMethods() {
+	log = LogFactory.getLog(ServerMethods.class);
+    }
+
     /**
-     * Get a list of RobotFramework keywords available in remote library for
-     * use.
+     * Get an array containing the names of the keywords that the library implements.
      * 
-     * @return list of keywords in Java remote library
+     * @return String array containing keyword names in the library
      */
     public String[] get_keyword_names() {
 	try {
-	    return RemoteServer.getLibrary().getKeywordNames();
+	    String[] names = Context.getLibrary().getKeywordNames();
+	    if (names == null || names.length == 0)
+		throw new RuntimeException("No keywords found in the test library");
+	    String[] newNames = Arrays.copyOf(names, names.length + 1);
+	    newNames[names.length] = "stop_remote_server";
+	    return newNames;
 	} catch (Throwable e) {
-	    System.err.println(e);
-	    return null;
+	    log.warn("", e);
+	    throw new RuntimeException(e);
 	}
     }
 
     /**
-     * Run specified Robot Framework keyword from remote server.
+     * Run the given keyword and return the results.
      * 
      * @param keyword
-     *            Keyword class library method to run for Robot Framework.
+     *            keyword to run
      * @param args
-     *            Arguments, if any, to pass to keyword method. An XML-RPC array
-     *            or in Redstone library, a Java ArrayList.
-     * @return RobotFramework specified data structure indicating pass/fail. An
-     *         XML-RPC struct or in Redstone library, a Java HashMap.
+     *            arguments packed in an array to pass to the keyword method
+     * @return remote result Map containing the execution results
      */
-    public Map run_keyword(String keyword, Object[] args) {
-
-	HashMap kr = new HashMap();
+    public Map<String, Object> run_keyword(String keyword, Object[] args) {
+	HashMap<String, Object> kr = new HashMap<String, Object>();
+	PrintStream outBackup = System.out;
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	System.setOut(new PrintStream(baos));
 	try {
-	    if (keyword.equalsIgnoreCase("stop_remote_server")) {
-		// set return value
-		kr.put("status", "PASS"); // RobotFramework spec for shutdown
-		kr.put("return", 1);
-		kr.put("error", "");
-		kr.put("traceback", "");
-
-		if (RemoteServer.getIsShutdownAllowed()) {
-		    RemoteServer.stop();
-		    kr.put("output", "NOTE: remote server shutting/shut down.");
-		} else {
-		    kr.put("output",
-			    "NOTE: remote server not configured to allow remote shutdowns. Your request has been ignored.");
-		    // in case RF spec changes to report failure in this case in
-		    // future
-		    // kr.put("status", "FAIL");
-		    // kr.put("error","Remote server not configured to allow remote shutdowns. Your request has been ignored.");
-		}
-		return kr;
-	    }
-	    Object retObj = RemoteServer.getLibrary().runKeyword(keyword, args);
-
-	    // TODO - check return type = array of some object,
-	    // or simple types: int, String, boolean, etc.
-	    // and process return value accordingly to send back to caller
-	    // use .NET version of generic remote server as the model to follow
-	    // http://code.google.com/p/sharprobotremoteserver/
-
-	    // so for now, we do this...
-
-	    // due to limitation of Java? (I think) in not being able to
-	    // redirect
-	    // standard (or stream) output from reflected/loaded library
-	    // output will always be empty with this implementation. Until we
-	    // can
-	    // fix/optimize this deficiency.
+	    kr.put("status", "PASS");
 	    kr.put("error", "");
-	    kr.put("output", "");
 	    kr.put("traceback", "");
-	    kr.put("status", "PASS"); // always pass, if no exception, RF spec
-	    if (retObj == null)
-		kr.put("return", ""); // can't return null, so do this...
-	    else
-		kr.put("return", retObj);
+	    Object retObj = "";
+	    if (keyword.equalsIgnoreCase("stop_remote_server")) {
+		retObj = stopRemoteServer();
+	    } else {
+		retObj = Context.getLibrary().runKeyword(keyword, args);
+	    }
+	    kr.put("output", baos.toString());
+	    kr.put("return", retObj);
 	    return kr;
 	} catch (Throwable e) {
-	    e.printStackTrace();
+	    log.warn("", e);
 	    kr.put("status", "FAIL");
+	    kr.put("output", baos.toString());
 	    kr.put("return", "");
 	    kr.put("error", e.getMessage());
-	    kr.put("output", e.getMessage());
-	    String stktrc = "";
-	    StackTraceElement[] st = e.getStackTrace();
-	    for (int i = 0; i < st.length; i++) {
-		stktrc += st.toString();
-		kr.put("traceback", stktrc);
-	    }
+	    kr.put("traceback", ExceptionUtils.getStackTrace(e));
 	    return kr;
+	} finally {
+	    System.setOut(outBackup);
 	}
     }
 
     /**
-     * Get list of arguments for specified Robot Framework keyword.
-     * 
-     * NOTE: Currently returns argument data type instead of name until we can
-     * fix it.
+     * Get an array of argument descriptors for the given keyword.
      * 
      * @param keyword
-     *            The keyword to get a list of arguments for.
-     * @return A string array of arguments for the given keyword.
+     *            The keyword to lookup.
+     * @return A string array of argument descriptors for the given keyword.
      */
     public String[] get_keyword_arguments(String keyword) {
-	// TODO - figure out how to best to implement this
-	// with reflection. Given a "keyword" method name,
-	// lookup method in Java class library that's
-	// loaded into the server, and return a string array
-	// of arguments (names) that method takes.
-
-	// my knowledge of Java reflection is limited,
-	// so for now, we do this...
 	if (keyword.equalsIgnoreCase("stop_remote_server")) {
 	    return new String[0];
 	}
 	try {
-	    return RemoteServer.getLibrary().getKeywordArguments(keyword);
+	    String[] args = Context.getLibrary().getKeywordArguments(keyword);
+	    // TODO: is this acceptable?
+	    return args == null ? new String[0] : args;
 	} catch (Throwable e) {
-	    System.err.println(e);
-	    return new String[0];
+	    log.warn("", e);
+	    throw new RuntimeException(e);
 	}
     }
 
     /**
-     * Get documentation for specified Robot Framework keyword.
-     * 
-     * NOTE: Tentatively done by getting class annotation info plus return value
-     * of keyword method. Could enhance to parse Javadoc info, etc.
+     * Get documentation for given keyword.
      * 
      * @param keyword
      *            The keyword to get documentation for.
      * @return A documentation string for the given keyword.
      */
     public String get_keyword_documentation(String keyword) {
-	// TODO - figure out how to implement this.
-	// Given a "keyword" method name, lookup method's
-	// documentation, and return as string.
-	// Use Javadoc API? Use doclet API?
-	// Use Java annotations?
-	// Look into how Robot Framework (non-remote)
-	// Java/Jython libraries implement this
-	// (with annotations, I believe)
-
-	// my knowledge of Java reflection +
-	// Java documentation is limited,
-	// so for now, we do this...
 	if (keyword.equalsIgnoreCase("stop_remote_server")) {
-	    String doc = "Remotely shut down remote server/library w/ Robot Framework keyword.\n\n";
-	    doc += "If server is configured to not allow remote shutdown, keyword 'request' is ignored by server.\n\n";
-	    doc += "Always returns status of PASS with return value of 1. Output value contains helpful info and may indicate whether remote shut down is allowed or not.";
-	    return doc;
+	    return "Stops the remote server.\n\nThe server may be configured so that users cannot stop it.";
 	}
 	try {
-	    return RemoteServer.getLibrary().getKeywordDocumentation(keyword);
+	    String doc = Context.getLibrary().getKeywordDocumentation(keyword);
+	    return doc == null ? "" : doc;
 	} catch (Throwable e) {
-	    System.err.println(e);
-	    return "";
+	    log.warn("", e);
+	    throw new RuntimeException(e);
 	}
+    }
+
+    /**
+     * Stops the remote server if it is configured to allow that.
+     * 
+     * @return remote result Map containing the execution results
+     */
+    public Map<String, Object> stop_remote_server() {
+	return run_keyword("stop_remote_server", null);
+    }
+
+    private boolean stopRemoteServer() {
+	if (Context.getRemoteServer().getAllowRemoteStop()) {
+	    System.out.println("Robot Framework remote server stopping");
+	    Context.getRemoteServer().gracefulStop();
+	} else {
+	    System.out.println("This Robot Framework remote server does not allow stopping");
+	}
+	return true;
     }
 }

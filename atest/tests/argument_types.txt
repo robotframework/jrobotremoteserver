@@ -1,0 +1,75 @@
+*** Settings ***
+Resource        resource.txt
+
+*** Test Cases ***
+String As Argument
+    String As Argument    ${BYTE STRING}
+
+Non-ASCII String As Argument
+    Unicode String As Argument    ${UNICODE STRING}
+
+Control Char As Argument
+    [Documentation]    Fails with ExpatError when server runs on Jython 2.5.
+    Control Char As Argument    ${CONTROL CHAR}
+
+Empty String As Argument
+    Empty String As Argument    ${EMPTY}
+
+Integer As Argument
+    Integer As Argument    ${42}
+    Negative Integer As Argument    ${-1}
+
+Float As Argument
+    Float As Argument    ${3.14}
+    Negative Float As Argument    ${-0.5}
+
+Zero As Argument
+    Zero As Argument    ${0}
+
+Boolean As Argument
+    Boolean True As Argument    ${True}
+    Boolean False As Argument    ${False}
+
+None As Argument
+    [Documentation]    None is converted to empty string because it is not supported by all XML-RPC versions.
+    None As Argument    ${None}
+
+Arbitrary Object As Argument
+    [Documentation]    Arbitrary objects cannot be transferred over XML-RPC and thus only their string presentation is used
+    Object As Argument    ${MyObject()}
+
+List As Argument
+    List As Argument    ${LIST}
+    Empty List As Argument    ${EMPTY LIST}
+
+List Containing None As Argument
+    List Containing None As Argument    ${LIST WITH NONE}
+
+List Containing Arbitrary Objects As Argument
+    List Containing Objects As Argument    ${LIST WITH OBJECTS}
+
+Nested List As Argument
+    Nested List As Argument  ${NESTED LIST}
+
+Tuple As Argument
+    [Documentation]    Tuples are converted to lists
+    List As Argument    ${TUPLE}
+    Empty List As Argument    ${EMPTY TUPLE}
+    Nested List As Argument    ${NESTED TUPLE}
+
+Dictionary As Argument
+    Dictionary As Argument    ${DICT}
+    Empty Dictionary As Argument    ${EMPTY DICT}
+
+Dictionary With Non-String Keys As Argument
+    [Documentation]    XML-RPC supports only strings as keys so must convert them
+    Dictionary With Non String Keys As Argument    ${DICT WITH NON STRING KEYS}
+
+Dictionary Containing None As Argument
+    Dictionary Containing None As Argument    ${DICT WITH NONE}
+
+Dictionary Containing Objects As Argument
+    Dictionary Containing Objects As Argument    ${DICT WITH OBJECTS}
+
+Nested Dictionary As Argument
+    Nested Dictionary As Argument    ${NESTED DICT}

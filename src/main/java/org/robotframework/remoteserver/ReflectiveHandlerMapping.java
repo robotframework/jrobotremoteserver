@@ -21,11 +21,15 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.AbstractReflectiveHandlerMapping;
 
 public class ReflectiveHandlerMapping extends AbstractReflectiveHandlerMapping {
+
+    /**
+     * Removes the prefixes from all keys in this handler mapping assuming a String was used as the key and period was
+     * used as a separator. Example: AccountsReceivable.Billing.getInvoice -> getInvoice
+     */
     @SuppressWarnings("unchecked")
     protected void removePrefixes() {
 	Map<String, Object> newHandlerMap = new HashMap<String, Object>();
-	for (Entry<String, Object> entry : (Set<Entry<String, Object>>) this.handlerMap
-		.entrySet()) {
+	for (Entry<String, Object> entry : (Set<Entry<String, Object>>) this.handlerMap.entrySet()) {
 	    String newKey = (String) entry.getKey();
 	    if (entry.getKey() instanceof String) {
 		String key = (String) entry.getKey();
@@ -38,8 +42,16 @@ public class ReflectiveHandlerMapping extends AbstractReflectiveHandlerMapping {
 	this.handlerMap = newHandlerMap;
     }
 
-    protected void addHandler(String pKey, Class<?> pClass)
-	    throws XmlRpcException {
+    /**
+     * Adds handlers for the given object to the mapping. The handlers are build by invoking
+     * {@link #registerPublicMethods(String, Class)}.
+     * 
+     * @param pKey
+     *            The class key, which is passed to {@link #registerPublicMethods(String, Class)}.
+     * @param pClass
+     *            Class, which is responsible for handling the request.
+     */
+    protected void addHandler(String pKey, Class<?> pClass) throws XmlRpcException {
 	registerPublicMethods(pKey, pClass);
     }
 }

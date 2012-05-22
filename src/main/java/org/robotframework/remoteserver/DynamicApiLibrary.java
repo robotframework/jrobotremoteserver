@@ -21,8 +21,7 @@ public class DynamicApiLibrary implements IRemoteLibrary {
     private Method getKeywordArguments;
     private Method getKeywordDocumentation;
 
-    protected DynamicApiLibrary(Object library, Method getKeywordNames,
-	    Method runKeyword, Method getKeywordArguments,
+    protected DynamicApiLibrary(Object library, Method getKeywordNames, Method runKeyword, Method getKeywordArguments,
 	    Method getKeywordDocumentation) {
 	this.library = library;
 	this.getKeywordNames = getKeywordNames;
@@ -41,8 +40,6 @@ public class DynamicApiLibrary implements IRemoteLibrary {
 
     public Object runKeyword(String keyword, Object[] args) {
 	try {
-	    for (Object arg : args)
-		System.out.println(arg.getClass() + ":" + arg);
 	    return runKeyword.invoke(library, keyword, args);
 	} catch (Exception e) {
 	    throw new RuntimeException(e.getMessage(), e);

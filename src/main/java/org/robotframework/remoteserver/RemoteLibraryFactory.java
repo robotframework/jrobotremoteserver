@@ -13,17 +13,20 @@
 package org.robotframework.remoteserver;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 public class RemoteLibraryFactory {
     public static IRemoteLibrary newRemoteLibrary(Object library) {
 	Class<?> clazz = library.getClass();
-	if (isDynamic(clazz))
-	    return new DynamicApiLibrary(library, getMethod(clazz,
-		    MethodType.GET_KEYWORD_NAMES), getMethod(clazz,
-		    MethodType.RUN_KEYWORD), getMethod(clazz,
-		    MethodType.GET_KEYWORD_ARGUMENTS), getMethod(clazz,
-		    MethodType.GET_KEYWORD_DOCUMENTATION));
-	else
+	if (isDynamic(clazz)) {
+	    Method getKeywordNames = getMethod(clazz, MethodType.GET_KEYWORD_NAMES);
+	    Method runKeyword = getMethod(clazz, MethodType.RUN_KEYWORD);
+	    Method getKeywordArguments = getMethod(clazz, MethodType.GET_KEYWORD_ARGUMENTS);
+	    Method getKeywordDocumentation = getMethod(clazz, MethodType.GET_KEYWORD_DOCUMENTATION);
+	    return new DynamicApiLibrary(library, getKeywordNames, runKeyword, getKeywordArguments,
+		    getKeywordDocumentation);
+	} else
 	    return new StaticApiLibrary(library);
     }
 
@@ -34,34 +37,38 @@ public class RemoteLibraryFactory {
 
     private static Method getMethod(Class<?> clazz, MethodType type) {
 	for (Method m : clazz.getMethods()) {
+	    if (!isEligibleMethod(m))
+		continue;
 	    String name = m.getName();
-	    Class<?>[] params = m.getParameterTypes();
+	    Class<?>[] pTypes = m.getParameterTypes();
 	    if (type.equals(MethodType.GET_KEYWORD_ARGUMENTS)
-		    && (name.equals("getKeywordArguments") || name
-			    .equals("get_keyword_arguments"))
-		    && m.getReturnType() == String[].class
-		    && params.length == 1 && params[0].equals(String.class))
+		    && (name.equals("getKeywordArguments") || name.equals("get_keyword_arguments"))
+		    && m.getReturnType() == String[].class && Arrays.equals(pTypes, new Class<?>[] { String.class }))
 		return m;
 	    if (type.equals(MethodType.GET_KEYWORD_DOCUMENTATION)
-		    && (name.equals("getKeywordDocumentation") || name
-			    .equals("get_keyword_documentation"))
-		    && m.getReturnType() == String.class && params.length == 1
-		    && params[0].equals(String.class))
+		    && (name.equals("getKeywordDocumentation") || name.equals("get_keyword_documentation"))
+		    && m.getReturnType() == String.class && Arrays.equals(pTypes, new Class<?>[] { String.class }))
 		return m;
 	    if (type.equals(MethodType.GET_KEYWORD_NAMES)
-		    && (name.equals("getKeywordNames") || name
-			    .equals("get_keyword_names"))
-		    && m.getReturnType() == String[].class
-		    && params.length == 0)
+		    && (name.equals("getKeywordNames") || name.equals("get_keyword_names"))
+		    && m.getReturnType() == String[].class && pTypes.length == 0)
 		return m;
-	    if (type.equals(MethodType.RUN_KEYWORD)
-		    && (name.equals("runKeyword") || name.equals("run_keyword"))
+	    if (type.equals(MethodType.RUN_KEYWORD) && (name.equals("runKeyword") || name.equals("run_keyword"))
 		    && m.getReturnType().equals(Object.class)
-		    && params.length == 2 && params[0].equals(String.class)
-		    && params[1].equals(Object[].class))
+		    && Arrays.equals(pTypes, new Class<?>[] { String.class, Object[].class }))
 		return m;
 	}
 	return null;
+    }
+
+    private static boolean isEligibleMethod(Method method) {
+	if (!Modifier.isPublic(method.getModifiers())) {
+	    return false; // Ignore non-public methods
+	}
+	if (method.getDeclaringClass() == Object.class) {
+	    return false; // Ignore methods from Object.class
+	}
+	return true;
     }
 
     enum MethodType {
