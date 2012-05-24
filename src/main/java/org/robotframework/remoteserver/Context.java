@@ -14,6 +14,7 @@ package org.robotframework.remoteserver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,25 +22,23 @@ public class Context {
 
     private static final ThreadLocal<Integer> port = new ThreadLocal<Integer>();
 
-    private static final ConcurrentHashMap<Integer, RemoteServer> remoteServerMap = new ConcurrentHashMap<Integer, RemoteServer>();
+    private static final Map<Integer, RemoteServer> remoteServerMap = new ConcurrentHashMap<Integer, RemoteServer>();
 
-    protected static void setPort(Integer rPort) {
-	port.set(rPort);
+    protected static void setPort(Integer port) {
+	Context.port.set(port);
     }
 
     protected static RemoteServer getRemoteServer() {
 	return remoteServerMap.get(port.get());
     }
 
-    protected static void addRemoteServer(RemoteServer server, Set<Integer> ports) {
-	synchronized (remoteServerMap) {
-	    for (Integer port : ports) {
-		if (remoteServerMap.containsKey(port))
-		    throw new RuntimeException(String.format("Another RemoteServer has claimed port %d", port));
-	    }
-	    for (Integer port : ports) {
-		remoteServerMap.put(port, server);
-	    }
+    protected static synchronized void addRemoteServer(RemoteServer server, Set<Integer> ports) {
+	for (Integer port : ports) {
+	    if (remoteServerMap.containsKey(port))
+		throw new RuntimeException(String.format("Another RemoteServer has claimed port %d", port));
+	}
+	for (Integer port : ports) {
+	    remoteServerMap.put(port, server);
 	}
     }
 
@@ -55,5 +54,4 @@ public class Context {
     protected static IRemoteLibrary getLibrary() {
 	return getRemoteServer().getLibrary(port.get());
     }
-
 }
