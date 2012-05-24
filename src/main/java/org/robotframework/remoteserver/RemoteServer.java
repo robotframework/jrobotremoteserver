@@ -60,10 +60,9 @@ public class RemoteServer {
 
     public static void main(String[] args) throws Exception {
 	// TODO: proper argument parsing
-	configureLogging(false);
+	configureLogging();
 	List<String> libs = new ArrayList<String>();
 	List<Integer> ports = new ArrayList<Integer>();
-	System.err.println(args.length);
 	for (int i = 0; i < args.length; i++) {
 	    if (args[i].equals("-library")) {
 		String[] parts = args[i + 1].split(":");
@@ -116,6 +115,7 @@ public class RemoteServer {
 	connector.setThreadPool(new QueuedThreadPool(20));
 	connector.setName("jrobotremotesever");
 	connectors.add(connector);
+	log.info(String.format("Added library %s", remoteLibrary.getName()));
     }
 
     protected SortedMap<Integer, IRemoteLibrary> getLibraryMap() {
@@ -178,30 +178,28 @@ public class RemoteServer {
 	connectors.clear();
     }
 
-    private static boolean isMainClass() {
-	StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-	StackTraceElement main = stack[stack.length - 1];
-	return main.getClassName().equals(RemoteServer.class.getName());
-    }
-
     /**
-     * Configure log4j to log messages of level INFO and above to the console and redirect the webserver's logging to
-     * log4j. This is convenient if you do not want to configure the logging yourself.
+     * Configures logging systems used by <tt>RemoteServer</tt> and its dependencies. Specifically,
+     * <ul>
+     * <li>Configure Log4J to log to the console</li>
+     * <li>Set Log4J's log level to INFO</li>
+     * <li>Redirect the Jetty's logging to Log4J</li>
+     * <li>Set Jakarta Commons Logging to use log to Log4J</li>
+     * </ul>
+     * This is convenient if you do not want to configure the logging yourself. This will only affect future instances
+     * of {@link org.eclipse.jetty.util.log.Logger} and {@link org.apache.commons.logging.Log}. This should be called as
+     * early as possible.
      */
     public static void configureLogging() {
-	configureLogging(true);
-    }
-
-    private static void configureLogging(boolean force) {
-	if (!force && !isMainClass())
-	    return;
 	Logger root = Logger.getRootLogger();
-	if (force || !root.getAllAppenders().hasMoreElements()) {
-	    root.removeAllAppenders();
-	    BasicConfigurator.configure();
-	    root.setLevel(Level.INFO);
-	    org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4j());
-	}
+	root.removeAllAppenders();
+	BasicConfigurator.configure();
+	root.setLevel(Level.INFO);
+	org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4j());
+	LogFactory.releaseAll();
+	LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
+		"org.apache.commons.logging.impl.Log4JLogger");
+	log = LogFactory.getLog(RemoteServer.class);
     }
 
     private void checkStarted() {
