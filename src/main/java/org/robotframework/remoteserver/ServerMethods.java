@@ -18,6 +18,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.AssertionFailedError;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +34,8 @@ import org.apache.commons.logging.LogFactory;
 public class ServerMethods {
 
     private Log log;
+    private static String[] ignoredExceptions = new String[] { "AssertionError", "AssertionFailedError", "Exception",
+	    "Error", "RuntimeError", "RuntimeException", "DataError", "TimeoutError", "RemoteError" };
 
     public ServerMethods() {
 	log = LogFactory.getLog(ServerMethods.class);
@@ -88,7 +93,7 @@ public class ServerMethods {
 	    kr.put("output", baos.toString());
 	    kr.put("return", "");
 	    Throwable t = e.getCause() == null ? e : e.getCause();
-	    kr.put("error", t.getMessage());
+	    kr.put("error", getError(t));
 	    kr.put("traceback", ExceptionUtils.getStackTrace(t));
 	    return kr;
 	} finally {
@@ -154,5 +159,13 @@ public class ServerMethods {
 	    System.out.println("This Robot Framework remote server does not allow stopping");
 	}
 	return true;
+    }
+
+    private String getError(Throwable thrown) {
+	String name = thrown.getClass().getSimpleName();
+	for (String ignoredName : ignoredExceptions)
+	    if (ignoredName.equals(name))
+		return thrown.getMessage();
+	return String.format("%s: %s", thrown.getClass().getName(), thrown.getMessage());
     }
 }

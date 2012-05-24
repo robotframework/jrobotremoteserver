@@ -1,39 +1,40 @@
-*** Settings ***
-Resource         resource.txt
+| *** Settings *** |
+| Resource       | resource.txt |
 
-*** Test Cases ***
-Base Exception
-    [Documentation]    FAIL My message
-    Base Exception
+| *** Test Cases *** |
+| Base Exception |
+|    | [Documentation] | FAIL My message |
+|    | Base Exception |
 
-Exception Without Message
-    [Documentation]    FAIL Exception
-    Exception Without Message
+| Exception Without Message |
+|    | [Documentation] | FAIL Exception |
+|    | Exception Without Message |
 
-AssertionError
-    [Documentation]    FAIL Failure message
-    Assertion Error
+| AssertionError |
+|    | [Documentation] | FAIL Failure message |
+|    | Assertion Error |
 
-RuntimeError
-    [Documentation]    FAIL Error message
-    Runtime Error
+| RuntimeError |
+|    | [Documentation] | FAIL Error message |
+|    | Runtime Error |
 
-Zero Division
-    [Documentation]    FAIL STARTS: ZeroDivisionError:
-    Zero Division
+| Zero Division |
+|    | [Documentation] | FAIL java.lang.ArithmeticException: / by zero |
+|    | Zero Division |
 
-Custom Exception
-    [Documentation]    FAIL MyException: My message
-    Custom Exception
+| Custom Exception |
+|    | [Documentation] | FAIL org.robotframework.examplelib.impl.MyException: My message |
+|    | Custom Exception |
 
-Failure Deeper
-    [Documentation]    FAIL Finally failing
-    Failure Deeper
+| Failure Deeper |
+|    | [Documentation] | FAIL Finally failing |
+|    | Failure Deeper |
 
-Error Message With Non-ASCII Unicode
-    [Documentation]    FAIL ${UNICODE STRING}
-    Error Message With Non ASCII Unicode
+| Error Message With Non-ASCII Unicode |
+|    | [Documentation] | FAIL ${UNICODE STRING} |
+|    | Error Message With Non ASCII Unicode |
 
-Error Message With Non-ASCII Bytes
-    [Documentation]    FAIL hyv${REPLACEMENT CHARACTER}
-    Error Message With Non ASCII Bytes
+| Error Message With Non-ASCII Bytes |
+|    | [Documentation] | FAIL hyv${REPLACEMENT CHARACTER} |
+|    | Error Message With Non ASCII Bytes |
+
