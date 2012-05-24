@@ -87,8 +87,9 @@ public class ServerMethods {
 	    kr.put("status", "FAIL");
 	    kr.put("output", baos.toString());
 	    kr.put("return", "");
-	    kr.put("error", e.getMessage());
-	    kr.put("traceback", ExceptionUtils.getStackTrace(e));
+	    Throwable t = e.getCause() == null ? e : e.getCause();
+	    kr.put("error", t.getMessage());
+	    kr.put("traceback", ExceptionUtils.getStackTrace(t));
 	    return kr;
 	} finally {
 	    System.setOut(outBackup);

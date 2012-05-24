@@ -127,7 +127,9 @@ public class StaticApiLibrary implements IRemoteLibrary {
 	    }
 	    return doc;
 	} catch (Exception e) {
-	    throw new RuntimeException(e);
+	    if (e.getClass().equals(java.lang.reflect.InvocationTargetException.class))
+		throw new RuntimeException(e.getCause().getMessage(), e.getCause());
+	    throw new RuntimeException(e.getMessage(), e);
 	}
     }
 

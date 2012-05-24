@@ -42,6 +42,8 @@ public class DynamicApiLibrary implements IRemoteLibrary {
 	try {
 	    return runKeyword.invoke(library, keyword, args);
 	} catch (Exception e) {
+	    if (e.getClass().equals(java.lang.reflect.InvocationTargetException.class))
+		throw new RuntimeException(e.getCause().getMessage(), e.getCause());
 	    throw new RuntimeException(e.getMessage(), e);
 	}
     }
