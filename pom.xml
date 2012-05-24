@@ -65,12 +65,6 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<mainClass>org.robotframework.remoteserver.RemoteServer</mainClass>
-						</manifest>
-					</archive>
 				</configuration>
 				<executions>
 					<execution>
