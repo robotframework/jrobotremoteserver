@@ -12,38 +12,82 @@
  */
 package org.robotframework.remoteserver;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
 import org.apache.xmlrpc.common.XmlRpcController;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
+import org.apache.xmlrpc.serializer.BooleanSerializer;
+import org.apache.xmlrpc.serializer.ByteArraySerializer;
+import org.apache.xmlrpc.serializer.DateSerializer;
+import org.apache.xmlrpc.serializer.DoubleSerializer;
+import org.apache.xmlrpc.serializer.I4Serializer;
+import org.apache.xmlrpc.serializer.ListSerializer;
+import org.apache.xmlrpc.serializer.MapSerializer;
+import org.apache.xmlrpc.serializer.ObjectArraySerializer;
 import org.apache.xmlrpc.serializer.StringSerializer;
 import org.apache.xmlrpc.serializer.TypeSerializer;
+import org.apache.xmlrpc.util.XmlRpcDateTimeDateFormat;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public class TypeFactory extends TypeFactoryImpl {
 
-    private Log log = LogFactory.getLog(TypeFactory.class);
-
-    private static final StringSerializer nullSerializer = new StringSerializer() {
+    private static final TypeSerializer STRING_SERIALIZER = new StringSerializer();
+    private static final TypeSerializer I4_SERIALIZER = new I4Serializer();
+    private static final TypeSerializer DOUBLE_SERIALIZER = new DoubleSerializer();
+    private static final TypeSerializer BOOLEAN_SERIALIZER = new BooleanSerializer();
+    private static final TypeSerializer BYTE_ARRAY_SERIALIZER = new ByteArraySerializer();
+    private static final TypeSerializer NULL_SERIALIZER = new StringSerializer() {
 	@Override
 	public void write(ContentHandler pHandler, Object pObject) throws SAXException {
 	    write(pHandler, null, "");
 	}
     };
+    private DateSerializer dateSerializer;
+    private final XmlRpcController controller;
 
     public TypeFactory(XmlRpcController pController) {
 	super(pController);
+	controller = pController;
     }
 
-    @Override
     public TypeSerializer getSerializer(XmlRpcStreamConfig pConfig, Object pObject) throws SAXException {
-	// TODO: handle Iterator & arbitrary objects & objects containing null
 	if (pObject == null) {
-	    log.debug("Converting null to \"\"");
-	    return nullSerializer;
-	}
-	return super.getSerializer(pConfig, pObject);
+	    return NULL_SERIALIZER;
+	} else if (pObject instanceof String) {
+	    return STRING_SERIALIZER;
+	} else if (pObject instanceof Integer || pObject instanceof Short || pObject instanceof Byte) {
+	    return I4_SERIALIZER;
+	} else if (pObject instanceof Boolean) {
+	    return BOOLEAN_SERIALIZER;
+	} else if (pObject instanceof Double || pObject instanceof Float) {
+	    return DOUBLE_SERIALIZER;
+	} else if (pObject instanceof Date) {
+	    if (dateSerializer == null) {
+		dateSerializer = new DateSerializer(new XmlRpcDateTimeDateFormat() {
+		    private static final long serialVersionUID = 24345909123324234L;
+
+		    protected TimeZone getTimeZone() {
+			return controller.getConfig().getTimeZone();
+		    }
+		});
+	    }
+	    return dateSerializer;
+	} else if (pObject instanceof byte[]) {
+	    return BYTE_ARRAY_SERIALIZER;
+	} else if (pObject instanceof Object[]) {
+	    return new ObjectArraySerializer(this, pConfig);
+	} else if (pObject instanceof List) {
+	    return new ListSerializer(this, pConfig);
+	} else if (pObject instanceof Map) {
+	    return new MapSerializer(this, pConfig);
+	} else
+	return STRING_SERIALIZER;
     }
 }
