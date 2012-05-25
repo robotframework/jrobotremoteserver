@@ -135,7 +135,7 @@ public class RemoteServer {
 		try {
 		    server.stop();
 		} catch (Throwable e) {
-		    log.error("Failed to stop the webserver", e);
+		    log.error(String.format("Failed to stop the server: %s", e.getMessage()), e);
 		}
 	    }
 	};
@@ -169,9 +169,11 @@ public class RemoteServer {
 	    server = new Server();
 	if (connectors.isEmpty())
 	    throw new RuntimeException("Cannot start the server without adding a library first");
+	if (!server.isStopped())
+	    throw new RuntimeException("The server is starting or already started");
 	Context.addRemoteServer(this, libraryMap.keySet());
 	server.setConnectors(connectors.toArray(new Connector[] {}));
-	ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", true, false);
+	ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
 	servletContextHandler.addServlet(RemoteServerServlet.class, "/");
 	log.info("Robot Framework remote server starting");
 	server.start();
