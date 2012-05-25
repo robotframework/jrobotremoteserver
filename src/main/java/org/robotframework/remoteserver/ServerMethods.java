@@ -14,8 +14,11 @@ package org.robotframework.remoteserver;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.AssertionFailedError;
@@ -82,15 +85,28 @@ public class ServerMethods {
 	    if (keyword.equalsIgnoreCase("stop_remote_server")) {
 		retObj = stopRemoteServer();
 	    } else {
-		retObj = Context.getLibrary().runKeyword(keyword, args);
+		try {
+		    retObj = Context.getLibrary().runKeyword(keyword, args);
+		} catch (Exception e) {
+		    if (illegalArgument(e)) {
+			arraysToLists(args);
+			retObj = Context.getLibrary().runKeyword(keyword, args);
+		    } else {
+			throw (e);
+		    }
+		}
 	    }
-	    kr.put("output", baos.toString());
+	    kr.put("output", baos.toString("UTF-8"));
 	    kr.put("return", retObj);
 	    return kr;
 	} catch (Throwable e) {
 	    log.warn("", e);
 	    kr.put("status", "FAIL");
-	    kr.put("output", baos.toString());
+	    try {
+		kr.put("output", baos.toString("UTF-8"));
+	    } catch (UnsupportedEncodingException e1) {
+		// ignore
+	    }
 	    kr.put("return", "");
 	    Throwable t = e.getCause() == null ? e : e.getCause();
 	    kr.put("error", getError(t));
@@ -162,10 +178,35 @@ public class ServerMethods {
     }
 
     private String getError(Throwable thrown) {
-	String name = thrown.getClass().getSimpleName();
+	String simpleName = thrown.getClass().getSimpleName();
 	for (String ignoredName : ignoredExceptions)
-	    if (ignoredName.equals(name))
-		return thrown.getMessage();
+	    if (simpleName.equals(ignoredName)) {
+		return StringUtils.defaultIfEmpty(thrown.getMessage(), simpleName);
+	    }
 	return String.format("%s: %s", thrown.getClass().getName(), thrown.getMessage());
+    }
+
+    private void arraysToLists(Object[] args) {
+	for (int i = 0; i < args.length; i++) {
+	    if (args[i].getClass().isArray()) {
+		Object[] arrArg = (Object[]) args[i];
+		List<Object> largs = new ArrayList<Object>();
+		for (Object arg : arrArg) {
+		    largs.add(arg);
+		}
+		args[i] = largs;
+	    }
+	}
+    }
+
+    private boolean illegalArgument(Throwable t) {
+	Throwable inner = t;
+	while (inner.getCause() != null) {
+	    inner = inner.getCause();
+	    if (inner.getClass().equals(IllegalArgumentException.class)) {
+		return true;
+	    }
+	}
+	return false;
     }
 }
