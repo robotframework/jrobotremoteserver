@@ -305,7 +305,7 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames("arg")
-    public void emptyListAsArgument(Object arg) {
+    public void emptyListAsArgument(List<?> arg) {
         shouldBeEqual(arg, new ArrayList<Object>());
     }
 
@@ -335,16 +335,19 @@ public class Keywords
     }
 
     @RobotKeyword
+    @ArgumentNames({ "arg" })
     public void dictionaryAsArgument(Map<Object,Object> arg) {
         shouldBeEqual(arg, returnDictionary());
     }  
    
     @RobotKeyword
+    @ArgumentNames({ "arg" })
     public void emptyDictionaryAsArgument(Map<?,?> arg) {
         shouldBeEqual(arg, new HashMap());
     }
 
     @RobotKeyword
+    @ArgumentNames({ "arg" })
     public void dictionaryWithNonStringKeysAsArgument(Map<Object, Object> arg) {
         Map exp = new HashMap();
         exp.put("1", 2);
@@ -353,6 +356,7 @@ public class Keywords
     }
     
     @RobotKeyword
+    @ArgumentNames({ "arg" })
     public void dictionaryContainingNoneAsArgument(Map<?,?> arg) {
         Map exp = new HashMap();
         exp.put("As value", "");
@@ -361,6 +365,7 @@ public class Keywords
     }
     
     @RobotKeyword
+    @ArgumentNames({ "arg" })
     public void dictionaryContainingObjectsAsArgument(Map<?,?> arg) {
         Map exp = new HashMap();
         exp.put("As value", "<MyObject1>");
@@ -369,6 +374,7 @@ public class Keywords
     }
     
     @RobotKeyword
+    @ArgumentNames({ "arg" })
     public void nestedDictionaryAsArgument(Object arg) {
         Map exp = new HashMap();
         Map m1 = new HashMap();
