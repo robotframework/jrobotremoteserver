@@ -76,7 +76,11 @@ public class ServerMethods {
 	HashMap<String, Object> kr = new HashMap<String, Object>();
 	PrintStream outBackup = System.out;
 	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	System.setOut(new PrintStream(baos));
+	try {
+	    System.setOut(new PrintStream(baos, false, "UTF-8"));
+	} catch (UnsupportedEncodingException e2) {
+	    // ignore
+	}
 	try {
 	    kr.put("status", "PASS");
 	    kr.put("error", "");
