@@ -24,13 +24,11 @@ import org.xml.sax.SAXException;
 
 public class TypeFactory extends TypeFactoryImpl {
 
-    private static Log log = LogFactory.getLog(TypeFactory.class);
+    private Log log = LogFactory.getLog(TypeFactory.class);
 
     private static final StringSerializer nullSerializer = new StringSerializer() {
 	@Override
 	public void write(ContentHandler pHandler, Object pObject) throws SAXException {
-	    System.err.println("Converting null to empty string");
-	    log.info("Converting null to empty string");
 	    write(pHandler, null, "");
 	}
     };
@@ -43,6 +41,7 @@ public class TypeFactory extends TypeFactoryImpl {
     public TypeSerializer getSerializer(XmlRpcStreamConfig pConfig, Object pObject) throws SAXException {
 	// TODO: handle Iterator & arbitrary objects & objects containing null
 	if (pObject == null) {
+	    log.debug("Converting null to \"\"");
 	    return nullSerializer;
 	}
 	return super.getSerializer(pConfig, pObject);
