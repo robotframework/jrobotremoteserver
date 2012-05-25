@@ -158,7 +158,7 @@ public class Keywords
     }
     
     @RobotKeyword
-    public void unicodeInException() {
+    public void errorMessageWithNonAsciiUnicode() {
         throw new RuntimeException(unicode);
     }
 
@@ -242,7 +242,13 @@ public class Keywords
     public void emptyStringAsArgument(Object arg) {
         shouldBeEqual(arg, "");
     }
-
+    
+    @RobotKeyword
+    @ArgumentNames("arg")
+    public void controlCharAsArgument(char arg) {
+        shouldBeEqual(arg, "");
+    }
+    
     @RobotKeyword
     @ArgumentNames("arg")
     public void integerAsArgument(Object arg) {
