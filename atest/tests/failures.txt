@@ -34,7 +34,3 @@
 |    | [Documentation] | FAIL ${UNICODE STRING} |
 |    | Error Message With Non ASCII Unicode |
 
-| Error Message With Non-ASCII Bytes |
-|    | [Documentation] | FAIL hyv${REPLACEMENT CHARACTER} |
-|    | Error Message With Non ASCII Bytes |
-
