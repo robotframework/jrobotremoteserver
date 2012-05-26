@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
 import org.apache.xmlrpc.common.XmlRpcController;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
@@ -32,6 +31,7 @@ import org.apache.xmlrpc.serializer.MapSerializer;
 import org.apache.xmlrpc.serializer.ObjectArraySerializer;
 import org.apache.xmlrpc.serializer.StringSerializer;
 import org.apache.xmlrpc.serializer.TypeSerializer;
+import org.apache.xmlrpc.serializer.TypeSerializerImpl;
 import org.apache.xmlrpc.util.XmlRpcDateTimeDateFormat;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -49,7 +49,14 @@ public class TypeFactory extends TypeFactoryImpl {
 	    write(pHandler, null, "");
 	}
     };
+    private static final TypeSerializer CHAR_ARRAY_SERIALIZER = new TypeSerializerImpl() {
+	public void write(ContentHandler pHandler, Object pObject) throws SAXException {
+	    char[] chars = (char[]) pObject;
+	    write(pHandler, null, chars);
+	}
+    };
     private DateSerializer dateSerializer;
+    private TypeSerializer primitiveArraySerializer;
     private final XmlRpcController controller;
 
     public TypeFactory(XmlRpcController pController) {
@@ -58,17 +65,17 @@ public class TypeFactory extends TypeFactoryImpl {
     }
 
     public TypeSerializer getSerializer(XmlRpcStreamConfig pConfig, Object pObject) throws SAXException {
-	if (pObject == null) {
+	if (pObject == null)
 	    return NULL_SERIALIZER;
-	} else if (pObject instanceof String) {
+	else if (pObject instanceof String)
 	    return STRING_SERIALIZER;
-	} else if (pObject instanceof Integer || pObject instanceof Short || pObject instanceof Byte) {
+	else if (pObject instanceof Integer || pObject instanceof Short || pObject instanceof Byte)
 	    return I4_SERIALIZER;
-	} else if (pObject instanceof Boolean) {
+	else if (pObject instanceof Boolean)
 	    return BOOLEAN_SERIALIZER;
-	} else if (pObject instanceof Double || pObject instanceof Float) {
+	else if (pObject instanceof Double || pObject instanceof Float)
 	    return DOUBLE_SERIALIZER;
-	} else if (pObject instanceof Date) {
+	else if (pObject instanceof Date) {
 	    if (dateSerializer == null) {
 		dateSerializer = new DateSerializer(new XmlRpcDateTimeDateFormat() {
 		    private static final long serialVersionUID = 24345909123324234L;
@@ -79,15 +86,42 @@ public class TypeFactory extends TypeFactoryImpl {
 		});
 	    }
 	    return dateSerializer;
-	} else if (pObject instanceof byte[]) {
+	} else if (pObject instanceof byte[])
 	    return BYTE_ARRAY_SERIALIZER;
-	} else if (pObject instanceof Object[]) {
+	else if (pObject instanceof Object[])
 	    return new ObjectArraySerializer(this, pConfig);
-	} else if (pObject instanceof List) {
+	else if (pObject instanceof List)
 	    return new ListSerializer(this, pConfig);
-	} else if (pObject instanceof Map) {
+	else if (pObject instanceof Map)
 	    return new MapSerializer(this, pConfig);
+	else if (pObject instanceof char[])
+	    return CHAR_ARRAY_SERIALIZER;
+	else if (pObject.getClass().isArray()) { // byte[] & object[] & char[] handled before this
+	    primitiveArraySerializer = new ObjectArraySerializer(this, pConfig) {
+		@Override
+		protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {
+		    Object[] array;
+		    if (pObject instanceof short[])
+			array = ArrayUtils.toObject((short[]) pObject);
+		    else if (pObject instanceof int[])
+			array = ArrayUtils.toObject((int[]) pObject);
+		    else if (pObject instanceof long[])
+			array = ArrayUtils.toObject((long[]) pObject);
+		    else if (pObject instanceof float[])
+			array = ArrayUtils.toObject((float[]) pObject);
+		    else if (pObject instanceof double[])
+			array = ArrayUtils.toObject((double[]) pObject);
+		    else if (pObject instanceof boolean[])
+			array = ArrayUtils.toObject((boolean[]) pObject);
+		    else
+			// should never happen
+			throw new SAXException(String.format("Array of type %s[] not handled!", pObject.getClass()
+				.getComponentType().getName()));
+		    super.writeData(pHandler, array);
+		}
+	    };
+	    return primitiveArraySerializer;
 	} else
-	return STRING_SERIALIZER;
+	    return STRING_SERIALIZER;
     }
 }

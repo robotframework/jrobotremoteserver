@@ -75,6 +75,9 @@
 | Return Array Containing Primitives |
 |    | Return Array Containing Primitives | [3, -5] | eval |
 
+| Return Array Containing Chars |
+|    | Return Array Containing Chars | OK |
+
 | *** Keywords *** |
 | Return Value Should Be |
 |    | [Arguments] | ${keyword} | ${expected} | ${evaluate}= |

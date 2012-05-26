@@ -576,6 +576,11 @@ public class Keywords
     }
     
     @RobotKeyword
+    public char[] returnArrayContainingChars() {
+        return new char[] { 79, 75 };
+    }
+    
+    @RobotKeyword
     public MyObject[] returnArrayContainingObjects() {
         return new MyObject[] { new MyObject("1"), new MyObject("2") };
     }
