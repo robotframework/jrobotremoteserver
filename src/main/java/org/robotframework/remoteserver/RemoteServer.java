@@ -86,28 +86,35 @@ public class RemoteServer {
      *            port to serve the test library from
      */
     public void addLibrary(String className, int port) {
-	Object library;
+	Class<?> clazz;
 	try {
-	    library = Class.forName(className).newInstance();
+	    clazz = Class.forName(className);
 	} catch (Exception e) {
-	    throw new RuntimeException(String.format("Unable to create an instance of %s", className), e);
+	    throw new RuntimeException(String.format("Unable to load class %s: %s", className, e.getMessage()), e);
 	}
-	addLibrary(library, port);
+	addLibrary(clazz, port);
     }
 
     /**
      * Add the given test library to the remote server on the given port. The server must be stopped when calling this.
      * 
      * @param library
-     *            instance of the test library
+     *            class of the test library
      * @param port
      *            port to serve the test library from
      */
-    public void addLibrary(Object library, int port) {
+    public void addLibrary(Class<?> clazz, int port) {
 	if (server != null && !server.isStopped())
 	    throw new RuntimeException("Cannot add a library once the server is started");
 	if (libraryMap.containsKey(port))
 	    throw new RuntimeException(String.format("A library was already added for port %d", port));
+	Object library;
+	try {
+	    library = clazz.newInstance();
+	} catch (Exception e) {
+	    throw new RuntimeException(String.format("Unable to create an instance of %s: %s", clazz.getName(), e
+		    .getMessage()), e);
+	}
 	IRemoteLibrary remoteLibrary = RemoteLibraryFactory.newRemoteLibrary(library);
 	libraryMap.put(port, remoteLibrary);
 	SelectChannelConnector connector = new SelectChannelConnector();
