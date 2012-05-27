@@ -15,13 +15,10 @@ package org.robotframework.remoteserver;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.AssertionFailedError;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -93,7 +90,8 @@ public class ServerMethods {
 		    retObj = Context.getLibrary().runKeyword(keyword, args);
 		} catch (Exception e) {
 		    if (illegalArgument(e)) {
-			arraysToLists(args);
+			for (int i = 0; i < args.length; i++)
+			    args[i] = arraysToLists(args[i]);
 			retObj = Context.getLibrary().runKeyword(keyword, args);
 		    } else {
 			throw (e);
@@ -190,17 +188,21 @@ public class ServerMethods {
 	return String.format("%s: %s", thrown.getClass().getName(), thrown.getMessage());
     }
 
-    private void arraysToLists(Object[] args) {
-	for (int i = 0; i < args.length; i++) {
-	    if (args[i].getClass().isArray()) {
-		Object[] arrArg = (Object[]) args[i];
-		List<Object> largs = new ArrayList<Object>();
-		for (Object arg : arrArg) {
-		    largs.add(arg);
-		}
-		args[i] = largs;
-	    }
-	}
+    protected Object arraysToLists(Object arg) {
+	if (arg instanceof Object[]) {
+	    Object[] array = (Object[]) arg;
+	    List<Object> list = Arrays.asList(array);
+	    for (int i = 0; i < list.size(); i++)
+		list.set(i, arraysToLists(list.get(i)));
+	    return list;
+	} else if (arg instanceof Map<?, ?>) {
+	    Map<?, ?> oldMap = (Map<?, ?>) arg;
+	    Map<Object, Object> newMap = new HashMap<Object, Object>();
+	    for (Object key : oldMap.keySet())
+		newMap.put(key, arraysToLists(oldMap.get(key)));
+	    return newMap;
+	} else
+	    return arg;
     }
 
     private boolean illegalArgument(Throwable t) {
