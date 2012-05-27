@@ -27,7 +27,6 @@ import org.apache.xmlrpc.serializer.DateSerializer;
 import org.apache.xmlrpc.serializer.DoubleSerializer;
 import org.apache.xmlrpc.serializer.I4Serializer;
 import org.apache.xmlrpc.serializer.ListSerializer;
-import org.apache.xmlrpc.serializer.MapSerializer;
 import org.apache.xmlrpc.serializer.ObjectArraySerializer;
 import org.apache.xmlrpc.serializer.StringSerializer;
 import org.apache.xmlrpc.serializer.TypeSerializer;
