@@ -329,7 +329,7 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames("arg")
-    public void nestedListAsArgument(Object arg) {
+    public void nestedListAsArgument(List<Object> arg) {
         System.out.println(arg.getClass().getName() + arg);
         List<Object> exp = new ArrayList<Object>();
         exp.add(Arrays.asList(true, false));
