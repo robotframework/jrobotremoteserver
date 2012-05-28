@@ -27,6 +27,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.robotframework.remoteserver.library.RemoteLibrary;
+import org.robotframework.remoteserver.library.RemoteLibraryFactory;
+import org.robotframework.remoteserver.logging.Jetty2Log4J;
 
 /**
  * Remote server for Robot Framework implemented in Java. Takes one or more user libraries and exposes their methods via
@@ -39,7 +42,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 public class RemoteServer {
     private static Log log = LogFactory.getLog(RemoteServer.class);
     private Server server;
-    private SortedMap<Integer, IRemoteLibrary> libraryMap = new TreeMap<Integer, IRemoteLibrary>();
+    private SortedMap<Integer, RemoteLibrary> libraryMap = new TreeMap<Integer, RemoteLibrary>();
     private boolean allowRemoteStop = true;
     private List<SelectChannelConnector> connectors = new ArrayList<SelectChannelConnector>();
 
@@ -115,7 +118,7 @@ public class RemoteServer {
 	    throw new RuntimeException(String.format("Unable to create an instance of %s: %s", clazz.getName(), e
 		    .getMessage()), e);
 	}
-	IRemoteLibrary remoteLibrary = RemoteLibraryFactory.newRemoteLibrary(library);
+	RemoteLibrary remoteLibrary = RemoteLibraryFactory.newRemoteLibrary(library);
 	libraryMap.put(port, remoteLibrary);
 	SelectChannelConnector connector = new SelectChannelConnector();
 	connector.setPort(port);
@@ -125,11 +128,11 @@ public class RemoteServer {
 	log.info(String.format("Added library %s", remoteLibrary.getName()));
     }
 
-    protected SortedMap<Integer, IRemoteLibrary> getLibraryMap() {
+    protected SortedMap<Integer, RemoteLibrary> getLibraryMap() {
 	return libraryMap;
     }
 
-    protected IRemoteLibrary getLibrary(Integer port) {
+    protected RemoteLibrary getLibrary(Integer port) {
 	return libraryMap.get(port);
     }
 
@@ -204,7 +207,7 @@ public class RemoteServer {
 	root.removeAllAppenders();
 	BasicConfigurator.configure();
 	root.setLevel(Level.INFO);
-	org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4j());
+	org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4J());
 	LogFactory.releaseAll();
 	LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
 		"org.apache.commons.logging.impl.Log4JLogger");

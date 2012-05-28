@@ -10,9 +10,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.robotframework.remoteserver;
+package org.robotframework.remoteserver.library;
 
-public interface IRemoteLibrary {
+public interface RemoteLibrary {
     public String[] getKeywordNames();
 
     public Object runKeyword(String keyword, Object[] args);

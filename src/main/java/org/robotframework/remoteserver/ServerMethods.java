@@ -132,7 +132,6 @@ public class ServerMethods {
 	}
 	try {
 	    String[] args = Context.getLibrary().getKeywordArguments(keyword);
-	    // TODO: is this acceptable?
 	    return args == null ? new String[0] : args;
 	} catch (Throwable e) {
 	    log.warn("", e);

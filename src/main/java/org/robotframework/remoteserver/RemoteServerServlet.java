@@ -24,6 +24,9 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
+import org.robotframework.remoteserver.library.RemoteLibrary;
+import org.robotframework.remoteserver.xmlrpc.ReflectiveHandlerMapping;
+import org.robotframework.remoteserver.xmlrpc.TypeFactory;
 
 public class RemoteServerServlet extends XmlRpcServlet {
     private static final long serialVersionUID = -7981676271855172976L;
@@ -62,7 +65,7 @@ public class RemoteServerServlet extends XmlRpcServlet {
 		    + "<HTML><HEAD><TITLE>jrobotremoteserver</TITLE></HEAD><BODY>"
 		    + "<P>jrobotremoteserver serving:</P>"
 		    + "<TABLE border='1' cellspacing='0' cellpadding='5'><TR><TH>Port</TH><TH>Library</TH></TR>");
-	    SortedMap<Integer, IRemoteLibrary> map = Context.getRemoteServer().getLibraryMap();
+	    SortedMap<Integer, RemoteLibrary> map = Context.getRemoteServer().getLibraryMap();
 	    for (Integer port : map.keySet()) {
 		sb.append("<TR><TD>");
 		sb.append(port.toString());

@@ -10,18 +10,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.robotframework.remoteserver;
+package org.robotframework.remoteserver.library;
 
 import java.lang.reflect.Method;
 
-public class DynamicApiLibrary implements IRemoteLibrary {
+import org.robotframework.remoteserver.library.RemoteLibrary;
+
+public class DynamicApiRemoteLibrary implements RemoteLibrary {
     private Object library;
     private Method getKeywordNames;
     private Method runKeyword;
     private Method getKeywordArguments;
     private Method getKeywordDocumentation;
 
-    protected DynamicApiLibrary(Object library, Method getKeywordNames, Method runKeyword, Method getKeywordArguments,
+    protected DynamicApiRemoteLibrary(Object library, Method getKeywordNames, Method runKeyword, Method getKeywordArguments,
 	    Method getKeywordDocumentation) {
 	this.library = library;
 	this.getKeywordNames = getKeywordNames;

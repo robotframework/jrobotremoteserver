@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.robotframework.remoteserver;
+package org.robotframework.remoteserver.xmlrpc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class ReflectiveHandlerMapping extends AbstractReflectiveHandlerMapping {
      * used as a separator. Example: AccountsReceivable.Billing.getInvoice -> getInvoice
      */
     @SuppressWarnings("unchecked")
-    protected void removePrefixes() {
+    public void removePrefixes() {
 	Map<String, Object> newHandlerMap = new HashMap<String, Object>();
 	for (Entry<String, Object> entry : (Set<Entry<String, Object>>) this.handlerMap.entrySet()) {
 	    String newKey = (String) entry.getKey();
@@ -51,7 +51,7 @@ public class ReflectiveHandlerMapping extends AbstractReflectiveHandlerMapping {
      * @param pClass
      *            Class, which is responsible for handling the request.
      */
-    protected void addHandler(String pKey, Class<?> pClass) throws XmlRpcException {
+    public void addHandler(String pKey, Class<?> pClass) throws XmlRpcException {
 	registerPublicMethods(pKey, pClass);
     }
 }

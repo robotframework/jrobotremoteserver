@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.robotframework.remoteserver.library.RemoteLibrary;
+
 public class Context {
 
     private static final ThreadLocal<Integer> port = new ThreadLocal<Integer>();
@@ -51,7 +53,7 @@ public class Context {
 	    remoteServerMap.remove(port);
     }
 
-    protected static IRemoteLibrary getLibrary() {
+    protected static RemoteLibrary getLibrary() {
 	return getRemoteServer().getLibrary(port.get());
     }
 }

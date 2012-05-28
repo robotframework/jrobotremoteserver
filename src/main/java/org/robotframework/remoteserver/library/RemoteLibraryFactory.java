@@ -10,24 +10,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.robotframework.remoteserver;
+package org.robotframework.remoteserver.library;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 public class RemoteLibraryFactory {
-    public static IRemoteLibrary newRemoteLibrary(Object library) {
+    public static RemoteLibrary newRemoteLibrary(Object library) {
 	Class<?> clazz = library.getClass();
 	if (isDynamic(clazz)) {
 	    Method getKeywordNames = getMethod(clazz, MethodType.GET_KEYWORD_NAMES);
 	    Method runKeyword = getMethod(clazz, MethodType.RUN_KEYWORD);
 	    Method getKeywordArguments = getMethod(clazz, MethodType.GET_KEYWORD_ARGUMENTS);
 	    Method getKeywordDocumentation = getMethod(clazz, MethodType.GET_KEYWORD_DOCUMENTATION);
-	    return new DynamicApiLibrary(library, getKeywordNames, runKeyword, getKeywordArguments,
+	    return new DynamicApiRemoteLibrary(library, getKeywordNames, runKeyword, getKeywordArguments,
 		    getKeywordDocumentation);
 	} else
-	    return new StaticApiLibrary(library);
+	    return new StaticApiRemoteLibrary(library);
     }
 
     private static boolean isDynamic(Class<?> clazz) {

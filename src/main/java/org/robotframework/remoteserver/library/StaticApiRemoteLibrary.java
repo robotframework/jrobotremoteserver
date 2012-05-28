@@ -10,17 +10,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.robotframework.remoteserver;
+package org.robotframework.remoteserver.library;
 
 import org.robotframework.remoteserver.javalib.SingleClassLibrary;
 
 
-public class StaticApiLibrary implements IRemoteLibrary {
+public class StaticApiRemoteLibrary implements RemoteLibrary {
 
     private Object library;
     private SingleClassLibrary handler;
 
-    protected StaticApiLibrary(Object library) {
+    protected StaticApiRemoteLibrary(Object library) {
 	handler = new SingleClassLibrary(library);
 	this.library = library;
     }

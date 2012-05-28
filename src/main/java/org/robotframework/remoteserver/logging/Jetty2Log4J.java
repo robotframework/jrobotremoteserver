@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.robotframework.remoteserver;
+package org.robotframework.remoteserver.logging;
 
 import org.eclipse.jetty.util.log.Logger;
 import org.apache.log4j.Level;
@@ -19,16 +19,16 @@ import org.apache.log4j.Level;
  * Jetty logger that redirects directly to Log4j without needing slf4j on the classpath. This way users do not need to
  * add more dependencies than jrobotremoteserver to get a unified logging solution.
  */
-public class Jetty2Log4j implements Logger {
+public class Jetty2Log4J implements Logger {
 
     private org.apache.log4j.Logger logger;
     private Level configuredLevel;
 
-    public Jetty2Log4j() {
+    public Jetty2Log4J() {
 	this("org.eclipse.jetty.util.log");
     }
 
-    public Jetty2Log4j(String name) {
+    public Jetty2Log4J(String name) {
 	logger = org.apache.log4j.Logger.getLogger(name);
     }
 
@@ -86,7 +86,7 @@ public class Jetty2Log4j implements Logger {
     }
 
     public Logger getLogger(String name) {
-	return new Jetty2Log4j(name);
+	return new Jetty2Log4J(name);
     }
 
     public void ignore(Throwable ignored) {
