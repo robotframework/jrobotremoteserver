@@ -7,9 +7,12 @@ The server's stdin and stdout streams are redirected to results/server.txt
 
 Usage:  servercontroller.py start|stop|test [args]
 
-  start args: [interpreter=sys.executable] [library='StaticApiLibrary.py']
+  start args: [libraries=default_libraries] formatted like class:port, ...
   test args:  [port=8270] [attempts=1]
   stop args:  [port=8270]
+  
+  default_libraries are a AnnotationLibrary, ClassPathLibrary, and static API
+  library on ports 8270-8272.
 
 Note: Starting from CLI leaves the terminal in a messed up state.
 """
@@ -27,10 +30,10 @@ import sys
 BASE = dirname(abspath(__file__))
 
 
-def start(interpreter='java', libraries=
-    ['org.robotframework.examplelib.FullDynamic:8270',
-     'org.robotframework.examplelib.MinDynamic:8271',
-     'org.robotframework.examplelib.Static:8272'] ):
+def start(libraries=
+        'org.robotframework.examplelib.FullDynamic:8270,' + \
+        'org.robotframework.examplelib.MinDynamic:8271,' + \
+        'org.robotframework.examplelib.Static:8272' ):
     if not os.path.exists(os.path.join(BASE, 'libs', 'target', 'examplelib-jar-with-dependencies.jar')):
         cmd = 'mvn -f "%s" clean package' % os.path.join(BASE, 'libs', 'pom.xml')
         print 'Building the test libraries with command:\n%s' % cmd
@@ -40,11 +43,13 @@ def start(interpreter='java', libraries=
     os.environ['CLASSPATH'] = rs_path + os.pathsep + tl_path
     print 'CLASSPATH: %s' % os.environ['CLASSPATH']
     results = _get_result_directory()
-    args = [interpreter, 'org.robotframework.remoteserver.RemoteServer']
+    args = ['java', 'org.robotframework.remoteserver.RemoteServer']
     ports = []
+    libraries = [x.strip() for x in libraries.split(',')]
     for lib in libraries:
         args.extend(['-library', lib])
         ports.append(lib.split(':')[1])
+        print 'adding library %s on port %s' % (lib.split(':')[0], lib.split(':')[1])
     with open(join(results, 'server.txt'), 'w') as output:
         server = subprocess.Popen(args,
                                   stdout=output, stderr=subprocess.STDOUT,
@@ -98,7 +103,6 @@ if __name__ == '__main__':
         sys.exit(__doc__)
     mode = sys.argv[1]
     args = sys.argv[2:]
-    #start()
     try:
         {'start': start, 'stop': stop, 'test': test}[mode](*args)
     except (KeyError, TypeError):
