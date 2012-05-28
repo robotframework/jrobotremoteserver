@@ -53,7 +53,7 @@ libraries = ['org.robotframework.examplelib.FullDynamic:8270',
 
 for entry in libraries:
     name, _, port = entry.partition(':')
-
+    name = name.rsplit('.', 1)[1]
     OUTPUT = join(RESULTS, 'output-' + name + '.xml')
     outputs.append(OUTPUT)
     servercontroller.start()
@@ -61,7 +61,7 @@ for entry in libraries:
     #name = interpreters + '_-_' + library_file.rsplit('.', 1)[0]
     args = [runner_interpreter, '-m', 'robot.run', '--name', name, '--variable', 'PORT:' + str(port),
             '--output', OUTPUT, '--log', 'NONE', '--report', 'NONE']
-    if 'min' in name.lower():
+    if 'min' in name.lower() or 'static' in name.lower():
         args.extend(['--exclude', 'argsknown'])
     #args.extend(clargs or [join(BASE, 'tests')])
     args.extend([join(BASE, 'tests')])
