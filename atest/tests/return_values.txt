@@ -72,8 +72,24 @@
 | Return Array Containing Strings |
 |    | Return Array Containing Strings | ['spam', 'eggs'] | eval |
 
-| Return Array Containing Primitives |
-|    | Return Array Containing Primitives | [3, -5] | eval |
+| Return Array Containing Integers |
+|    | Return Array Of Short | [${34}, ${-98}] | eval |
+|    | Return Primitive Array Of Short | [${287}, ${-86}] | eval |
+|    | Return Array Of Integer | [${3}, ${-5}] | eval |
+|    | Return Primitive Array Of Int | [${-338}, ${897}] | eval |
+|    | Return Array Of Long | ['-9223372036854775800', '9223372036854775805'] | eval | # strings as longs do not fit in I4 |
+|    | Return Primitive Array Of Long | ['8723372036854774829', '-9123372036854775382'] | eval |
+
+| Return Array Containing Rational Numbers |
+|    | Return Array Of Float | [${8.2}, ${-7.38}] | eval |
+|    | Return Primitive Array Of Float | [${-7.774}, ${562.1}] | eval |
+|    | Return Array Of Double | [${101.6}, ${45.67}] | eval |
+|    | Return Primitive Array Of Double | [${-37.11}, ${90.4}] | eval |
+|    | Return Primitive Array Of Boolean | [${True}, ${False}] | eval |
+
+| Return Array Containing Booleans |
+|    | Return Array Of Boolean | [${False}, ${True}] | eval |
+|    | Return Primitive Array Of Boolean | [${True}, ${False}] | eval |
 
 | Return Array Containing Chars |
 |    | Return Array Containing Chars | OK |

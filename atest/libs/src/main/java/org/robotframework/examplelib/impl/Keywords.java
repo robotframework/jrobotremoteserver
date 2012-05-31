@@ -22,7 +22,7 @@ import org.robotframework.javalib.annotation.RobotKeywords;
 @RobotKeywords
 public class Keywords
 {
-    
+
     private final String unicode = "Hyv\u00E4\u00E4 y\u00F6t\u00E4. "
             + "\u0421\u043F\u0430\u0441\u0438\u0431\u043E!";
 
@@ -42,7 +42,7 @@ public class Keywords
     public String getServerLanguage() {
         return "Java";
     }
-    
+
     @RobotKeyword("This keyword passes.\n"
                 + "\n"
                 + "See `Failing`, `Logging`, and `Returning` for other basic keywords.")
@@ -53,7 +53,7 @@ public class Keywords
     public static void failing(String message) {
         throw new AssertionError(message);
     }
-    
+
     @RobotKeyword("This keywords logs given `message` with given `level`\n"
                 + "\n"
                 + "Example:"
@@ -64,19 +64,19 @@ public class Keywords
         String level = args.length > 0 ? args[0] : "INFO";
         System.out.println(String.format("*%s* %s", level, message));
     }
-    
+
     @RobotKeyword("This keyword returns a string 'returned string'.")
     public String returning() {
         return "returned string";
     }
-    
+
     // Logging
 
     @RobotKeyword
     public void oneMessageWithoutLevel() {
         System.out.println("Hello, world!");
     }
-    
+
     @RobotKeyword
     public void multipleMessagesWithDifferentLevels() {
         System.out.println("Info message");
@@ -87,12 +87,12 @@ public class Keywords
         System.out.println("*TRACE* This is ignored");
         System.out.println("*WARN* Warning");
     }
-     
+
     @RobotKeyword
     public void logUnicode() {
         System.out.println(unicode);
     }
-    
+
     @RobotKeyword
     public static void loggingAndFailing() {
         System.out.println("*INFO* This keyword will fail!");
@@ -110,7 +110,7 @@ public class Keywords
     public void logControlChar() {
         System.out.println((char) 1);
     }
-    
+
     // Failures
 
     @RobotKeyword
@@ -132,12 +132,12 @@ public class Keywords
     public void runtimeError() {
         throw new RuntimeException("Error message");
     }
-    
+
     @RobotKeyword
     public static void indexError() {
         System.out.println(new String[] {}[0]);
     }
-    
+
     @RobotKeyword
     public static void zeroDivision() {
         System.out.println(1/0);
@@ -147,7 +147,7 @@ public class Keywords
     public static void customException() throws MyException {
         throw new MyException("My message");
     }
-    
+
     @RobotKeyword
     @ArgumentNames({"rounds=10"})
     public static void failureDeeper(Object...args) {
@@ -156,7 +156,7 @@ public class Keywords
             throw new RuntimeException("Finally failing");
         failureDeeper(rounds-1);
     }
-    
+
     @RobotKeyword
     public void errorMessageWithNonAsciiUnicode() {
         throw new RuntimeException(unicode);
@@ -211,7 +211,7 @@ public class Keywords
         }
         return sb.toString();
     }
-    
+
     @RobotKeyword
     @ArgumentNames({"req", "default='world", "*varargs"})
     public String requiredDefaultsAndVarargs(Object req, Object...varargs) {
@@ -242,13 +242,13 @@ public class Keywords
     public void emptyStringAsArgument(Object arg) {
         shouldBeEqual(arg, "");
     }
-    
+
     @RobotKeyword
     @ArgumentNames("arg")
     public void controlCharAsArgument(char arg) {
         shouldBeEqual(arg, "");
     }
-    
+
     @RobotKeyword
     @ArgumentNames("arg")
     public void integerAsArgument(Object arg) {
@@ -345,7 +345,7 @@ public class Keywords
     public void dictionaryAsArgument(Map<Object,Object> arg) {
         shouldBeEqual(arg, returnDictionary());
     }  
-   
+
     @RobotKeyword
     @ArgumentNames({ "arg" })
     public void emptyDictionaryAsArgument(Map<?,?> arg) {
@@ -360,7 +360,7 @@ public class Keywords
         exp.put("", true);
         shouldBeEqual(arg, exp);
     }
-    
+
     @RobotKeyword
     @ArgumentNames({ "arg" })
     public void dictionaryContainingNoneAsArgument(Map<?,?> arg) {
@@ -369,7 +369,7 @@ public class Keywords
         exp.put("", "As key");
         shouldBeEqual(arg, exp);
     }
-    
+
     @RobotKeyword
     @ArgumentNames({ "arg" })
     public void dictionaryContainingObjectsAsArgument(Map<?,?> arg) {
@@ -378,7 +378,7 @@ public class Keywords
         exp.put("<MyObject2>", "As key");
         shouldBeEqual(arg, exp);
     }
-    
+
     @RobotKeyword
     @ArgumentNames({ "arg" })
     public void nestedDictionaryAsArgument(Object arg) {
@@ -397,14 +397,14 @@ public class Keywords
         exp.put("2", m1);
         shouldBeEqual(arg, exp);
     }
-    
+
     // Return values
-    
+
     @RobotKeyword
     public String returnString() {
         return "Hello, world!";
     }
-    
+
     @RobotKeyword
     public String returnUnicodeString() {
         return unicode;
@@ -414,7 +414,7 @@ public class Keywords
     public String returnEmptyString() {
         return "";
     }
-    
+
     @RobotKeyword
     public int returnInteger() {
         return 42;
@@ -424,17 +424,17 @@ public class Keywords
     public int returnNegativeInteger() {
         return -1;
     }
-    
+
     @RobotKeyword
     public double returnFloat() {
         return 3.14d;
     }
-    
+
     @RobotKeyword
     public double returnNegativeFloat() {
         return -0.5d;
     }
-    
+
     @RobotKeyword
     public int returnZero() {
         return 0;
@@ -444,7 +444,7 @@ public class Keywords
     public boolean returnBooleanTrue() {
         return true;
     }
-    
+
     @RobotKeyword
     public boolean returnBooleanFalse() {
         return false;
@@ -452,7 +452,7 @@ public class Keywords
 
     @RobotKeyword
     public void returnNothing() {}
-    
+
     @RobotKeyword
     public Object returnObject() {
         return new MyObject("");
@@ -462,17 +462,17 @@ public class Keywords
     public List<? extends Object> returnList() {
         return Arrays.asList("One", -2, false);
     }
-    
+
     @RobotKeyword
     public List<Object> returnEmptyList() {
         return new ArrayList<Object>();
     }
-    
+
     @RobotKeyword
     public List<Object> returnListContainingNone() {
         return Arrays.asList(new Object[] {null});
     }
-    
+
     @RobotKeyword
     public List returnListContainingObjects() {
         return Arrays.asList(new MyObject("1"), new MyObject("2"));
@@ -510,7 +510,7 @@ public class Keywords
         dic.put(null, true);
         return dic;
     }
-    
+
     @RobotKeyword
     public Map<Object, Object> returnDictionaryContainingNone() {
         Map<Object, Object> dic = new HashMap<Object, Object>();
@@ -518,7 +518,7 @@ public class Keywords
         dic.put(null, "As key");
         return dic;
     }
-    
+
     @RobotKeyword
     public Map<Object, Object> returnDictionaryContainingObjects() {
         Map<Object, Object> dic = new HashMap<Object, Object>();
@@ -526,7 +526,7 @@ public class Keywords
         dic.put(new MyObject("2"), "As key");
         return dic;
     }
-    
+
     @RobotKeyword
     public Map<Object, Object> returnNestedDictionary() {
         Map<Object, Object> ret = new HashMap<Object, Object>();
@@ -544,52 +544,102 @@ public class Keywords
         ret.put(2, inner);
         return ret;
     }
-    
+
     @RobotKeyword
     public char returnControlChar() {
         return (char)1;
     }
-    
+
     @RobotKeyword
     public char returnChar() {
         return 'R';
     }
-       
+
     @RobotKeyword
     public Object[] returnArrayContainingStrings() {
         return new Object[] { "spam", "eggs" };
     }
-    
+
     @RobotKeyword
     public Double returnDoubleObject() {
         return 4.2;
     }
-    
+
     @RobotKeyword
     public Short returnShortObject() {
         return 9;
     }
-    
-    @RobotKeyword
-    public Object[] returnArrayContainingIntegers() {
-        return new Integer[] { 4, -2 };
-    }
-    
+
     @RobotKeyword
     public char[] returnArrayContainingChars() {
         return new char[] { 79, 75 };
     }
-    
+
     @RobotKeyword
     public MyObject[] returnArrayContainingObjects() {
         return new MyObject[] { new MyObject("1"), new MyObject("2") };
     }
-    
+
     @RobotKeyword
-    public int[] returnArrayContainingPrimitives() {
-        return new int[] { 3, -5 };
+    public Short[] returnArrayOfShort() {
+        return new Short[] { 34, -98 };
     }
-    
+
+    @RobotKeyword
+    public short[] returnPrimitiveArrayOfShort() {
+        return new short[] { 287, -86 };
+    }
+
+    @RobotKeyword
+    public Object[] returnArrayOfInteger() {
+        return new Integer[] { 3, -5 };
+    }
+
+    @RobotKeyword
+    public int[] returnPrimitiveArrayOfInt() {
+        return new int[] { -338, 897 };
+    }
+
+    @RobotKeyword
+    public Long[] returnArrayOfLong() {
+        return new Long[] { -9223372036854775800L, 9223372036854775805L };
+    }
+
+    @RobotKeyword
+    public long[] returnPrimitiveArrayOfLong() {
+        return new long[] { 8723372036854774829L, -9123372036854775382L };
+    }
+
+    @RobotKeyword
+    public Float[] returnArrayOfFloat() {
+        return new Float[] { 8.2f, -7.38f };
+    }
+
+    @RobotKeyword
+    public float[] returnPrimitiveArrayOfFloat() {
+        return new float[] { -7.774f, 562.1f };
+    }
+
+    @RobotKeyword
+    public Double[] returnArrayOfDouble() {
+        return new Double[] { 101.6, 45.67 };
+    }
+
+    @RobotKeyword
+    public double[] returnPrimitiveArrayOfDouble() {
+        return new double[] { -37.11, 90.4 };
+    }
+
+    @RobotKeyword
+    public Boolean[] returnArrayOfBoolean() {
+        return new Boolean[] { false, true };
+    }
+
+    @RobotKeyword
+    public boolean[] returnPrimitiveArrayOfBoolean() {
+        return new boolean[] { true, false };
+    }
+
     @RobotKeyword
     public Queue<String> returnQueue() {
         Queue<String> queue = new LinkedBlockingQueue<String>();
@@ -597,7 +647,7 @@ public class Keywords
         queue.add("second");
         return queue;
     }
-    
+
     @RobotKeyword
     public Object returnTreeSet() {
         SortedSet<Integer> s = new TreeSet<Integer>();
@@ -605,11 +655,11 @@ public class Keywords
         s.add(2);
         return s;
     }
-    
+
     private void shouldBeEqual(Object a, Object b) {
         shouldBeEqual(a, b, "");
     }
-    
+
     /* The equals method of any class is too precise in most classes to use directly, especially on
      * PyObject's subclasses.  This method considers equality to mean all Lists and array have
      * the same elements in the same order.  For maps, order is ignored and keys are assumed to be
@@ -670,5 +720,4 @@ public class Keywords
         else
             throw new AssertionError(String.format("%sNot equal: %s:%s %s:%s", where, a.getClass(), a, b.getClass(), b));
     }
-    
 }
