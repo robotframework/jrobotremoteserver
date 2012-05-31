@@ -108,9 +108,9 @@ public class RemoteServer {
      */
     public void addLibrary(Class<?> clazz, int port) {
 	if (server != null && !server.isStopped())
-	    throw new RuntimeException("Cannot add a library once the server is started");
+	    throw new IllegalStateException("Cannot add a library once the server is started");
 	if (libraryMap.containsKey(port))
-	    throw new RuntimeException(String.format("A library was already added for port %d", port));
+	    throw new IllegalStateException(String.format("A library was already added for port %d", port));
 	Object library;
 	try {
 	    library = clazz.newInstance();
@@ -159,7 +159,8 @@ public class RemoteServer {
      * @throws Exception
      */
     public void stop() throws Exception {
-	checkStarted();
+	if (server == null)
+	    throw new IllegalStateException("The server was never started");
 	log.info("Robot Framework remote server stopping");
 	try {
 	    server.stop();
@@ -178,9 +179,9 @@ public class RemoteServer {
 	if (server == null)
 	    server = new Server();
 	if (connectors.isEmpty())
-	    throw new RuntimeException("Cannot start the server without adding a library first");
+	    throw new IllegalStateException("Cannot start the server without adding a library first");
 	if (!server.isStopped())
-	    throw new RuntimeException("The server is starting or already started");
+	    throw new IllegalStateException("The server is starting or already started");
 	Context.addRemoteServer(this, libraryMap.keySet());
 	server.setConnectors(connectors.toArray(new Connector[] {}));
 	ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
@@ -196,7 +197,7 @@ public class RemoteServer {
      * <li>Configure Log4J to log to the console</li>
      * <li>Set Log4J's log level to INFO</li>
      * <li>Redirect the Jetty's logging to Log4J</li>
-     * <li>Set Jakarta Commons Logging to use log to Log4J</li>
+     * <li>Set Jakarta Commons Logging to log to Log4J</li>
      * </ul>
      * This is convenient if you do not want to configure the logging yourself. This will only affect future instances
      * of {@link org.eclipse.jetty.util.log.Logger} and {@link org.apache.commons.logging.Log}. This should be called as
@@ -212,10 +213,5 @@ public class RemoteServer {
 	LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
 		"org.apache.commons.logging.impl.Log4JLogger");
 	log = LogFactory.getLog(RemoteServer.class);
-    }
-
-    private void checkStarted() {
-	if (server == null)
-	    throw new RuntimeException("The server was never started");
     }
 }
