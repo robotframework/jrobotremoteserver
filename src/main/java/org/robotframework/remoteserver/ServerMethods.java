@@ -89,7 +89,7 @@ public class ServerMethods {
 		try {
 		    retObj = Context.getLibrary().runKeyword(keyword, args);
 		} catch (Exception e) {
-		    if (illegalArgument(e)) {
+		    if (illegalArgumentIn(e)) {
 			for (int i = 0; i < args.length; i++)
 			    args[i] = arraysToLists(args[i]);
 			retObj = Context.getLibrary().runKeyword(keyword, args);
@@ -102,7 +102,6 @@ public class ServerMethods {
 	    kr.put("return", retObj);
 	    return kr;
 	} catch (Throwable e) {
-	    log.warn("", e);
 	    kr.put("status", "FAIL");
 	    try {
 		kr.put("output", baos.toString("UTF-8"));
@@ -204,7 +203,7 @@ public class ServerMethods {
 	    return arg;
     }
 
-    private boolean illegalArgument(Throwable t) {
+    private boolean illegalArgumentIn(Throwable t) {
 	Throwable inner = t;
 	while (inner.getCause() != null) {
 	    inner = inner.getCause();
