@@ -93,7 +93,7 @@ public class RemoteServer {
 	try {
 	    clazz = Class.forName(className);
 	} catch (Exception e) {
-	    throw new RuntimeException(String.format("Unable to load class %s: %s", className, e.getMessage()), e);
+	    throw new RuntimeException(String.format("Unable to load class %s", className), e);
 	}
 	addLibrary(clazz, port);
     }
@@ -115,8 +115,7 @@ public class RemoteServer {
 	try {
 	    library = clazz.newInstance();
 	} catch (Exception e) {
-	    throw new RuntimeException(String.format("Unable to create an instance of %s: %s", clazz.getName(), e
-		    .getMessage()), e);
+	    throw new RuntimeException(String.format("Unable to create an instance of %s", clazz.getName()), e);
 	}
 	RemoteLibrary remoteLibrary = RemoteLibraryFactory.newRemoteLibrary(library);
 	libraryMap.put(port, remoteLibrary);
