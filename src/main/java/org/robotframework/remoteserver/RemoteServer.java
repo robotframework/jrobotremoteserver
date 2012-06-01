@@ -44,6 +44,7 @@ public class RemoteServer {
     private Server server;
     private SortedMap<Integer, RemoteLibrary> libraryMap = new TreeMap<Integer, RemoteLibrary>();
     private boolean allowRemoteStop = true;
+    private String host = null;
     private List<SelectChannelConnector> connectors = new ArrayList<SelectChannelConnector>();
 
     /**
@@ -59,6 +60,22 @@ public class RemoteServer {
      */
     public void setAllowRemoteStop(boolean allowed) {
 	allowRemoteStop = allowed;
+    }
+
+    public String getHost() {
+	return host;
+    }
+
+    /**
+     * Set the hostname of the interface to bind to. Usually not needed and determined automatically. For exotic network
+     * configuration, network with VPN, specifying the host might be necessary.
+     * 
+     * @param hostName
+     *            The hostname or address representing the interface to which all connectors will bind, or null for all
+     *            interfaces.
+     */
+    public void setHost(String hostName) {
+	host = hostName;
     }
 
     public static void main(String[] args) throws Exception {
@@ -182,6 +199,8 @@ public class RemoteServer {
 	if (!server.isStopped())
 	    throw new IllegalStateException("The server is starting or already started");
 	Context.addRemoteServer(this, libraryMap.keySet());
+	for (Connector conn : connectors)
+	    conn.setHost(host);
 	server.setConnectors(connectors.toArray(new Connector[] {}));
 	ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
 	servletContextHandler.addServlet(RemoteServerServlet.class, "/");
