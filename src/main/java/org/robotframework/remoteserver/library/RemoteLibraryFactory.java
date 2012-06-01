@@ -37,7 +37,7 @@ public class RemoteLibraryFactory {
 
     private static Method getMethod(Class<?> clazz, MethodType type) {
 	for (Method m : clazz.getMethods()) {
-	    if (!isEligibleMethod(m))
+	    if (!Modifier.isPublic(m.getModifiers()))
 		continue;
 	    String name = m.getName();
 	    Class<?>[] pTypes = m.getParameterTypes();
@@ -59,16 +59,6 @@ public class RemoteLibraryFactory {
 		return m;
 	}
 	return null;
-    }
-
-    private static boolean isEligibleMethod(Method method) {
-	if (!Modifier.isPublic(method.getModifiers())) {
-	    return false; // Ignore non-public methods
-	}
-	if (method.getDeclaringClass() == Object.class) {
-	    return false; // Ignore methods from Object.class
-	}
-	return true;
     }
 
     enum MethodType {
