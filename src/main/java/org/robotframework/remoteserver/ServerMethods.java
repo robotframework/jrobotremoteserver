@@ -169,10 +169,10 @@ public class ServerMethods {
 
     private boolean stopRemoteServer() {
 	if (Context.getRemoteServer().getAllowRemoteStop()) {
-	    System.out.println("Robot Framework remote server stopping");
+	    System.out.print("Robot Framework remote server stopping");
 	    Context.getRemoteServer().gracefulStop();
 	} else {
-	    System.out.println("This Robot Framework remote server does not allow stopping");
+	    System.out.print("This Robot Framework remote server does not allow stopping");
 	}
 	return true;
     }
