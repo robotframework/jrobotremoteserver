@@ -12,10 +12,8 @@
  */
 package org.robotframework.remoteserver.xmlrpc;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
@@ -23,7 +21,6 @@ import org.apache.xmlrpc.common.XmlRpcController;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
 import org.apache.xmlrpc.serializer.BooleanSerializer;
 import org.apache.xmlrpc.serializer.ByteArraySerializer;
-import org.apache.xmlrpc.serializer.DateSerializer;
 import org.apache.xmlrpc.serializer.DoubleSerializer;
 import org.apache.xmlrpc.serializer.I4Serializer;
 import org.apache.xmlrpc.serializer.ListSerializer;
@@ -31,7 +28,6 @@ import org.apache.xmlrpc.serializer.ObjectArraySerializer;
 import org.apache.xmlrpc.serializer.StringSerializer;
 import org.apache.xmlrpc.serializer.TypeSerializer;
 import org.apache.xmlrpc.serializer.TypeSerializerImpl;
-import org.apache.xmlrpc.util.XmlRpcDateTimeDateFormat;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -54,13 +50,10 @@ public class TypeFactory extends TypeFactoryImpl {
 	    write(pHandler, null, chars);
 	}
     };
-    private DateSerializer dateSerializer;
     private TypeSerializer primitiveArraySerializer;
-    private final XmlRpcController controller;
 
     public TypeFactory(XmlRpcController pController) {
 	super(pController);
-	controller = pController;
     }
 
     public TypeSerializer getSerializer(XmlRpcStreamConfig pConfig, Object pObject) throws SAXException {
@@ -74,18 +67,7 @@ public class TypeFactory extends TypeFactoryImpl {
 	    return BOOLEAN_SERIALIZER;
 	else if (pObject instanceof Double || pObject instanceof Float)
 	    return DOUBLE_SERIALIZER;
-	else if (pObject instanceof Date) {
-	    if (dateSerializer == null) {
-		dateSerializer = new DateSerializer(new XmlRpcDateTimeDateFormat() {
-		    private static final long serialVersionUID = 24345909123324234L;
-
-		    protected TimeZone getTimeZone() {
-			return controller.getConfig().getTimeZone();
-		    }
-		});
-	    }
-	    return dateSerializer;
-	} else if (pObject instanceof byte[])
+	else if (pObject instanceof byte[])
 	    return BYTE_ARRAY_SERIALIZER;
 	else if (pObject instanceof Object[])
 	    return new ObjectArraySerializer(this, pConfig);

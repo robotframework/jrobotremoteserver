@@ -94,6 +94,9 @@
 | Return Array Containing Chars |
 |    | Return Array Containing Chars | OK |
 
+| Return Date |
+|    | Return Date | Wed Dec 31 18:00:00 CST 1969 |
+
 | *** Keywords *** |
 | Return Value Should Be |
 |    | [Arguments] | ${keyword} | ${expected} | ${evaluate}= |

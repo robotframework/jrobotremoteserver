@@ -2,6 +2,7 @@ package org.robotframework.examplelib.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class Keywords
 
     private final String unicode = "Hyv\u00E4\u00E4 y\u00F6t\u00E4. "
             + "\u0421\u043F\u0430\u0441\u0438\u0431\u043E!";
-
+    
     // Common keywords
 
     @RobotKeyword("Documentation")
@@ -638,6 +639,11 @@ public class Keywords
     @RobotKeyword
     public boolean[] returnPrimitiveArrayOfBoolean() {
         return new boolean[] { true, false };
+    }
+    
+    @RobotKeyword
+    public Date returnDate() {
+        return new Date(0);
     }
 
     @RobotKeyword
