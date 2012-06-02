@@ -69,6 +69,10 @@
 | Return Nested Dictionary |
 |    | Return Nested Dictionary | {'1': {'': False}, '2': {'A': {'n': ''}, 'B': {'o': '<MyObject>', 'e': {}}}} | eval |
 
+| Return Array Containing Bytes |
+|    | Return Array Of Byte | [${-57}, ${21}] | eval |
+|    | Return Primitive Array Of Byte | [${-4}, ${8}] | eval |
+
 | Return Array Containing Strings |
 |    | Return Array Containing Strings | ['spam', 'eggs'] | eval |
 
@@ -101,6 +105,10 @@
 |    | Return Queue | ['first', '<MyObjectsecond>'] | eval |
 |    | Return Tree Set | [${2}, ${5}] | eval |
 |    | Return Empty Queue | [] | eval |
+
+| Return Byte |
+|    | Return Byte | ${67} |
+|    | Return Byte Object | ${127} |
 
 | *** Keywords *** |
 | Return Value Should Be |

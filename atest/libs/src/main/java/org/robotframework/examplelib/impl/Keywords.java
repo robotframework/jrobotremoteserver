@@ -573,6 +573,16 @@ public class Keywords
     }
 
     @RobotKeyword
+    public byte returnByte() {
+        return 67;
+    }
+    
+    @RobotKeyword
+    public Byte returnByteObject() {
+        return 127;
+    }
+
+    @RobotKeyword
     public char[] returnArrayContainingChars() {
         return new char[] { 79, 75 };
     }
@@ -580,6 +590,16 @@ public class Keywords
     @RobotKeyword
     public MyObject[] returnArrayContainingObjects() {
         return new MyObject[] { new MyObject("1"), new MyObject("2") };
+    }
+
+    @RobotKeyword
+    public Byte[] returnArrayOfByte() {
+        return new Byte[] { (byte) -57, (byte) 21};
+    }
+
+    @RobotKeyword
+    public byte[] returnPrimitiveArrayOfByte() {
+        return new byte[] { (byte) -4, (byte) 8};
     }
 
     @RobotKeyword

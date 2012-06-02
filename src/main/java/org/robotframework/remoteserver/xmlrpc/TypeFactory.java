@@ -20,7 +20,6 @@ import org.apache.xmlrpc.common.TypeFactoryImpl;
 import org.apache.xmlrpc.common.XmlRpcController;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
 import org.apache.xmlrpc.serializer.BooleanSerializer;
-import org.apache.xmlrpc.serializer.ByteArraySerializer;
 import org.apache.xmlrpc.serializer.DoubleSerializer;
 import org.apache.xmlrpc.serializer.I4Serializer;
 import org.apache.xmlrpc.serializer.ListSerializer;
@@ -37,7 +36,6 @@ public class TypeFactory extends TypeFactoryImpl {
     private static final TypeSerializer I4_SERIALIZER = new I4Serializer();
     private static final TypeSerializer DOUBLE_SERIALIZER = new DoubleSerializer();
     private static final TypeSerializer BOOLEAN_SERIALIZER = new BooleanSerializer();
-    private static final TypeSerializer BYTE_ARRAY_SERIALIZER = new ByteArraySerializer();
     private static final TypeSerializer NULL_SERIALIZER = new StringSerializer() {
 	@Override
 	public void write(ContentHandler pHandler, Object pObject) throws SAXException {
@@ -67,8 +65,6 @@ public class TypeFactory extends TypeFactoryImpl {
 	    return BOOLEAN_SERIALIZER;
 	else if (pObject instanceof Double || pObject instanceof Float)
 	    return DOUBLE_SERIALIZER;
-	else if (pObject instanceof byte[])
-	    return BYTE_ARRAY_SERIALIZER;
 	else if (pObject instanceof Object[])
 	    return new ObjectArraySerializer(this, pConfig);
 	else if (pObject instanceof List)
@@ -84,7 +80,9 @@ public class TypeFactory extends TypeFactoryImpl {
 		@Override
 		protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {
 		    Object[] array;
-		    if (pObject instanceof short[])
+		    if (pObject instanceof byte[])
+			array = ArrayUtils.toObject((byte[]) pObject);
+		    else if (pObject instanceof short[])
 			array = ArrayUtils.toObject((short[]) pObject);
 		    else if (pObject instanceof int[])
 			array = ArrayUtils.toObject((int[]) pObject);
