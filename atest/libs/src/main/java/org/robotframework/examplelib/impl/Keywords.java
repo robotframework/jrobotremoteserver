@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
@@ -647,11 +648,16 @@ public class Keywords
     }
 
     @RobotKeyword
-    public Queue<String> returnQueue() {
-        Queue<String> queue = new LinkedBlockingQueue<String>();
+    public Queue<Object> returnQueue() {
+        Queue<Object> queue = new LinkedBlockingQueue<Object>();
         queue.add("first");
-        queue.add("second");
+        queue.add(new MyObject("second"));
         return queue;
+    }
+    
+    @RobotKeyword
+    public Queue<String> returnEmptyQueue() {
+        return new PriorityQueue();
     }
 
     @RobotKeyword

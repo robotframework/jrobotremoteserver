@@ -75,6 +75,8 @@ public class TypeFactory extends TypeFactoryImpl {
 	    return new ListSerializer(this, pConfig);
 	else if (pObject instanceof Map)
 	    return new MapSerializer(this, pConfig);
+	else if (pObject instanceof Iterable)
+	    return new IterableSerializer(this, pConfig);
 	else if (pObject instanceof char[])
 	    return CHAR_ARRAY_SERIALIZER;
 	else if (pObject.getClass().isArray()) { // byte[] & object[] & char[] handled before this
