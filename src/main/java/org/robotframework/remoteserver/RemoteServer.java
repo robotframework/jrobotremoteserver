@@ -27,6 +27,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.robotframework.remoteserver.cli.CommandLineHelper;
 import org.robotframework.remoteserver.library.RemoteLibrary;
 import org.robotframework.remoteserver.library.RemoteLibraryFactory;
 import org.robotframework.remoteserver.logging.Jetty2Log4J;
@@ -43,23 +44,23 @@ public class RemoteServer {
     private static Log log = LogFactory.getLog(RemoteServer.class);
     private Server server;
     private SortedMap<Integer, RemoteLibrary> libraryMap = new TreeMap<Integer, RemoteLibrary>();
-    private boolean allowRemoteStop = true;
+    private boolean allowStop = true;
     private String host = null;
     private List<SelectChannelConnector> connectors = new ArrayList<SelectChannelConnector>();
 
     /**
      * @return whether this server allows remote stopping
      */
-    public boolean getAllowRemoteStop() {
-	return allowRemoteStop;
+    public boolean getAllowStop() {
+	return allowStop;
     }
 
     /**
      * @param allowed
      *            whether to allow stopping the server remotely
      */
-    public void setAllowRemoteStop(boolean allowed) {
-	allowRemoteStop = allowed;
+    public void setAllowStop(boolean allowed) {
+	allowStop = allowed;
     }
 
     public String getHost() {
@@ -79,21 +80,22 @@ public class RemoteServer {
     }
 
     public static void main(String[] args) throws Exception {
-	// TODO: proper argument parsing
 	configureLogging();
-	List<String> libs = new ArrayList<String>();
-	List<Integer> ports = new ArrayList<Integer>();
-	for (int i = 0; i < args.length; i++) {
-	    if (args[i].equals("-library")) {
-		String[] parts = args[i + 1].split(":");
-		libs.add(parts[0].trim());
-		ports.add(new Integer(parts[1]));
-		i++;
-	    }
+	CommandLineHelper clh = new CommandLineHelper(args);
+	if (clh.getHelpRequested()) {
+	    System.out.print(clh.getUsage());
+	    System.exit(0);
+	} else if (clh.getError() != null) {
+	    System.out.println(clh.getError());
+	    System.out.println();
+	    System.out.println(clh.getUsage());
+	    System.exit(1);
 	}
 	RemoteServer rs = new RemoteServer();
-	for (int i = 0; i < libs.size(); i++)
-	    rs.addLibrary(libs.get(i), ports.get(i));
+	for (int port : clh.getLibraryMap().keySet())
+	    rs.addLibrary(clh.getLibraryMap().get(port), port);
+	rs.setAllowStop(clh.getAllowStop());
+	rs.setHost(clh.getHost());
 	rs.start();
     }
 

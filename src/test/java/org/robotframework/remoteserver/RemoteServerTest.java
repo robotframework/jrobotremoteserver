@@ -19,13 +19,13 @@ public class RemoteServerTest {
     @Test
     public void allowRemoteStop() throws Exception {
 	server = new RemoteServer();
-	Assert.assertEquals(server.getAllowRemoteStop(), true);
-	server.setAllowRemoteStop(false);
+	Assert.assertEquals(server.getAllowStop(), true);
+	server.setAllowStop(false);
 	server.addLibrary(StaticOne.class, 8270);
 	server.start();
 	String result = (String) runKeyword("stop_remote_server", new Object[0]).get("output");
 	Assert.assertEquals(result, "This Robot Framework remote server does not allow stopping");
-	server.setAllowRemoteStop(true);
+	server.setAllowStop(true);
 	Thread.sleep(5000);
 	result = (String) runKeyword("stop_remote_server", new Object[0]).get("output");
 	Assert.assertEquals(result, "Robot Framework remote server stopping");

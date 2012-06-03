@@ -47,7 +47,7 @@ def start(libraries=
     ports = []
     libraries = [x.strip() for x in libraries.split(',')]
     for lib in libraries:
-        args.extend(['-library', lib])
+        args.extend(['--library', lib])
         ports.append(lib.split(':')[1])
         print 'adding library %s on port %s' % (lib.split(':')[0], lib.split(':')[1])
     with open(join(results, 'server.txt'), 'w') as output:
