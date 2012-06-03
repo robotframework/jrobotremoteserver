@@ -16,10 +16,6 @@ LIST_WITH_NONE = [None]
 LIST_WITH_OBJECTS = [MyObject(1), MyObject(2)]
 NESTED_LIST = [[True, False], [[1, None, MyObject(), {}]]]
 
-TUPLE = ('One', -2, False)
-EMPTY_TUPLE = ()
-NESTED_TUPLE = ((True, False), [(1, None, MyObject(), {})])
-
 DICT = {'one': 1, 'spam': 'eggs'}
 EMPTY_DICT = {}
 DICT_WITH_NON_STRING_KEYS = {1: 2, None: True}

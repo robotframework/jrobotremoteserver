@@ -75,7 +75,7 @@ public class TypeFactory extends TypeFactoryImpl {
 	    return new IterableSerializer(this, pConfig);
 	else if (pObject instanceof char[])
 	    return CHAR_ARRAY_SERIALIZER;
-	else if (pObject.getClass().isArray()) { // byte[] & object[] & char[] handled before this
+	else if (pObject.getClass().isArray()) { // object[] & char[] handled before this
 	    primitiveArraySerializer = new ObjectArraySerializer(this, pConfig) {
 		@Override
 		protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {

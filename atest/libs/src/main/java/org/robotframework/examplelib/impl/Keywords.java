@@ -265,14 +265,14 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames("arg")
-    public void floatAsArgument(Object arg) {
-        shouldBeEqual(arg, returnFloat());
+    public void doubleAsArgument(double arg) {
+        shouldBeEqual(arg, returnDouble());
     }
 
     @RobotKeyword
     @ArgumentNames("arg")
-    public void negativeFloatAsArgument(Object arg) {
-        shouldBeEqual(arg, returnNegativeFloat());
+    public void doubleObjectAsArgument(Double arg) {
+        shouldBeEqual(arg, returnDoubleObject());
     }
 
     @RobotKeyword
@@ -295,7 +295,13 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames("arg")
-    public void noneAsArgument(Object arg) {
+    public void booleanObjectAsArgument(Boolean arg) {
+        shouldBeEqual(arg, false);
+    }
+
+    @RobotKeyword
+    @ArgumentNames("arg")
+    public void nullAsArgument(Object arg) {
         shouldBeEqual(arg, "");
     }
 
@@ -344,19 +350,19 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void dictionaryAsArgument(Map<Object,Object> arg) {
-        shouldBeEqual(arg, returnDictionary());
+    public void mapAsArgument(Map<Object,Object> arg) {
+        shouldBeEqual(arg, returnMap());
     }  
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void emptyDictionaryAsArgument(Map<?,?> arg) {
+    public void emptyMapAsArgument(Map<?,?> arg) {
         shouldBeEqual(arg, new HashMap());
     }
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void dictionaryWithNonStringKeysAsArgument(Map<Object, Object> arg) {
+    public void mapWithNonStringKeysAsArgument(Map<Object, Object> arg) {
         Map exp = new HashMap();
         exp.put("1", 2);
         exp.put("", true);
@@ -365,7 +371,7 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void dictionaryContainingNoneAsArgument(Map<?,?> arg) {
+    public void mapContainingNoneAsArgument(Map<?,?> arg) {
         Map exp = new HashMap();
         exp.put("As value", "");
         exp.put("", "As key");
@@ -374,7 +380,7 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void dictionaryContainingObjectsAsArgument(Map<?,?> arg) {
+    public void mapContainingObjectsAsArgument(Map<?,?> arg) {
         Map exp = new HashMap();
         exp.put("As value", "<MyObject1>");
         exp.put("<MyObject2>", "As key");
@@ -383,7 +389,7 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void nestedDictionaryAsArgument(Object arg) {
+    public void nestedMapAsArgument(Object arg) {
         Map exp = new HashMap();
         Map m1 = new HashMap();
         m1.put("", false);
@@ -418,23 +424,33 @@ public class Keywords
     }
 
     @RobotKeyword
-    public int returnInteger() {
+    public int returnInt() {
+        return 12;
+    }
+    
+    @RobotKeyword
+    public Integer returnInteger() {
         return 42;
     }
 
     @RobotKeyword
-    public int returnNegativeInteger() {
+    public Integer returnNegativeInteger() {
         return -1;
     }
 
     @RobotKeyword
-    public double returnFloat() {
-        return 3.14d;
+    public float returnFloat() {
+        return 3.14f;
     }
 
     @RobotKeyword
-    public double returnNegativeFloat() {
-        return -0.5d;
+    public float returnNegativeFloat() {
+        return -0.5f;
+    }
+
+    @RobotKeyword
+    public Float returnFloatObject() {
+        return 86.02f;
     }
 
     @RobotKeyword
@@ -453,7 +469,17 @@ public class Keywords
     }
 
     @RobotKeyword
+    public Boolean returnBooleanObject() {
+        return false;
+    }
+
+    @RobotKeyword
     public void returnNothing() {}
+    
+    @RobotKeyword
+    public Object returnNull() {
+        return null;
+    }
 
     @RobotKeyword
     public Object returnObject() {
@@ -471,7 +497,7 @@ public class Keywords
     }
 
     @RobotKeyword
-    public List<Object> returnListContainingNone() {
+    public List<Object> returnListContainingNull() {
         return Arrays.asList(new Object[] {null});
     }
 
@@ -493,7 +519,7 @@ public class Keywords
     }
 
     @RobotKeyword
-    public Map<Object, Object> returnDictionary() {
+    public Map<Object, Object> returnMap() {
         Map<Object, Object> dic = new HashMap<Object, Object>();
         dic.put("one", 1);
         dic.put("spam", "eggs");
@@ -501,12 +527,12 @@ public class Keywords
     }
 
     @RobotKeyword
-    public Map<Object, Object> returnEmptyDictionary() {
+    public Map<Object, Object> returnEmptyMap() {
         return new HashMap<Object, Object>();
     }
 
     @RobotKeyword
-    public Map<Object, Object> returnDictionaryWithNonStringKeys() {
+    public Map<Object, Object> returnMapWithNonStringKeys() {
         Map<Object, Object> dic = new HashMap<Object, Object>();
         dic.put(1, 2);
         dic.put(null, true);
@@ -514,7 +540,7 @@ public class Keywords
     }
 
     @RobotKeyword
-    public Map<Object, Object> returnDictionaryContainingNone() {
+    public Map<Object, Object> returnMapContainingNull() {
         Map<Object, Object> dic = new HashMap<Object, Object>();
         dic.put("As value", null);
         dic.put(null, "As key");
@@ -522,7 +548,7 @@ public class Keywords
     }
 
     @RobotKeyword
-    public Map<Object, Object> returnDictionaryContainingObjects() {
+    public Map<Object, Object> returnMapContainingObjects() {
         Map<Object, Object> dic = new HashMap<Object, Object>();
         dic.put("As value", new MyObject("1"));
         dic.put(new MyObject("2"), "As key");
@@ -530,7 +556,7 @@ public class Keywords
     }
 
     @RobotKeyword
-    public Map<Object, Object> returnNestedDictionary() {
+    public Map<Object, Object> returnNestedMap() {
         Map<Object, Object> ret = new HashMap<Object, Object>();
         Map<Object, Object> inner = new HashMap<Object, Object>();
         inner.put(null, false);
@@ -563,8 +589,18 @@ public class Keywords
     }
 
     @RobotKeyword
+    public Double returnDouble() {
+        return 9.34;
+    }
+
+    @RobotKeyword
     public Double returnDoubleObject() {
         return 4.2;
+    }
+
+    @RobotKeyword
+    public short returnShort() {
+        return -88;
     }
 
     @RobotKeyword
@@ -588,7 +624,7 @@ public class Keywords
     }
 
     @RobotKeyword
-    public MyObject[] returnArrayContainingObjects() {
+    public MyObject[] returnArrayOfObjects() {
         return new MyObject[] { new MyObject("1"), new MyObject("2") };
     }
 
@@ -686,6 +722,9 @@ public class Keywords
         s.add(5);
         s.add(2);
         return s;
+    }
+
+    private void privateMethod() {
     }
 
     private void shouldBeEqual(Object a, Object b) {
