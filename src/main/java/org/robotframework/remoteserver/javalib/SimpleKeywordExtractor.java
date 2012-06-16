@@ -31,6 +31,9 @@ public class SimpleKeywordExtractor implements IKeywordExtractor<Keyword> {
         for (final Method method : methods) {
             if (method.getDeclaringClass() != Object.class && Modifier.isPublic(method.getModifiers())) {
                 Keyword keyword = createKeyword(keywordBean, method);
+                String methodName = method.getName();
+                if (extractedKeywords.containsKey(methodName))
+        	    throw new RuntimeException("Overloaded method with name '" + methodName + "' found!");
                 extractedKeywords.put(method.getName(), keyword);
             }
         }
