@@ -406,6 +406,15 @@ public class Keywords
         shouldBeEqual(arg, exp);
     }
 
+    @RobotKeyword
+    @ArgumentNames({ "nums", "sum" })
+    public void arrayAsArgument(Object[] nums, Integer sum) {
+        Integer asum = 0;
+        for (Object num : nums)
+            asum += (Integer) num;
+        shouldBeEqual(sum, asum);
+    }
+
     // Return values
 
     @RobotKeyword

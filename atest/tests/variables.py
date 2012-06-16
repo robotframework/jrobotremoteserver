@@ -15,6 +15,7 @@ EMPTY_LIST = []
 LIST_WITH_NONE = [None]
 LIST_WITH_OBJECTS = [MyObject(1), MyObject(2)]
 NESTED_LIST = [[True, False], [[1, None, MyObject(), {}]]]
+LIST_WITH_INTEGERS = [3, -5]
 
 DICT = {'one': 1, 'spam': 'eggs'}
 EMPTY_DICT = {}

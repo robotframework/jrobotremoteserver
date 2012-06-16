@@ -69,3 +69,6 @@
 | Nested Map As Argument |
 |    | Nested Map As Argument | ${NESTED DICT} |
 
+| Array As Argument |
+|    | Array As Argument | ${LIST_WITH_INTEGERS} | ${-2} |
+
