@@ -29,6 +29,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.robotframework.remoteserver.cli.CommandLineHelper;
 import org.robotframework.remoteserver.library.RemoteLibrary;
+import org.robotframework.remoteserver.library.DefaultRemoteLibraryFactory;
 import org.robotframework.remoteserver.library.RemoteLibraryFactory;
 import org.robotframework.remoteserver.logging.Jetty2Log4J;
 
@@ -47,6 +48,7 @@ public class RemoteServer {
     private boolean allowStop = true;
     private String host = null;
     private List<SelectChannelConnector> connectors = new ArrayList<SelectChannelConnector>();
+    private RemoteLibraryFactory libraryFactory;
 
     /**
      * @return whether this server allows remote stopping
@@ -136,7 +138,9 @@ public class RemoteServer {
 	} catch (Exception e) {
 	    throw new RuntimeException(String.format("Unable to create an instance of %s", clazz.getName()), e);
 	}
-	RemoteLibrary remoteLibrary = RemoteLibraryFactory.newRemoteLibrary(library);
+	if (libraryFactory == null)
+	    libraryFactory = createLibraryFactory();
+	RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
 	libraryMap.put(port, remoteLibrary);
 	SelectChannelConnector connector = new SelectChannelConnector();
 	connector.setPort(port);
@@ -233,5 +237,9 @@ public class RemoteServer {
 	LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
 		"org.apache.commons.logging.impl.Log4JLogger");
 	log = LogFactory.getLog(RemoteServer.class);
+    }
+    
+    protected RemoteLibraryFactory createLibraryFactory() {
+	return new DefaultRemoteLibraryFactory();
     }
 }
