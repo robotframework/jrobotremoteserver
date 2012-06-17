@@ -38,7 +38,7 @@ import org.robotframework.remoteserver.logging.Jetty2Log4J;
  * XML-RPC using an embedded web server.
  * 
  * @see <a href="http://code.google.com/p/robotframework/wiki/RemoteLibrary">Remote Library wiki page</a>
- * @see <a href="http://code.google.com/p/robotframework/wiki/UserGuide">User Guide</a> for Robot Framework
+ * @see <a href="http://code.google.com/p/robotframework/wiki/UserGuide">User Guide for Robot Framework</a>
  * @see <a href="http://xmlrpc.scripting.com/spec.html">XML-RPC Specification</a>
  */
 public class RemoteServer {
@@ -83,22 +83,22 @@ public class RemoteServer {
 
     public static void main(String[] args) throws Exception {
 	configureLogging();
-	CommandLineHelper clh = new CommandLineHelper(args);
-	if (clh.getHelpRequested()) {
-	    System.out.print(clh.getUsage());
+	CommandLineHelper helper = new CommandLineHelper(args);
+	if (helper.getHelpRequested()) {
+	    System.out.print(helper.getUsage());
 	    System.exit(0);
-	} else if (clh.getError() != null) {
-	    System.out.println(clh.getError());
+	} else if (helper.getError() != null) {
+	    System.out.println(helper.getError());
 	    System.out.println();
-	    System.out.println(clh.getUsage());
+	    System.out.println(helper.getUsage());
 	    System.exit(1);
 	}
-	RemoteServer rs = new RemoteServer();
-	for (int port : clh.getLibraryMap().keySet())
-	    rs.addLibrary(clh.getLibraryMap().get(port), port);
-	rs.setAllowStop(clh.getAllowStop());
-	rs.setHost(clh.getHost());
-	rs.start();
+	RemoteServer remoteServer = new RemoteServer();
+	for (int port : helper.getLibraryMap().keySet())
+	    remoteServer.addLibrary(helper.getLibraryMap().get(port), port);
+	remoteServer.setAllowStop(helper.getAllowStop());
+	remoteServer.setHost(helper.getHost());
+	remoteServer.start();
     }
 
     /**
@@ -122,8 +122,8 @@ public class RemoteServer {
     /**
      * Add the given test library to the remote server on the given port. The server must be stopped when calling this.
      * 
-     * @param library
-     *            class of the test library
+     * @param clazz
+     *            test library's class
      * @param port
      *            port to serve the test library from
      */
@@ -144,7 +144,7 @@ public class RemoteServer {
 	libraryMap.put(port, remoteLibrary);
 	SelectChannelConnector connector = new SelectChannelConnector();
 	connector.setPort(port);
-	connector.setThreadPool(new QueuedThreadPool(20));
+	connector.setThreadPool(new QueuedThreadPool(10));
 	connector.setName("jrobotremotesever");
 	connectors.add(connector);
 	log.info(String.format("Added library %s", remoteLibrary.getName()));
