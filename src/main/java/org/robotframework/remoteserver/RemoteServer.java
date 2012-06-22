@@ -36,7 +36,7 @@ import org.robotframework.remoteserver.logging.Jetty2Log4J;
 import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 
 /**
- * Remote server for Robot Framework implemented in Java. Takes one or more user libraries and exposes their methods via
+ * Remote server for Robot Framework implemented in Java. Takes one or more test libraries and exposes their methods via
  * XML-RPC using an embedded web server.
  * 
  * @see <a href="http://code.google.com/p/robotframework/wiki/RemoteLibrary">Remote Library wiki page</a>
@@ -79,7 +79,7 @@ public class RemoteServer {
      * configuration, network with VPN, specifying the host might be necessary.
      * 
      * @param hostName
-     *            The hostname or address representing the interface to which all connectors will bind, or null for all
+     *            the hostname or address representing the interface to which all connectors will bind, or null for all
      *            interfaces.
      */
     public void setHost(String hostName) {
@@ -107,12 +107,12 @@ public class RemoteServer {
     }
 
     /**
-     * Add the given test library to the remote server on the given port. The server must be stopped when calling this.
+     * Map the given test library to the specified port. The server must be stopped when calling this.
      * 
      * @param className
-     *            the test library's class name
+     *            class name of the test library
      * @param port
-     *            port to serve the test library from
+     *            port to map the test library to
      */
     public void addLibrary(String className, int port) {
 	Class<?> clazz;
@@ -125,12 +125,12 @@ public class RemoteServer {
     }
 
     /**
-     * Add the given test library to the remote server on the given port. The server must be stopped when calling this.
+     * Map the given test library to the specified port. The server must be stopped when calling this.
      * 
      * @param clazz
-     *            test library's class
+     *            class of the test library
      * @param port
-     *            port to serve the test library from
+     *            port to map the test library to
      */
     public void addLibrary(Class<?> clazz, int port) {
 	if (server != null && !server.isStopped())
@@ -155,7 +155,7 @@ public class RemoteServer {
     }
 
     /**
-     * @return A copy of the port to library mapping
+     * @return A copy of the port to test library mapping
      */
     public SortedMap<Integer, RemoteLibrary> getLibraryMap() {
 	return new TreeMap<Integer, RemoteLibrary>(libraryMap);
@@ -163,8 +163,8 @@ public class RemoteServer {
 
     /**
      * @param port
-     *            The request port
-     * @return Returns the library to which the specified port is mapped
+     *            the request port
+     * @return test library the specified port is mapped to
      */
     public RemoteLibrary getLibrary(Integer port) {
 	return libraryMap.get(port);
@@ -245,8 +245,8 @@ public class RemoteServer {
      * <li>Set Jakarta Commons Logging to log to Log4J</li>
      * </ul>
      * This is convenient if you do not want to configure the logging yourself. This will only affect future instances
-     * of {@link org.eclipse.jetty.util.log.Logger} and {@link org.apache.commons.logging.Log}. This should be called as
-     * early as possible.
+     * of {@link org.eclipse.jetty.util.log.Logger} and {@link org.apache.commons.logging.Log}, so this should be called
+     * as early as possible.
      */
     public static void configureLogging() {
 	Logger root = Logger.getRootLogger();
