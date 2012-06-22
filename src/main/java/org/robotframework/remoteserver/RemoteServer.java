@@ -149,7 +149,6 @@ public class RemoteServer {
 	libraryMap.put(port, remoteLibrary);
 	SelectChannelConnector connector = new SelectChannelConnector();
 	connector.setPort(port);
-	connector.setThreadPool(new QueuedThreadPool(10));
 	connector.setName("jrobotremotesever");
 	connectors.add(connector);
 	log.info(String.format("Added library %s", remoteLibrary.getName()));
