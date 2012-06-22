@@ -4,3 +4,4 @@ test-output
 .settings
 .project
 atest/results
+.pyc
