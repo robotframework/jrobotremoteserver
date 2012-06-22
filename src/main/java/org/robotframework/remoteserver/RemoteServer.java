@@ -26,12 +26,14 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.robotframework.remoteserver.cli.CommandLineHelper;
 import org.robotframework.remoteserver.library.RemoteLibrary;
 import org.robotframework.remoteserver.library.DefaultRemoteLibraryFactory;
 import org.robotframework.remoteserver.library.RemoteLibraryFactory;
 import org.robotframework.remoteserver.logging.Jetty2Log4J;
+import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 
 /**
  * Remote server for Robot Framework implemented in Java. Takes one or more user libraries and exposes their methods via
@@ -65,6 +67,9 @@ public class RemoteServer {
 	allowStop = allowed;
     }
 
+    /**
+     * @return the hostname set with {@link #setHost(String)}
+     */
     public String getHost() {
 	return host;
     }
@@ -150,46 +155,64 @@ public class RemoteServer {
 	log.info(String.format("Added library %s", remoteLibrary.getName()));
     }
 
-    protected SortedMap<Integer, RemoteLibrary> getLibraryMap() {
-	return libraryMap;
-    }
-
-    protected RemoteLibrary getLibrary(Integer port) {
-	return libraryMap.get(port);
-    }
-
-    protected void gracefulStop() {
-	log.info("Robot Framework remote server stopping");
-	server.setGracefulShutdown(2000);
-	Thread stopper = new Thread() {
-	    @Override
-	    public void run() {
-		try {
-		    server.stop();
-		} catch (Throwable e) {
-		    log.error(String.format("Failed to stop the server: %s", e.getMessage()), e);
-		}
-	    }
-	};
-	stopper.start();
-	libraryMap.clear();
+    /**
+     * @return A copy of the port to library mapping
+     */
+    public SortedMap<Integer, RemoteLibrary> getLibraryMap() {
+	return new TreeMap<Integer, RemoteLibrary>(libraryMap);
     }
 
     /**
-     * Immediately stops the remote server. This will remove all test libraries.
+     * @param port
+     *            The request port
+     * @return Returns the library to which the specified port is mapped
+     */
+    public RemoteLibrary getLibrary(Integer port) {
+	return libraryMap.get(port);
+    }
+
+    /**
+     * A non-blocking method for stopping the remote server that allows requests to complete within the given timeout
+     * before shutting down the server. This method exists to allow stopping the server remotely. New connections will
+     * not be accepted after calling this. This will remove all test libraries.
+     * 
+     * @param timeoutMS
+     *            the milliseconds to wait for existing request to complete before stopping the server
+     */
+    public void stop(int timeoutMS) throws Exception {
+	if (server == null)
+	    throw new IllegalStateException("The server was never started");
+	log.info("Robot Framework remote server stopping");
+	if (timeoutMS > 0) {
+	    server.setGracefulShutdown(timeoutMS);
+	    Thread stopper = new Thread() {
+		@Override
+		public void run() {
+		    try {
+			server.stop();
+		    } catch (Throwable e) {
+			log.error(String.format("Failed to stop the server: %s", e.getMessage()), e);
+		    }
+		}
+	    };
+	    stopper.start();
+	    libraryMap.clear();
+	} else {
+	    try {
+		server.stop();
+	    } finally {
+		libraryMap.clear();
+	    }
+	}
+    }
+
+    /**
+     * Stops the remote server immediately. This will remove all test libraries.
      * 
      * @throws Exception
      */
     public void stop() throws Exception {
-	if (server == null)
-	    throw new IllegalStateException("The server was never started");
-	log.info("Robot Framework remote server stopping");
-	try {
-	    server.stop();
-	    Context.removeRemoteServer(this);
-	} finally {
-	    libraryMap.clear();
-	}
+	stop(0);
     }
 
     /**
@@ -204,12 +227,11 @@ public class RemoteServer {
 	    throw new IllegalStateException("Cannot start the server without adding a library first");
 	if (!server.isStopped())
 	    throw new IllegalStateException("The server is starting or already started");
-	Context.addRemoteServer(this, libraryMap.keySet());
 	for (Connector conn : connectors)
 	    conn.setHost(host);
 	server.setConnectors(connectors.toArray(new Connector[] {}));
 	ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
-	servletContextHandler.addServlet(RemoteServerServlet.class, "/");
+	servletContextHandler.addServlet(new ServletHolder(new RemoteServerServlet(this)), "/");
 	log.info("Robot Framework remote server starting");
 	server.start();
 	connectors.clear();
@@ -238,7 +260,7 @@ public class RemoteServer {
 		"org.apache.commons.logging.impl.Log4JLogger");
 	log = LogFactory.getLog(RemoteServer.class);
     }
-    
+
     protected RemoteLibraryFactory createLibraryFactory() {
 	return new DefaultRemoteLibraryFactory();
     }
