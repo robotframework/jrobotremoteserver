@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.Servlet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
@@ -42,7 +44,7 @@ import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 public class RemoteServer {
     private static Log log = LogFactory.getLog(RemoteServer.class);
     private Server server;
-    private Map<Integer, Class<?>> libraryMap = new HashMap<Integer, Class<?>>();
+    protected Map<Integer, Class<?>> libraryMap = new HashMap<Integer, Class<?>>();
     private boolean allowStop = true;
     private String host = null;
     private List<SelectChannelConnector> connectors = new ArrayList<SelectChannelConnector>();
@@ -195,7 +197,7 @@ public class RemoteServer {
 	    conn.setHost(host);
 	server.setConnectors(connectors.toArray(new Connector[] {}));
 	ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
-	servletContextHandler.addServlet(new ServletHolder(new RemoteServerServlet(this, libraryMap)), "/");
+	servletContextHandler.addServlet(new ServletHolder(createServlet()), "/");
 	libraryMap.clear();
 	log.info("Robot Framework remote server starting");
 	server.start();
@@ -224,5 +226,9 @@ public class RemoteServer {
 	LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
 		"org.apache.commons.logging.impl.Log4JLogger");
 	log = LogFactory.getLog(RemoteServer.class);
+    }
+    
+    protected Servlet createServlet() {
+	return new RemoteServerServlet(this, libraryMap);
     }
 }
