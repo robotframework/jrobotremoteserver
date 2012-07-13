@@ -14,7 +14,9 @@ package org.robotframework.remoteserver.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,24 +27,44 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
 import org.robotframework.remoteserver.RemoteServer;
+import org.robotframework.remoteserver.context.Context;
+import org.robotframework.remoteserver.library.DefaultRemoteLibraryFactory;
 import org.robotframework.remoteserver.library.RemoteLibrary;
+import org.robotframework.remoteserver.library.RemoteLibraryFactory;
 import org.robotframework.remoteserver.xmlrpc.ReflectiveHandlerMapping;
 import org.robotframework.remoteserver.xmlrpc.TypeFactory;
 
-public class RemoteServerServlet extends XmlRpcServlet {
+/**
+ * This servlet uses the same instance of a test library to process all requests on a given port
+ */
+public class RemoteServerServlet extends XmlRpcServlet implements Context {
     private static final long serialVersionUID = -7981676271855172976L;
     private static String page = null;
-    private static final ThreadLocal<Integer> port = new ThreadLocal<Integer>();
-    RemoteServer remoteServer;
+    private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<HttpServletRequest>();
+    private RemoteServer remoteServer;
+    private SortedMap<Integer, RemoteLibrary> libraryMap;
 
-    public RemoteServerServlet(RemoteServer remoteServer) {
+    public RemoteServerServlet(RemoteServer remoteServer, Map<Integer, Class<?>> libraryMap) {
 	this.remoteServer = remoteServer;
+	RemoteLibraryFactory libraryFactory = createLibraryFactory();
+	this.libraryMap = new TreeMap<Integer, RemoteLibrary>();
+	for (Integer port : libraryMap.keySet()) {
+	    Class<?> clazz = libraryMap.get(port);
+	    Object library;
+	    try {
+		library = clazz.newInstance();
+	    } catch (Exception e) {
+		throw new RuntimeException(String.format("Unable to create an instance of %s", clazz.getName()), e);
+	    }
+	    RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
+	    this.libraryMap.put(port, remoteLibrary);
+	}
     }
 
     @Override
     protected XmlRpcHandlerMapping newXmlRpcHandlerMapping() throws XmlRpcException {
 	ReflectiveHandlerMapping map = new ReflectiveHandlerMapping();
-	map.setRequestProcessorFactoryFactory(new RemoteServerRequestProcessorFactoryFactory(remoteServer));
+	map.setRequestProcessorFactoryFactory(new RemoteServerRequestProcessorFactoryFactory(this));
 	map.addHandler("keywords", ServerMethods.class);
 	map.removePrefixes();
 	this.getXmlRpcServletServer().setTypeFactory(new TypeFactory(this.getXmlRpcServletServer()));
@@ -51,8 +73,12 @@ public class RemoteServerServlet extends XmlRpcServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	port.set(req.getServerPort());
-	super.service(req, resp);
+	request.set(req);
+	try {
+	    super.service(req, resp);
+	} finally {
+	    request.remove();
+	}
     }
 
     @Override
@@ -65,10 +91,12 @@ public class RemoteServerServlet extends XmlRpcServlet {
     }
 
     /**
-     * @return The port number on which the last request on the current thread was received
+     * The request is shared so that more context, such as the client address, can be obtained
+     * 
+     * @return {@link HttpServletRequest} object that contains the request the client has made of the servlet
      */
-    public static Integer getPort() {
-	return port.get();
+    public static HttpServletRequest getRequest() {
+	return request.get();
     }
 
     protected String getPage() {
@@ -80,17 +108,28 @@ public class RemoteServerServlet extends XmlRpcServlet {
 		    + "<HTML><HEAD><TITLE>jrobotremoteserver</TITLE></HEAD><BODY>"
 		    + "<P>jrobotremoteserver serving:</P>"
 		    + "<TABLE border='1' cellspacing='0' cellpadding='5'><TR><TH>Port</TH><TH>Library</TH></TR>");
-	    SortedMap<Integer, RemoteLibrary> map = remoteServer.getLibraryMap();
-	    for (Integer port : map.keySet()) {
+	    for (Integer port : libraryMap.keySet()) {
 		sb.append("<TR><TD>");
 		sb.append(port.toString());
 		sb.append("</TD><TD>");
-		sb.append(StringEscapeUtils.escapeHtml(map.get(port).getName()));
+		sb.append(StringEscapeUtils.escapeHtml(libraryMap.get(port).getName()));
 		sb.append("</TD></TR>");
 	    }
 	    sb.append("</TABLE></BODY></HTML>");
 	    page = sb.toString();
 	    return page;
 	}
+    }
+
+    public RemoteLibrary getLibrary() {
+	return libraryMap.get(getRequest().getServerPort());
+    }
+
+    protected RemoteLibraryFactory createLibraryFactory() {
+	return new DefaultRemoteLibraryFactory();
+    }
+
+    public RemoteServer getRemoteServer() {
+	return remoteServer;
     }
 }

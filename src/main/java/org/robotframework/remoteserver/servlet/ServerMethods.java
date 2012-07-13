@@ -24,8 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.robotframework.remoteserver.RemoteServer;
-import org.robotframework.remoteserver.library.RemoteLibrary;
+import org.robotframework.remoteserver.context.Context;
 
 /**
  * Contains the XML-RPC methods that implement the remote library interface.
@@ -36,13 +35,13 @@ import org.robotframework.remoteserver.library.RemoteLibrary;
 public class ServerMethods {
 
     private Log log;
-    private RemoteServer remoteServer;
+    private Context context;
     private static String[] ignoredExceptions = new String[] { "AssertionError", "AssertionFailedError", "Exception",
 	    "Error", "RuntimeError", "RuntimeException", "DataError", "TimeoutError", "RemoteError" };
 
-    public ServerMethods(RemoteServer remoteServer) {
+    public ServerMethods(Context context) {
 	log = LogFactory.getLog(ServerMethods.class);
-	this.remoteServer = remoteServer;
+	this.context = context;
     }
 
     /**
@@ -52,7 +51,7 @@ public class ServerMethods {
      */
     public String[] get_keyword_names() {
 	try {
-	    String[] names = getLibrary().getKeywordNames();
+	    String[] names = context.getLibrary().getKeywordNames();
 	    if (names == null || names.length == 0)
 		throw new RuntimeException("No keywords found in the test library");
 	    String[] newNames = Arrays.copyOf(names, names.length + 1);
@@ -91,12 +90,12 @@ public class ServerMethods {
 		retObj = stopRemoteServer();
 	    } else {
 		try {
-		    retObj = getLibrary().runKeyword(keyword, args);
+		    retObj = context.getLibrary().runKeyword(keyword, args);
 		} catch (Exception e) {
 		    if (illegalArgumentIn(e)) {
 			for (int i = 0; i < args.length; i++)
 			    args[i] = arraysToLists(args[i]);
-			retObj = getLibrary().runKeyword(keyword, args);
+			retObj = context.getLibrary().runKeyword(keyword, args);
 		    } else {
 			throw (e);
 		    }
@@ -134,7 +133,7 @@ public class ServerMethods {
 	    return new String[0];
 	}
 	try {
-	    String[] args = getLibrary().getKeywordArguments(keyword);
+	    String[] args = context.getLibrary().getKeywordArguments(keyword);
 	    return args == null ? new String[0] : args;
 	} catch (Throwable e) {
 	    log.warn("", e);
@@ -154,7 +153,7 @@ public class ServerMethods {
 	    return "Stops the remote server.\n\nThe server may be configured so that users cannot stop it.";
 	}
 	try {
-	    String doc = remoteServer.getLibrary(RemoteServerServlet.getPort()).getKeywordDocumentation(keyword);
+	    String doc = context.getLibrary().getKeywordDocumentation(keyword);
 	    return doc == null ? "" : doc;
 	} catch (Throwable e) {
 	    log.warn("", e);
@@ -172,9 +171,9 @@ public class ServerMethods {
     }
 
     protected boolean stopRemoteServer() throws Exception {
-	if (remoteServer.getAllowStop()) {
+	if (context.getRemoteServer().getAllowStop()) {
 	    System.out.print("Robot Framework remote server stopping");
-	    remoteServer.stop(2000);
+	    context.getRemoteServer().stop(2000);
 	} else {
 	    System.out.print("This Robot Framework remote server does not allow stopping");
 	}
@@ -216,9 +215,5 @@ public class ServerMethods {
 	    }
 	}
 	return false;
-    }
-
-    protected RemoteLibrary getLibrary() {
-	return remoteServer.getLibrary(RemoteServerServlet.getPort());
     }
 }

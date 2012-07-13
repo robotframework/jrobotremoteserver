@@ -13,9 +13,9 @@
 package org.robotframework.remoteserver;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,9 +28,6 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.robotframework.remoteserver.cli.CommandLineHelper;
-import org.robotframework.remoteserver.library.DefaultRemoteLibraryFactory;
-import org.robotframework.remoteserver.library.RemoteLibrary;
-import org.robotframework.remoteserver.library.RemoteLibraryFactory;
 import org.robotframework.remoteserver.logging.Jetty2Log4J;
 import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 
@@ -45,11 +42,10 @@ import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 public class RemoteServer {
     private static Log log = LogFactory.getLog(RemoteServer.class);
     private Server server;
-    private SortedMap<Integer, RemoteLibrary> libraryMap = new TreeMap<Integer, RemoteLibrary>();
+    private Map<Integer, Class<?>> libraryMap = new HashMap<Integer, Class<?>>();
     private boolean allowStop = true;
     private String host = null;
     private List<SelectChannelConnector> connectors = new ArrayList<SelectChannelConnector>();
-    private RemoteLibraryFactory libraryFactory;
 
     /**
      * @return whether this server allows remote stopping
@@ -136,37 +132,12 @@ public class RemoteServer {
 	    throw new IllegalStateException("Cannot add a library once the server is started");
 	if (libraryMap.containsKey(port))
 	    throw new IllegalStateException(String.format("A library was already added for port %d", port));
-	Object library;
-	try {
-	    library = clazz.newInstance();
-	} catch (Exception e) {
-	    throw new RuntimeException(String.format("Unable to create an instance of %s", clazz.getName()), e);
-	}
-	if (libraryFactory == null)
-	    libraryFactory = createLibraryFactory();
-	RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
-	libraryMap.put(port, remoteLibrary);
+	libraryMap.put(port, clazz);
 	SelectChannelConnector connector = new SelectChannelConnector();
 	connector.setPort(port);
 	connector.setName("jrobotremotesever");
 	connectors.add(connector);
-	log.info(String.format("Added library %s", remoteLibrary.getName()));
-    }
-
-    /**
-     * @return A copy of the port to test library mapping
-     */
-    public SortedMap<Integer, RemoteLibrary> getLibraryMap() {
-	return new TreeMap<Integer, RemoteLibrary>(libraryMap);
-    }
-
-    /**
-     * @param port
-     *            the request port
-     * @return test library the specified port is mapped to
-     */
-    public RemoteLibrary getLibrary(Integer port) {
-	return libraryMap.get(port);
+	log.info(String.format("Added library %s", clazz.getName()));
     }
 
     /**
@@ -194,13 +165,8 @@ public class RemoteServer {
 		}
 	    };
 	    stopper.start();
-	    libraryMap.clear();
 	} else {
-	    try {
-		server.stop();
-	    } finally {
-		libraryMap.clear();
-	    }
+	    server.stop();
 	}
     }
 
@@ -229,7 +195,8 @@ public class RemoteServer {
 	    conn.setHost(host);
 	server.setConnectors(connectors.toArray(new Connector[] {}));
 	ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
-	servletContextHandler.addServlet(new ServletHolder(new RemoteServerServlet(this)), "/");
+	servletContextHandler.addServlet(new ServletHolder(new RemoteServerServlet(this, libraryMap)), "/");
+	libraryMap.clear();
 	log.info("Robot Framework remote server starting");
 	server.start();
 	connectors.clear();
@@ -257,9 +224,5 @@ public class RemoteServer {
 	LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
 		"org.apache.commons.logging.impl.Log4JLogger");
 	log = LogFactory.getLog(RemoteServer.class);
-    }
-
-    protected RemoteLibraryFactory createLibraryFactory() {
-	return new DefaultRemoteLibraryFactory();
     }
 }

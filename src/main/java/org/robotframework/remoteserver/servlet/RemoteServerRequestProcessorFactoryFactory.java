@@ -15,14 +15,14 @@ package org.robotframework.remoteserver.servlet;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.server.RequestProcessorFactoryFactory;
-import org.robotframework.remoteserver.RemoteServer;
+import org.robotframework.remoteserver.context.Context;
 
 public class RemoteServerRequestProcessorFactoryFactory implements RequestProcessorFactoryFactory {
     private final RequestProcessorFactory factory = new RemoteServerRequestProcessorFactory();
     private final ServerMethods serverMethods;
 
-    public RemoteServerRequestProcessorFactoryFactory(RemoteServer server) {
-	this.serverMethods = new ServerMethods(server);
+    public RemoteServerRequestProcessorFactoryFactory(Context context) {
+	this.serverMethods = new ServerMethods(context);
     }
 
     public RequestProcessorFactory getRequestProcessorFactory(@SuppressWarnings("rawtypes") Class aClass)
