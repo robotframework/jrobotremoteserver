@@ -145,7 +145,7 @@ public class RemoteServer {
     /**
      * A non-blocking method for stopping the remote server that allows requests to complete within the given timeout
      * before shutting down the server. This method exists to allow stopping the server remotely. New connections will
-     * not be accepted after calling this. This will remove all test libraries.
+     * not be accepted after calling this.
      * 
      * @param timeoutMS
      *            the milliseconds to wait for existing request to complete before stopping the server
@@ -173,7 +173,7 @@ public class RemoteServer {
     }
 
     /**
-     * Stops the remote server immediately. This will remove all test libraries.
+     * Stops the remote server immediately.
      * 
      * @throws Exception
      */

@@ -16,8 +16,8 @@ import org.eclipse.jetty.util.log.Logger;
 import org.apache.log4j.Level;
 
 /**
- * Jetty logger that redirects directly to Log4j without needing slf4j on the classpath. This way users do not need to
- * add more dependencies than jrobotremoteserver to get a unified logging solution.
+ * Jetty logger that redirects directly to Log4J without needing SLF4J on the classpath. This way users do not need to
+ * add more dependencies to get a unified logging solution.
  */
 public class Jetty2Log4J implements Logger {
 
@@ -90,7 +90,11 @@ public class Jetty2Log4J implements Logger {
     }
 
     public void ignore(Throwable ignored) {
-	logger.trace("", ignored);
+	try {
+	    logger.trace("", ignored);
+	} catch (NoSuchMethodError e) {
+	    // ignore. can happen if Log4J version < 1.2.12 loaded at runtime
+	}
     }
 
     private String format(String msg, Object... args) {
