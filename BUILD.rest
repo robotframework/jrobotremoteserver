@@ -2,7 +2,7 @@ Building
 --------
 
 Maven is used as build tool for jrobotremoteserver.
-You can simply do a 'mvn clean package' in the project directory.
+You can simply do a 'mvn clean package javadoc:jar' in the project directory.
 
 Robot Tests
 -----------

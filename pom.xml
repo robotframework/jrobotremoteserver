@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.robotframework</groupId>
+	<groupId>com.github.ombre42</groupId>
 	<artifactId>remoteserver</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>2.0-BETA</version>
 	<packaging>jar</packaging>
 	<name>jrobotremoteserver</name>
-	<url>http://code.google.com/p/jrobotremoteserver/</url>
+	<url>https://github.com/ombre42/jrobotremoteserver</url>
 	<licenses>
 		<license>
 			<name>Apache 2</name>
@@ -14,6 +14,16 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<developers>
+		<developer>
+			<name>Kevin Ormbrek</name>
+			<email>kormbrek@gmail.com</email>
+		</developer>
+		<developer>
+			<name>David Luu</name>
+			<email>mangaroo@gmail.com</email>
+		</developer>
+	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -97,4 +107,9 @@
 		</plugins>
 	</build>
 	<description>Serves remote test libraries for Robot Framework that are implemented in Java.</description>
+	<scm>
+		<connection>scm:git:git@github.com:ombre42/jrobotremoteserver.git</connection>
+		<developerConnection>scm:git:git@github.com:ombre42/jrobotremoteserver.git</developerConnection>
+		<url>git@github.com:ombre42/jrobotremoteserver.git</url>
+	</scm>
 </project>
