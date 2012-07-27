@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +27,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
+import org.apache.xmlrpc.webserver.XmlRpcServletServer;
 import org.robotframework.remoteserver.RemoteServer;
 import org.robotframework.remoteserver.context.Context;
 import org.robotframework.remoteserver.library.DefaultRemoteLibraryFactory;
@@ -54,11 +56,18 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
 	    try {
 		library = clazz.newInstance();
 	    } catch (Exception e) {
-		throw new RuntimeException(String.format("Unable to create an instance of %s", clazz.getName()), e);
+		throw new RuntimeException(e);
 	    }
 	    RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
 	    this.libraryMap.put(port, remoteLibrary);
 	}
+    }
+
+    @Override
+    protected XmlRpcServletServer newXmlRpcServer(ServletConfig pConfig) throws XmlRpcException {
+	XmlRpcServletServer server = new XmlRpcServletServer();
+	server.setTypeFactory(new TypeFactory(this.getXmlRpcServletServer()));
+	return server;
     }
 
     @Override
@@ -67,7 +76,6 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
 	map.setRequestProcessorFactoryFactory(new RemoteServerRequestProcessorFactoryFactory(this));
 	map.addHandler("keywords", ServerMethods.class);
 	map.removePrefixes();
-	this.getXmlRpcServletServer().setTypeFactory(new TypeFactory(this.getXmlRpcServletServer()));
 	return map;
     }
 
