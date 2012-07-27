@@ -25,6 +25,7 @@ import socket
 from os.path import abspath, dirname, exists, join
 import os
 import sys
+import glob
 
 
 BASE = dirname(abspath(__file__))
@@ -38,7 +39,10 @@ def start(libraries=
         cmd = 'mvn -f "%s" clean package' % os.path.join(BASE, 'libs', 'pom.xml')
         print 'Building the test libraries with command:\n%s' % cmd
         subprocess.call(cmd, shell=True)
-    rs_path = os.path.join(dirname(BASE), 'target', 'jrobotremoteserver-jar-with-dependencies.jar')
+    files = glob.glob(os.path.join(dirname(BASE), 'target') + os.sep + '*jar-with-dependencies.jar')
+    if not files:
+        raise Exception('Build jrobotremoteserver including the standalone jar first')
+    rs_path = os.path.join(dirname(BASE), 'target', files[0])
     tl_path = os.path.join(BASE, 'libs', 'target', 'examplelib-jar-with-dependencies.jar')
     os.environ['CLASSPATH'] = rs_path + os.pathsep + tl_path
     print 'CLASSPATH: %s' % os.environ['CLASSPATH']
