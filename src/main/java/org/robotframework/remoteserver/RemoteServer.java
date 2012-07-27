@@ -43,7 +43,7 @@ import org.robotframework.remoteserver.servlet.RemoteServerServlet;
  */
 public class RemoteServer {
     private static Log log = LogFactory.getLog(RemoteServer.class);
-    private Server server;
+    private Server server = new Server();
     protected Map<Integer, Class<?>> libraryMap = new HashMap<Integer, Class<?>>();
     private boolean allowStop = true;
     private String host = null;
@@ -116,7 +116,7 @@ public class RemoteServer {
 	try {
 	    clazz = Class.forName(className);
 	} catch (Exception e) {
-	    throw new RuntimeException(String.format("Unable to load class %s", className), e);
+	    throw new RuntimeException(e);
 	}
 	addLibrary(clazz, port);
     }
@@ -130,7 +130,7 @@ public class RemoteServer {
      *            port to map the test library to
      */
     public void addLibrary(Class<?> clazz, int port) {
-	if (server != null && !server.isStopped())
+	if (!server.isStopped())
 	    throw new IllegalStateException("Cannot add a library once the server is started");
 	if (libraryMap.containsKey(port))
 	    throw new IllegalStateException(String.format("A library was already added for port %d", port));
@@ -151,8 +151,6 @@ public class RemoteServer {
      *            the milliseconds to wait for existing request to complete before stopping the server
      */
     public void stop(int timeoutMS) throws Exception {
-	if (server == null)
-	    throw new IllegalStateException("The server was never started");
 	log.info("Robot Framework remote server stopping");
 	if (timeoutMS > 0) {
 	    server.setGracefulShutdown(timeoutMS);
@@ -187,12 +185,8 @@ public class RemoteServer {
      * @throws Exception
      */
     public void start() throws Exception {
-	if (server == null)
-	    server = new Server();
 	if (connectors.isEmpty())
 	    throw new IllegalStateException("Cannot start the server without adding a library first");
-	if (!server.isStopped())
-	    throw new IllegalStateException("The server is starting or already started");
 	for (Connector conn : connectors)
 	    conn.setHost(host);
 	server.setConnectors(connectors.toArray(new Connector[] {}));

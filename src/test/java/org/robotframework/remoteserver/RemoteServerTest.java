@@ -24,11 +24,11 @@ public class RemoteServerTest {
 	server.addLibrary(StaticOne.class, 8270);
 	server.start();
 	String result = (String) runKeyword("stop_remote_server", new Object[0]).get("output");
-	Assert.assertEquals(result, "This Robot Framework remote server does not allow stopping");
+	Assert.assertEquals(result, "This Robot Framework remote server does not allow stopping\n");
 	server.setAllowStop(true);
 	Thread.sleep(5000);
 	result = (String) runKeyword("stop_remote_server", new Object[0]).get("output");
-	Assert.assertEquals(result, "Robot Framework remote server stopping");
+	Assert.assertEquals(result, "Robot Framework remote server stopping\n");
     }
 
     @Test
@@ -44,26 +44,6 @@ public class RemoteServerTest {
 	result = (String) runKeyword("getName", new Object[0]).get("return");
 	Assert.assertEquals(result, "StaticTwo");
 	server.stop();
-    }
-    
-    @Test
-    public void cantLoadClass() {
-	try {
-	    server.addLibrary("TheAnswer", 56);
-	} catch (RuntimeException e) {
-	    Assert.assertEquals(e.getMessage(), "Unable to load class TheAnswer");
-	}
-    }
-
-    @Test
-    public void cantInstantiateClass() {
-	Object anon = new Object() {
-	};
-	try {
-	    server.addLibrary(anon.getClass(), 55);
-	} catch (RuntimeException e) {
-	    Assert.assertEquals(e.getMessage(), "Unable to create an instance of " + anon.getClass().getName());
-	}
     }
 
     public XmlRpcClient getClient() {
