@@ -113,6 +113,13 @@ public class Keywords
         System.out.println((char) 1);
     }
 
+    @RobotKeyword
+    public void logToOutAndErr() {
+        System.err.print("To err");
+        System.out.print("To out");
+        System.err.print(" is human");
+    }
+
     // Failures
 
     @RobotKeyword

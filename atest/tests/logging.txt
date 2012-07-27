@@ -37,3 +37,6 @@
 |    | [Documentation] | Fails with ExpatError when running tests on Jython 2.5.\nLOG 1:1 INFO >< |
 |    | Log Control Char |
 
+| Logg To Out And Err |
+|    | [Documentation] | LOG 1 INFO To out\nTo err is human |
+|    | Log To Out And Err |

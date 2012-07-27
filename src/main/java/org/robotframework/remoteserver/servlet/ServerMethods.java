@@ -12,9 +12,6 @@
  */
 package org.robotframework.remoteserver.servlet;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.robotframework.javalib.util.StdStreamRedirecter;
 import org.robotframework.remoteserver.context.Context;
 
 /**
@@ -74,13 +72,8 @@ public class ServerMethods {
      */
     public Map<String, Object> run_keyword(String keyword, Object[] args) {
 	HashMap<String, Object> kr = new HashMap<String, Object>();
-	PrintStream outBackup = System.out;
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	try {
-	    System.setOut(new PrintStream(baos, false, "UTF-8"));
-	} catch (UnsupportedEncodingException e2) {
-	    // ignore
-	}
+	StdStreamRedirecter redirector = new StdStreamRedirecter();
+	redirector.redirectStdStreams();
 	try {
 	    kr.put("status", "PASS");
 	    kr.put("error", "");
@@ -101,24 +94,18 @@ public class ServerMethods {
 		    }
 		}
 	    }
-	    kr.put("output", baos.toString("UTF-8"));
 	    kr.put("return", retObj);
-	    return kr;
 	} catch (Throwable e) {
 	    kr.put("status", "FAIL");
-	    try {
-		kr.put("output", baos.toString("UTF-8"));
-	    } catch (UnsupportedEncodingException e1) {
-		// ignore
-	    }
 	    kr.put("return", "");
 	    Throwable t = e.getCause() == null ? e : e.getCause();
 	    kr.put("error", getError(t));
 	    kr.put("traceback", ExceptionUtils.getStackTrace(t));
-	    return kr;
 	} finally {
-	    System.setOut(outBackup);
+	    kr.put("output", redirector.getStdOutAsString() + "\n" + redirector.getStdErrAsString());
+	    redirector.resetStdStreams();
 	}
+	return kr;
     }
 
     /**
