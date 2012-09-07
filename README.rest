@@ -2,7 +2,7 @@
 jrobotremoteserver
 ******************
 
-jrobotremoteserver is a `remote server <https://code.google.com/p/robotframework/wiki/RemoteLibrary>` for `Robot Framework <http://robotframework.googlecode.com/>` implemented in Java.
+jrobotremoteserver is a `remote server <https://code.google.com/p/robotframework/wiki/RemoteLibrary>`_ for `Robot Framework <http://robotframework.googlecode.com/>`_ implemented in Java.
 
 Documentation can be found on the project `wiki <https://github.com/ombre42/jrobotremoteserver/wiki>`_.
 
