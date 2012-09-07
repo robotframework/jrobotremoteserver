@@ -5,3 +5,4 @@ test-output
 .project
 atest/results
 *.pyc
+*.class
