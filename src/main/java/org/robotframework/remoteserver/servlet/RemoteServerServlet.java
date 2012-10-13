@@ -90,6 +90,17 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
     }
 
     @Override
+    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	/* when the client is Jython 2.5.x (old xmlrpclib using HTTP/1.0), the server's sockets got stuck in 
+	 * FIN_WAIT_2 for some time, eventually hitting the limit of open sockets on some Windows systems. adding 
+	 * this header gets Jetty to close the socket.
+	 */
+	if ("HTTP/1.0".equals(req.getProtocol()))
+	    resp.addHeader("Connection", "close");
+	super.doPost(req, resp);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	resp.setContentType("text/html");
 	String body = getPage();
@@ -130,7 +141,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
     }
 
     public RemoteLibrary getLibrary() {
-	return libraryMap.get(getRequest().getServerPort());
+	return libraryMap.get(getRequest().getLocalPort());
     }
 
     protected RemoteLibraryFactory createLibraryFactory() {
