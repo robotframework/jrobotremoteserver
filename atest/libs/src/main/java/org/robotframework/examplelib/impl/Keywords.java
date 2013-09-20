@@ -266,6 +266,12 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames("arg")
+    public int intAsArgument(int arg) {
+        return arg;
+    }
+
+    @RobotKeyword
+    @ArgumentNames("arg")
     public void negativeIntegerAsArgument(Integer arg) {
         shouldBeEqual(arg, returnNegativeInteger());
     }

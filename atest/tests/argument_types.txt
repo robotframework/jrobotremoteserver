@@ -19,6 +19,11 @@
 |    | Integer As Argument | ${42} |
 |    | Negative Integer As Argument | ${-1} |
 
+| Int As Argument Conversion From String |
+|    | [Documentation] | JavalibCore does the conversion, this is just a sanity check |
+|    | ${number}= | Int As Argument | 42 |
+|    | Should Be Equal | ${number} | ${42} |
+
 | Double As Argument |
 |    | Double As Argument | ${9.34} |
 |    | Double Object As Argument | ${4.2} |
