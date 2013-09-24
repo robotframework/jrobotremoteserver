@@ -10,6 +10,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* This code is derived from JavalibCore 
+ * Copyright 2008 Nokia Siemens Networks Oyj
+ */
 package org.robotframework.remoteserver.javalib;
 
 import java.lang.reflect.InvocationTargetException;
