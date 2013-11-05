@@ -746,6 +746,11 @@ public class Keywords
         return s;
     }
 
+    @RobotKeyword
+    public static String staticMethod() {
+        return "eggs";
+    }
+
     private void privateMethod() {
     }
 
