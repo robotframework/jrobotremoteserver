@@ -4,6 +4,6 @@ public class DuplicateKeywords {
     public void myKeyword() {
     }
 
-    public void my_keyword() {
+    public void my_keyword(String it) {
     }
 }

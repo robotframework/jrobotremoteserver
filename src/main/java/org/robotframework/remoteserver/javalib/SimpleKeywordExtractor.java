@@ -22,41 +22,29 @@ import java.util.Map;
 
 import org.robotframework.javalib.beans.annotation.IKeywordExtractor;
 import org.robotframework.javalib.keyword.Keyword;
-import org.robotframework.javalib.reflection.IKeywordInvoker;
-import org.robotframework.javalib.reflection.KeywordInvoker;
 
 public class SimpleKeywordExtractor implements IKeywordExtractor<Keyword> {
 
+    @SuppressWarnings("unchecked")
     public Map<String, Keyword> extractKeywords(Object keywordBean) {
-	Map<String, Keyword> extractedKeywords = new HashMap<String, Keyword>();
+        Map<String, OverloadableKeyword> overloadableKeywords = new HashMap<String, OverloadableKeyword>();
         Method[] methods = keywordBean.getClass().getMethods();
 
         for (final Method method : methods) {
             if (method.getDeclaringClass() != Object.class && Modifier.isPublic(method.getModifiers())) {
-                Keyword keyword = createKeyword(keywordBean, method);
-                String methodName = method.getName();
-                if (extractedKeywords.containsKey(methodName))
-        	    throw new RuntimeException("Overloaded method with name '" + methodName + "' found!");
-                extractedKeywords.put(method.getName(), keyword);
+                createOrUpdateKeyword(overloadableKeywords, keywordBean, method);
             }
         }
-        return extractedKeywords;
-    }
-    
-    IKeywordInvoker createKeywordInvoker(Object keywordBean, Method method) {
-        return new KeywordInvoker(keywordBean, method);
+        return (Map<String, Keyword>)(Map<String,?>) overloadableKeywords;
     }
 
-    private Keyword createKeyword(Object keywordBean, Method method) {
-        IKeywordInvoker keywordInvoker = createKeywordInvoker(keywordBean, method);
-        return createKeyword(keywordInvoker);
+    private void createOrUpdateKeyword(Map<String, OverloadableKeyword> extractedKeywords, Object keywordBean, Method method) {
+        String name = method.getName();
+        if(extractedKeywords.containsKey(name)){
+            extractedKeywords.get(name).addOverload(method);
+        } else {
+            extractedKeywords.put(name, new OverloadableKeyword(keywordBean, method));
+        }
     }
 
-    private Keyword createKeyword(final IKeywordInvoker keywordInvoker) {
-        return new Keyword() {
-            public Object execute(Object[] arguments) {
-                return keywordInvoker.invoke(arguments);
-            }
-        };
-    }
 }

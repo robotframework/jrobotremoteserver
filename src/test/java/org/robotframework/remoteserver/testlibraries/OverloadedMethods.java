@@ -6,4 +6,12 @@ public class OverloadedMethods {
 
     public void myKeyword(String name) {
     }
+
+    public String numberType(short number) {
+        return "short overload";
+    }
+    public String numberType(int number) {
+        return "int overload";
+    }
+
 }
