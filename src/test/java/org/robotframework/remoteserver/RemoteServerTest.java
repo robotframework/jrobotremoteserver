@@ -11,6 +11,7 @@ import org.robotframework.remoteserver.testlibraries.StaticOne;
 import org.robotframework.remoteserver.testlibraries.StaticTwo;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class RemoteServerTest {
@@ -18,38 +19,35 @@ public class RemoteServerTest {
 
     @Test
     public void allowRemoteStop() throws Exception {
-	server = new RemoteServer();
 	Assert.assertEquals(server.getAllowStop(), true);
 	server.setAllowStop(false);
-	server.addLibrary(StaticOne.class, 8270);
+	server.addLibrary(StaticOne.class, "/");
 	server.start();
-	String result = (String) runKeyword("stop_remote_server", new Object[0]).get("output");
+	String result = (String) runKeyword("/", "stop_remote_server").get("output");
 	Assert.assertEquals(result, "This Robot Framework remote server does not allow stopping\n");
 	server.setAllowStop(true);
-	Thread.sleep(5000);
-	result = (String) runKeyword("stop_remote_server", new Object[0]).get("output");
+	result = (String) runKeyword("/", "stop_remote_server").get("output");
 	Assert.assertEquals(result, "Robot Framework remote server stopping\n");
     }
 
     @Test
     public void serverIsRestartable() throws Exception {
-	server = new RemoteServer();
-	server.addLibrary(StaticOne.class, 8270);
+	server.addLibrary(StaticOne.class, "/1");
 	server.start();
-	String result = (String) runKeyword("getName", new Object[0]).get("return");
+	String result = (String) runKeyword("/1", "getName").get("return");
 	Assert.assertEquals(result, "StaticOne");
 	server.stop();
-	server.addLibrary(StaticTwo.class, 8270);
+	server.addLibrary(StaticTwo.class, "/2");
 	server.start();
-	result = (String) runKeyword("getName", new Object[0]).get("return");
+	result = (String) runKeyword("/2", "getName").get("return");
 	Assert.assertEquals(result, "StaticTwo");
 	server.stop();
     }
 
-    public XmlRpcClient getClient() {
+    public XmlRpcClient getClient(String path) {
 	XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 	try {
-	    config.setServerURL(new URL("http://127.0.0.1:8270/"));
+	    config.setServerURL(new URL("http://127.0.0.1:8270" + path));
 	} catch (MalformedURLException e) {
 	    // ignore
 	}
@@ -58,8 +56,8 @@ public class RemoteServerTest {
 	return client;
     }
 
-    public Map runKeyword(String keywordName, Object[] params) {
-	XmlRpcClient client = getClient();
+    public Map runKeyword(String path, String keywordName, Object... params) {
+	XmlRpcClient client = getClient(path);
 	Map result = null;
 	try {
 	    result = (Map) client.execute("run_keyword", new Object[] { keywordName, params });
@@ -69,13 +67,14 @@ public class RemoteServerTest {
 	return result;
     }
     
-    @AfterMethod
+    @BeforeMethod
     public void setup() throws Exception {
 	server = new RemoteServer();
+	server.setPort(8270);
     }
 
     @AfterMethod
-    public void cleanup() {
+    public void cleanup() throws InterruptedException {
 	try {
 	server.stop();
 	} catch (Throwable t) {

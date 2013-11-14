@@ -32,9 +32,9 @@ BASE = dirname(abspath(__file__))
 
 
 def start(libraries=
-        'org.robotframework.examplelib.FullDynamic:8270,' + \
-        'org.robotframework.examplelib.MinDynamic:8271,' + \
-        'org.robotframework.examplelib.Static:8272' ):
+        'org.robotframework.examplelib.FullDynamic:/FullDynamic,' + \
+        'org.robotframework.examplelib.MinDynamic:/MinDynamic,' + \
+        'org.robotframework.examplelib.Static:/Static' ):
     if not os.path.exists(os.path.join(BASE, 'libs', 'target', 'examplelib-jar-with-dependencies.jar')):
         cmd = 'mvn -f "%s" clean package' % os.path.join(BASE, 'libs', 'pom.xml')
         print 'Building the test libraries with command:\n%s' % cmd
@@ -47,19 +47,19 @@ def start(libraries=
     os.environ['CLASSPATH'] = rs_path + os.pathsep + tl_path
     print 'CLASSPATH: %s' % os.environ['CLASSPATH']
     results = _get_result_directory()
-    args = ['java', 'org.robotframework.remoteserver.RemoteServer']
-    ports = []
+    port = "8270"
+    args = ['java', 'org.robotframework.remoteserver.RemoteServer', '--port', port]
     libraries = [x.strip() for x in libraries.split(',')]
+    paths = [x.partition(':')[2] for x in libraries]
     for lib in libraries:
         args.extend(['--library', lib])
-        ports.append(lib.split(':')[1])
-        print 'adding library %s on port %s' % (lib.split(':')[0], lib.split(':')[1])
+        print 'adding library %s on path %s' % (lib.split(':')[0], lib.split(':')[1])
     with open(join(results, 'server.txt'), 'w') as output:
         server = subprocess.Popen(args,
                                   stdout=output, stderr=subprocess.STDOUT,
                                   env=_get_environ())
-    for port in ports:
-        if not test(port, attempts=15):
+    for path in paths:
+        if not test(port, path, attempts=15):
             server.terminate()
             raise RuntimeError('Starting remote server failed')
 
@@ -76,8 +76,8 @@ def _get_environ():
     return environ
 
 
-def test(port=8270, attempts=1):
-    url = 'http://localhost:%s' % port
+def test(port, path, attempts=1):
+    url = 'http://localhost:%s%s' % (port, path)
     for i in range(int(attempts)):
         if i > 0:
             time.sleep(1)
@@ -89,17 +89,17 @@ def test(port=8270, attempts=1):
             errmsg = err.faultString
             break
         else:
-            print "%s remote server running on port %s" % (ret['return'], port)
+            print "%s remote server running on port %s, path %s" % (ret['return'], port, path)
             return True
-    print "Failed to connect to remote server on port %s: %s" % (port, errmsg)
+    print "Failed to connect to remote server on port %s path %s: %s" % (port, path, errmsg)
     return False
 
 
-def stop(port=8270):
-    if test(port):
-        server = xmlrpclib.ServerProxy('http://localhost:%s' % port)
+def stop(port=8270, path="/"):
+    if test(port, path):
+        server = xmlrpclib.ServerProxy('http://localhost:%s%s' % (port, path))
         server.stop_remote_server()
-        print "Remote server on port %s stopped" % port
+        print "Remote server on port %s path %s stopped" % (port, path)
 
 
 if __name__ == '__main__':

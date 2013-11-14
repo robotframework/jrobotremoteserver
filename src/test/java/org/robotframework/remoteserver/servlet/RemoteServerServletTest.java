@@ -53,7 +53,8 @@ public class RemoteServerServletTest {
     @BeforeClass
     private void startServer() throws Exception {
 	server = new RemoteServer();
-	server.addLibrary(StaticOne.class, 8270);
+	server.setPort(8270);
+	server.addLibrary(StaticOne.class, "/");
 	server.start();
     }
 

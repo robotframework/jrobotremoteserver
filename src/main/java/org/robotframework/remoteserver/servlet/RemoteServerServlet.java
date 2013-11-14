@@ -15,8 +15,7 @@ package org.robotframework.remoteserver.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -43,24 +42,40 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
     private static final long serialVersionUID = -7981676271855172976L;
     private static String page = null;
     private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<HttpServletRequest>();
+    private static final ThreadLocal<RemoteLibrary> currLibrary = new ThreadLocal<RemoteLibrary>();
     private RemoteServer remoteServer;
-    private SortedMap<Integer, RemoteLibrary> libraryMap;
+    private Map<String, RemoteLibrary> libraryMap = new ConcurrentHashMap<String, RemoteLibrary>();
 
-    public RemoteServerServlet(RemoteServer remoteServer, Map<Integer, Class<?>> libraryMap) {
-	this.remoteServer = remoteServer;
-	RemoteLibraryFactory libraryFactory = createLibraryFactory();
-	this.libraryMap = new TreeMap<Integer, RemoteLibrary>();
-	for (Integer port : libraryMap.keySet()) {
-	    Class<?> clazz = libraryMap.get(port);
-	    Object library;
-	    try {
-		library = clazz.newInstance();
-	    } catch (Exception e) {
-		throw new RuntimeException(e);
-	    }
-	    RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
-	    this.libraryMap.put(port, remoteLibrary);
-	}
+    public RemoteServerServlet() {
+    }
+
+    public RemoteServerServlet(RemoteServer remoteServer, Map<String, Class<?>> libraryMap) {
+        for (String path : libraryMap.keySet()) {
+            addLibrary(libraryMap.get(path), path);
+        }
+    }
+
+    public void addLibrary(String className, String path) {
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        addLibrary(clazz, path);
+    }
+
+    public void addLibrary(Class<?> clazz, String path) {
+        checkPath(path);
+        RemoteLibraryFactory libraryFactory = createLibraryFactory();
+        Object library;
+        try {
+            library = clazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
+        this.libraryMap.put(path, remoteLibrary);
     }
 
     @Override
@@ -95,9 +110,19 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
 	 * FIN_WAIT_2 for some time, eventually hitting the limit of open sockets on some Windows systems. adding 
 	 * this header gets Jetty to close the socket.
 	 */
-	if ("HTTP/1.0".equals(req.getProtocol()))
-	    resp.addHeader("Connection", "close");
-	super.doPost(req, resp);
+        String path = req.getServletPath() == null ? "" : req.getServletPath();
+        if (req.getPathInfo() != null) {
+            path += req.getPathInfo();
+        }
+        path = cleanPath(path);
+        if (libraryMap.containsKey(path)) {
+            currLibrary.set(libraryMap.get(path));
+            if ("HTTP/1.0".equals(req.getProtocol()))
+                resp.addHeader("Connection", "close");
+            super.doPost(req, resp);
+        } else {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, String.format("No library mapped to %s", path));
+        }
     }
 
     @Override
@@ -126,12 +151,12 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
 	    sb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
 		    + "<HTML><HEAD><TITLE>jrobotremoteserver</TITLE></HEAD><BODY>"
 		    + "<P>jrobotremoteserver serving:</P>"
-		    + "<TABLE border='1' cellspacing='0' cellpadding='5'><TR><TH>Port</TH><TH>Library</TH></TR>");
-	    for (Integer port : libraryMap.keySet()) {
+		    + "<TABLE border='1' cellspacing='0' cellpadding='5'><TR><TH>Path</TH><TH>Library</TH></TR>");
+	    for (String path : libraryMap.keySet()) {
 		sb.append("<TR><TD>");
-		sb.append(port.toString());
+		sb.append(path.toString());
 		sb.append("</TD><TD>");
-		sb.append(StringEscapeUtils.escapeHtml(libraryMap.get(port).getName()));
+		sb.append(StringEscapeUtils.escapeHtml(libraryMap.get(path).getName()));
 		sb.append("</TD></TR>");
 	    }
 	    sb.append("</TABLE></BODY></HTML>");
@@ -141,7 +166,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
     }
 
     public RemoteLibrary getLibrary() {
-	return libraryMap.get(getRequest().getLocalPort());
+	return currLibrary.get();
     }
 
     protected RemoteLibraryFactory createLibraryFactory() {
@@ -150,5 +175,33 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
 
     public RemoteServer getRemoteServer() {
 	return remoteServer;
+    }
+
+    public void setRemoteServer(RemoteServer server) {
+        remoteServer = server;
+    }
+
+    private static String cleanPath(String path) {
+        path = path == null ? "/" : path;
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        path = path.replaceAll("/+", "/");
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        return path;
+    }
+
+    private static void checkPath(String path) {
+        if (path == null || !path.startsWith("/")) {
+            throw new IllegalPathException(String.format("Path [%s] does not start with a /.", path));
+        } else if (path.contains("//")) {
+            throw new IllegalPathException(String.format("Path [%s] contains repeated forward slashes.", path));
+        } else if (!path.equals("/") && path.endsWith("/")) {
+            throw new IllegalPathException(String.format("Path [%s] ends with a /.", path));
+        } else if (!path.matches("[a-zA-Z0-9-._~/]+")) {
+            throw new IllegalPathException(String.format("Path [%s] ends with a /.", path));
+        }
     }
 }

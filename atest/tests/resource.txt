@@ -1,9 +1,10 @@
 *** Settings ***
-Library          Remote    localhost:${PORT}
+Library          Remote    localhost:${PORT}${PATH}
 Variables        variables.py
 
 *** Variables ***
 ${PORT}              8270
+${PATH}              /
 ${ORIG LOG LEVEL}    INFO
 
 *** Keywords ***

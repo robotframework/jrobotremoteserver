@@ -16,10 +16,10 @@ public class CommandLineHelpertTest {
 
     @Test(alwaysRun = true)
     public void moreThanOneLibrary() {
-	CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "lib1:10", "--library", "lib2:20" });
-	Map<Integer, String> expected = new HashMap<Integer, String>();
-	expected.put(10, "lib1");
-	expected.put(20, "lib2");
+	CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "lib1:/one", "--library", "lib2:/two" });
+	Map<String, String> expected = new HashMap<String, String>();
+	expected.put("/one", "lib1");
+	expected.put("/two", "lib2");
 	Assert.assertEquals(clh.getLibraryMap(), expected);
     }
 
@@ -33,17 +33,15 @@ public class CommandLineHelpertTest {
 
     @Test(alwaysRun = true)
     public void badValues() {
-	CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "lib" });
-	Assert.assertEquals(clh.getError(), "Value for library must be in the format classname:port");
-	clh = new CommandLineHelper(new String[] { "--library", "lib:-5" });
+	CommandLineHelper clh = new CommandLineHelper(new String[] { "--port", "blah" });
 	Assert.assertEquals(clh.getError(), "Port must be 1-65535");
 	clh = new CommandLineHelper(new String[] { "--allowstop", "yes" });
 	Assert.assertEquals(clh.getError(), "Value for option allowstop must be true or false");
     }
 
     @Test(alwaysRun = true)
-    public void samePort() {
-	CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "lib1:8080", "--library", "lib2:8080" });
-	Assert.assertEquals(clh.getError(), "Cannot serve more than one library from the same port");
+    public void samePath() {
+	CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "lib1", "--library", "lib2" });
+	Assert.assertEquals(clh.getError(), "Duplicate path [/]");
     }
 }
