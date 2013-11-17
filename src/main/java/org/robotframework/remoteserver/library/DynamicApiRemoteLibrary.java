@@ -23,54 +23,64 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
     private Method getKeywordArguments;
     private Method getKeywordDocumentation;
 
-    protected DynamicApiRemoteLibrary(Object library, Method getKeywordNames, Method runKeyword, Method getKeywordArguments,
-	    Method getKeywordDocumentation) {
-	this.library = library;
-	this.getKeywordNames = getKeywordNames;
-	this.runKeyword = runKeyword;
-	this.getKeywordArguments = getKeywordArguments;
-	this.getKeywordDocumentation = getKeywordDocumentation;
+    protected DynamicApiRemoteLibrary(Object library, Method getKeywordNames, Method runKeyword,
+            Method getKeywordArguments, Method getKeywordDocumentation) {
+        this.library = library;
+        this.getKeywordNames = getKeywordNames;
+        this.runKeyword = runKeyword;
+        this.getKeywordArguments = getKeywordArguments;
+        this.getKeywordDocumentation = getKeywordDocumentation;
     }
 
+    @Override
     public String[] getKeywordNames() {
-	try {
-	    return (String[]) getKeywordNames.invoke(library, new Object[] {});
-	} catch (Exception e) {
-	    throw new RuntimeException(e.getMessage(), e);
-	}
+        try {
+            return (String[]) getKeywordNames.invoke(library, new Object[] {});
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
+    @Override
     public Object runKeyword(String keyword, Object[] args) {
-	try {
-	    return runKeyword.invoke(library, keyword, args);
-	} catch (Exception e) {
-	    if (e.getClass().equals(java.lang.reflect.InvocationTargetException.class))
-		throw new RuntimeException(e.getCause().getMessage(), e.getCause());
-	    throw new RuntimeException(e.getMessage(), e);
-	}
+        try {
+            return runKeyword.invoke(library, keyword, args);
+        } catch (Exception e) {
+            if (e.getClass().equals(java.lang.reflect.InvocationTargetException.class))
+                throw new RuntimeException(e.getCause().getMessage(), e.getCause());
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
+    @Override
     public String[] getKeywordArguments(String keyword) {
-	if (getKeywordArguments == null)
-	    return new String[] { "*args" };
-	try {
-	    return (String[]) getKeywordArguments.invoke(library, keyword);
-	} catch (Exception e) {
-	    throw new RuntimeException(e.getMessage(), e);
-	}
+        if (getKeywordArguments == null)
+            return new String[] { "*args" };
+        try {
+            return (String[]) getKeywordArguments.invoke(library, keyword);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
+    @Override
     public String getKeywordDocumentation(String keyword) {
-	if (getKeywordDocumentation == null)
-	    return "";
-	try {
-	    return (String) getKeywordDocumentation.invoke(library, keyword);
-	} catch (Exception e) {
-	    throw new RuntimeException(e.getMessage(), e);
-	}
+        if (getKeywordDocumentation == null)
+            return "";
+        try {
+            return (String) getKeywordDocumentation.invoke(library, keyword);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
+    @Override
     public String getName() {
-	return library.getClass().getName();
+        return library.getClass().getName();
+    }
+
+    @Override
+    public Object getImplementation() {
+        return library;
     }
 }
