@@ -27,13 +27,19 @@ import org.robotframework.remoteserver.logging.Jetty2Log4J;
 import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 
 /**
- * Remote server for Robot Framework implemented in Java. Takes one or more test libraries and exposes their methods via
- * XML-RPC using an embedded web server.
+ * Remote server for Robot Framework implemented in Java. Takes one or more test
+ * libraries and exposes their methods via XML-RPC using an embedded web server.
  * 
- * @see <a href="https://github.com/ombre42/jrobotremoteserver/wiki">jrobotremoteserver wiki</a>
- * @see <a href="http://code.google.com/p/robotframework/wiki/RemoteLibrary">Remote Library wiki page</a>
- * @see <a href="http://code.google.com/p/robotframework/wiki/UserGuide">User Guide for Robot Framework</a>
- * @see <a href="http://xmlrpc.scripting.com/spec.html">XML-RPC Specification</a>
+ * @see <a
+ *      href="https://github.com/ombre42/jrobotremoteserver/wiki">jrobotremoteserver
+ *      wiki</a>
+ * @see <a
+ *      href="http://code.google.com/p/robotframework/wiki/RemoteLibrary">Remote
+ *      Library wiki page</a>
+ * @see <a href="http://code.google.com/p/robotframework/wiki/UserGuide">User
+ *      Guide for Robot Framework</a>
+ * @see <a href="http://xmlrpc.scripting.com/spec.html">XML-RPC
+ *      Specification</a>
  */
 public class RemoteServer {
     private static Log log = LogFactory.getLog(RemoteServer.class);
@@ -43,11 +49,21 @@ public class RemoteServer {
     private boolean allowStop = true;
     private String host = null;
 
+    /**
+     * When using port 0 (ephemeral), use this to get the port selected after
+     * the server is started.
+     * 
+     * @return the port set with {@link #setPort(int)} or chosen by the server
+     */
     public Integer getPort() {
         return port;
     }
 
-    public void setPort(Integer port) {
+    /**
+     * @param port
+     *            the port to bind to. defaults to 0 for ephemeral.
+     */
+    public void setPort(int port) {
         this.port = port;
     }
 
@@ -55,7 +71,7 @@ public class RemoteServer {
      * @return whether this server allows remote stopping
      */
     public boolean getAllowStop() {
-            return allowStop;
+        return allowStop;
     }
 
     /**
@@ -63,23 +79,24 @@ public class RemoteServer {
      *            whether to allow stopping the server remotely
      */
     public void setAllowStop(boolean allowed) {
-            allowStop = allowed;
+        allowStop = allowed;
     }
 
     /**
      * @return the hostname set with {@link #setHost(String)}
      */
     public String getHost() {
-            return host;
+        return host;
     }
 
     /**
-     * Set the hostname of the interface to bind to. Usually not needed and determined automatically. For exotic network
-     * configuration, network with VPN, specifying the host might be necessary.
+     * Set the hostname of the interface to bind to. Usually not needed and
+     * determined automatically. For exotic network configuration, network with
+     * VPN, specifying the host might be necessary.
      * 
      * @param hostName
-     *            the hostname or address representing the interface to which all connectors will bind, or null for all
-     *            interfaces.
+     *            the hostname or address representing the interface to which
+     *            all connectors will bind, or null for all interfaces.
      */
     public void setHost(String hostName) {
         host = hostName;
@@ -107,12 +124,19 @@ public class RemoteServer {
     }
 
     /**
-     * Map the given test library to the specified path. The server must be stopped when calling this.
+     * Map the given test library to the specified path.
      * 
      * @param className
      *            class name of the test library
      * @param path
-     *            path to map the test library to
+     *            path to map the test library to. path must:
+     *            <ul>
+     *            <li>start with a /</li>
+     *            <li>contain only alphanumeric characters or any of these: / -
+     *            . _ ~</li>
+     *            <li>not end in a /</li>
+     *            <li>not contain a repeating sequence of /s</li>
+     *            </ul>
      */
     public void addLibrary(String className, String path) {
         servlet.addLibrary(className, path);
@@ -120,7 +144,7 @@ public class RemoteServer {
     }
 
     /**
-     * Map the given test library to the specified path. The server must be stopped when calling this.
+     * Map the given test library to the specified path.
      * 
      * @param clazz
      *            class of the test library
@@ -133,15 +157,16 @@ public class RemoteServer {
     }
 
     /**
-     * A non-blocking method for stopping the remote server that allows requests to complete within the given timeout
-     * before shutting down the server. This method exists to allow stopping the server remotely. New connections will
-     * not be accepted after calling this.
+     * A non-blocking method for stopping the remote server that allows requests
+     * to complete within the given timeout before shutting down the server.
+     * This method exists to allow stopping the server remotely. New connections
+     * will not be accepted after calling this.
      * 
      * @param timeoutMS
-     *            the milliseconds to wait for existing request to complete before stopping the server
+     *            the milliseconds to wait for existing request to complete
+     *            before stopping the server
      */
-    public void stop(int timeoutMS) throws Exception
-    {
+    public void stop(int timeoutMS) throws Exception {
         log.info("Robot Framework remote server stopping");
         if (timeoutMS > 0) {
             server.setGracefulShutdown(timeoutMS);
@@ -150,8 +175,7 @@ public class RemoteServer {
                 public void run() {
                     try {
                         server.stop();
-                    }
-                    catch (Throwable e) {
+                    } catch (Throwable e) {
                         log.error(String.format("Failed to stop the server: %s", e.getMessage()), e);
                     }
                 }
@@ -182,7 +206,7 @@ public class RemoteServer {
         connector.setPort(port);
         connector.setHost(host);
         connector.setName("jrobotremotesever");
-        server.setConnectors(new Connector[] {connector});
+        server.setConnectors(new Connector[] { connector });
         ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
         servletContextHandler.addServlet(new ServletHolder(servlet), "/");
         log.info("Robot Framework remote server starting");
@@ -191,16 +215,19 @@ public class RemoteServer {
     }
 
     /**
-     * Configures logging systems used by <tt>RemoteServer</tt> and its dependencies. Specifically,
+     * Configures logging systems used by <tt>RemoteServer</tt> and its
+     * dependencies. Specifically,
      * <ul>
      * <li>Configure Log4J to log to the console</li>
      * <li>Set Log4J's log level to INFO</li>
      * <li>Redirect the Jetty's logging to Log4J</li>
      * <li>Set Jakarta Commons Logging to log to Log4J</li>
      * </ul>
-     * This is convenient if you do not want to configure the logging yourself. This will only affect future instances
-     * of {@link org.eclipse.jetty.util.log.Logger} and {@link org.apache.commons.logging.Log}, so this should be called
-     * as early as possible.
+     * This is convenient if you do not want to configure the logging yourself.
+     * This will only affect future instances of
+     * {@link org.eclipse.jetty.util.log.Logger} and
+     * {@link org.apache.commons.logging.Log}, so this should be called as early
+     * as possible.
      */
     public static void configureLogging() {
         Logger root = Logger.getRootLogger();
@@ -210,7 +237,7 @@ public class RemoteServer {
         org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4J());
         LogFactory.releaseAll();
         LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
-        	"org.apache.commons.logging.impl.Log4JLogger");
+                "org.apache.commons.logging.impl.Log4JLogger");
         log = LogFactory.getLog(RemoteServer.class);
     }
 
