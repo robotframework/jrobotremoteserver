@@ -117,7 +117,7 @@ public class RemoteServer {
         RemoteServer remoteServer = new RemoteServer();
         remoteServer.setPort(helper.getPort());
         for (String path : helper.getLibraryMap().keySet())
-            remoteServer.addLibrary(helper.getLibraryMap().get(path), path);
+            remoteServer.putLibrary(path, helper.getLibraryMap().get(path));
         remoteServer.setAllowStop(helper.getAllowStop());
         remoteServer.setHost(helper.getHost());
         remoteServer.start();
@@ -138,8 +138,8 @@ public class RemoteServer {
      *            <li>not contain a repeating sequence of /s</li>
      *            </ul>
      */
-    public void addLibrary(String className, String path) {
-        servlet.addLibrary(className, path);
+    public void putLibrary(String path, String className) {
+        servlet.putLibrary(path, className);
         log.info(String.format("Added library %s", className));
     }
 
@@ -151,8 +151,8 @@ public class RemoteServer {
      * @param path
      *            path to map the test library to
      */
-    public void addLibrary(Class<?> clazz, String path) {
-        servlet.addLibrary(clazz, path);
+    public void putLibrary(String path, Class<?> clazz) {
+        servlet.putLibrary(path, clazz);
         log.info(String.format("Added library %s", clazz.getName()));
     }
 

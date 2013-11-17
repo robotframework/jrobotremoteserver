@@ -17,51 +17,51 @@ public class RemoteServerServletTest {
 
     @Test
     public void serverClosesHttp10Connections() throws Exception {
-	Socket s = new Socket((String)null, 8270);
+        Socket s = new Socket((String) null, 8270);
 
-	PrintWriter writer = new PrintWriter(s.getOutputStream ());
-	BufferedReader reader = new BufferedReader (new InputStreamReader(s.getInputStream ()));
+        PrintWriter writer = new PrintWriter(s.getOutputStream());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
-	String head = "POST / HTTP/1.0\r\nUser-Agent: test\r\nHost: localhost\r\nContent-Type: text/xml\r\nContent-length: ";
-	writer.print(head);
-	writer.print(Integer.toString(body.length()));
-	writer.print("\r\n\r\n");
-	writer.print(body);
-	writer.flush();
+        String head = "POST / HTTP/1.0\r\nUser-Agent: test\r\nHost: localhost\r\nContent-Type: text/xml\r\nContent-length: ";
+        writer.print(head);
+        writer.print(Integer.toString(body.length()));
+        writer.print("\r\n\r\n");
+        writer.print(body);
+        writer.flush();
 
-	StringBuilder output = new StringBuilder();
-	String inputLine;
-	while ((inputLine = reader.readLine()) != null) 
-	    output.append(inputLine + "\n");
-	Assert.assertTrue(output.toString().contains("stop_remote_server"));
+        StringBuilder output = new StringBuilder();
+        String inputLine;
+        while ((inputLine = reader.readLine()) != null)
+            output.append(inputLine + "\n");
+        Assert.assertTrue(output.toString().contains("stop_remote_server"));
         boolean closed = false;
         try { // should fail on first write when in CLOSE_WAIT but doesn't
-	    for(int i=0; i<100; i++) {
-	        s.getOutputStream().write(5);
-	        s.getOutputStream().flush();
-	    }
-	} catch (SocketException e) {
-	    closed = true;
-	}
+            for (int i = 0; i < 100; i++) {
+                s.getOutputStream().write(5);
+                s.getOutputStream().flush();
+            }
+        } catch (SocketException e) {
+            closed = true;
+        }
         Assert.assertTrue(closed);
-	reader.close();
-	writer.close();
-	s.close();
+        reader.close();
+        writer.close();
+        s.close();
     }
 
     @SuppressWarnings("unused")
     @BeforeClass
     private void startServer() throws Exception {
-	server = new RemoteServer();
-	server.setPort(8270);
-	server.addLibrary(StaticOne.class, "/");
-	server.start();
+        server = new RemoteServer();
+        server.setPort(8270);
+        server.putLibrary("/", StaticOne.class);
+        server.start();
     }
 
     @SuppressWarnings("unused")
     @AfterClass
     private void stopServer() throws Exception {
-	server.stop();
+        server.stop();
     }
 
     private RemoteServer server;
