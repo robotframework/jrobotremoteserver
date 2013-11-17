@@ -36,11 +36,10 @@ import org.robotframework.remoteserver.xmlrpc.ReflectiveHandlerMapping;
 import org.robotframework.remoteserver.xmlrpc.TypeFactory;
 
 /**
- * This servlet uses the same instance of a test library to process all requests on a given port
+ * This servlet uses the same instance of a test library to process all requests
  */
 public class RemoteServerServlet extends XmlRpcServlet implements Context {
     private static final long serialVersionUID = -7981676271855172976L;
-    private static String page = null;
     private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<HttpServletRequest>();
     private static final ThreadLocal<RemoteLibrary> currLibrary = new ThreadLocal<RemoteLibrary>();
     private RemoteServer remoteServer;
@@ -80,36 +79,38 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
 
     @Override
     protected XmlRpcServletServer newXmlRpcServer(ServletConfig pConfig) throws XmlRpcException {
-	XmlRpcServletServer server = new XmlRpcServletServer();
-	server.setTypeFactory(new TypeFactory(this.getXmlRpcServletServer()));
-	return server;
+        XmlRpcServletServer server = new XmlRpcServletServer();
+        server.setTypeFactory(new TypeFactory(this.getXmlRpcServletServer()));
+        return server;
     }
 
     @Override
     protected XmlRpcHandlerMapping newXmlRpcHandlerMapping() throws XmlRpcException {
-	ReflectiveHandlerMapping map = new ReflectiveHandlerMapping();
-	map.setRequestProcessorFactoryFactory(new RemoteServerRequestProcessorFactoryFactory(this));
-	map.addHandler("keywords", ServerMethods.class);
-	map.removePrefixes();
-	return map;
+        ReflectiveHandlerMapping map = new ReflectiveHandlerMapping();
+        map.setRequestProcessorFactoryFactory(new RemoteServerRequestProcessorFactoryFactory(this));
+        map.addHandler("keywords", ServerMethods.class);
+        map.removePrefixes();
+        return map;
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	request.set(req);
-	try {
-	    super.service(req, resp);
-	} finally {
-	    request.remove();
-	}
+        request.set(req);
+        try {
+            super.service(req, resp);
+        } finally {
+            request.remove();
+        }
     }
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	/* when the client is Jython 2.5.x (old xmlrpclib using HTTP/1.0), the server's sockets got stuck in 
-	 * FIN_WAIT_2 for some time, eventually hitting the limit of open sockets on some Windows systems. adding 
-	 * this header gets Jetty to close the socket.
-	 */
+        /*
+         * when the client is Jython 2.5.x (old xmlrpclib using HTTP/1.0), the
+         * server's sockets got stuck in FIN_WAIT_2 for some time, eventually
+         * hitting the limit of open sockets on some Windows systems. adding
+         * this header gets Jetty to close the socket.
+         */
         String path = req.getServletPath() == null ? "" : req.getServletPath();
         if (req.getPathInfo() != null) {
             path += req.getPathInfo();
@@ -127,54 +128,54 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-	resp.setContentType("text/html");
-	String body = getPage();
-	resp.setContentLength(body.length());
-	PrintWriter out = resp.getWriter();
-	out.print(body);
+        resp.setContentType("text/html");
+        String body = getPage();
+        resp.setContentLength(body.length());
+        PrintWriter out = resp.getWriter();
+        out.print(body);
     }
 
     /**
-     * The request is shared so that more context, such as the client address, can be obtained
+     * The request is shared so that more context, such as the client address,
+     * can be obtained
      * 
-     * @return {@link HttpServletRequest} object that contains the request the client has made of the servlet
+     * @return {@link HttpServletRequest} object that contains the request the
+     *         client has made of the servlet
      */
     public static HttpServletRequest getRequest() {
-	return request.get();
+        return request.get();
     }
 
-    protected String getPage() {
-	if (page != null)
-	    return page;
-	else {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
-		    + "<HTML><HEAD><TITLE>jrobotremoteserver</TITLE></HEAD><BODY>"
-		    + "<P>jrobotremoteserver serving:</P>"
-		    + "<TABLE border='1' cellspacing='0' cellpadding='5'><TR><TH>Path</TH><TH>Library</TH></TR>");
-	    for (String path : libraryMap.keySet()) {
-		sb.append("<TR><TD>");
-		sb.append(path.toString());
-		sb.append("</TD><TD>");
-		sb.append(StringEscapeUtils.escapeHtml(libraryMap.get(path).getName()));
-		sb.append("</TD></TR>");
-	    }
-	    sb.append("</TABLE></BODY></HTML>");
-	    page = sb.toString();
-	    return page;
-	}
+    private String getPage() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
+                + "<HTML><HEAD><TITLE>jrobotremoteserver</TITLE></HEAD><BODY>" + "<P>jrobotremoteserver serving:</P>"
+                + "<TABLE border='1' cellspacing='0' cellpadding='5'><TR><TH>Path</TH><TH>Library</TH></TR>");
+        if (libraryMap.isEmpty()) {
+            sb.append("<TR><TD COLSPAN=\"2\">No libraries mapped</TD></TR>");
+        } else {
+            for (String path : libraryMap.keySet()) {
+                sb.append("<TR><TD>");
+                sb.append(path.toString());
+                sb.append("</TD><TD>");
+                sb.append(StringEscapeUtils.escapeHtml(libraryMap.get(path).getName()));
+                sb.append("</TD></TR>");
+            }
+        }
+        sb.append("</TABLE></BODY></HTML>");
+        return sb.toString();
     }
 
     public RemoteLibrary getLibrary() {
-	return currLibrary.get();
+        return currLibrary.get();
     }
 
     protected RemoteLibraryFactory createLibraryFactory() {
-	return new DefaultRemoteLibraryFactory();
+        return new DefaultRemoteLibraryFactory();
     }
 
     public RemoteServer getRemoteServer() {
-	return remoteServer;
+        return remoteServer;
     }
 
     public void setRemoteServer(RemoteServer server) {
