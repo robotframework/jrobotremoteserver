@@ -43,28 +43,34 @@ import org.robotframework.remoteserver.servlet.RemoteServerServlet;
  */
 public class RemoteServer {
     private static Log log = LogFactory.getLog(RemoteServer.class);
-    private Server server = new Server();
+    protected Server server = new Server();
     private RemoteServerServlet servlet = new RemoteServerServlet();
-    private int port = 0;
+    private SelectChannelConnector connector = new SelectChannelConnector();
     private boolean allowStop = true;
-    private String host = null;
+
+    public RemoteServer() {
+        connector.setName("jrobotremoteserver");
+        server.setConnectors(new Connector[] { connector });
+        servlet.setRemoteServer(this);
+        ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
+        servletContextHandler.addServlet(new ServletHolder(servlet), "/");
+    }
 
     /**
-     * When using port 0 (ephemeral), use this to get the port selected after
-     * the server is started.
-     * 
-     * @return the port set with {@link #setPort(int)} or chosen by the server
+     * @return The actual port the server's connector is listening on or -1 if
+     *         it has not been opened, or -2 if it has been closed.
      */
-    public Integer getPort() {
-        return port;
+    public Integer getLocalPort() {
+        return connector.getLocalPort();
     }
 
     /**
      * @param port
-     *            the port to bind to. defaults to 0 for ephemeral.
+     *            The port to listen of for connections or 0 if any available
+     *            port may be used. Defaults to 0.
      */
     public void setPort(int port) {
-        this.port = port;
+        connector.setPort(port);
     }
 
     /**
@@ -86,7 +92,7 @@ public class RemoteServer {
      * @return the hostname set with {@link #setHost(String)}
      */
     public String getHost() {
-        return host;
+        return connector.getHost();
     }
 
     /**
@@ -99,7 +105,7 @@ public class RemoteServer {
      *            all connectors will bind, or null for all interfaces.
      */
     public void setHost(String hostName) {
-        host = hostName;
+        connector.setHost(hostName);
     }
 
     public static void main(String[] args) throws Exception {
@@ -153,7 +159,7 @@ public class RemoteServer {
      */
     public void putLibrary(String path, Class<?> clazz) {
         servlet.putLibrary(path, clazz);
-        log.info(String.format("Added library %s", clazz.getName()));
+        log.info(String.format("Mapped path %s to library %s.", path, clazz.getName()));
     }
 
     /**
@@ -201,17 +207,9 @@ public class RemoteServer {
      * @throws Exception
      */
     public void start() throws Exception {
-        servlet.setRemoteServer(this);
-        SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(port);
-        connector.setHost(host);
-        connector.setName("jrobotremotesever");
-        server.setConnectors(new Connector[] { connector });
-        ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
-        servletContextHandler.addServlet(new ServletHolder(servlet), "/");
         log.info("Robot Framework remote server starting");
         server.start();
-        log.info("jrobotremoteserver started on port " + Integer.toString(server.getConnectors()[0].getPort()) + ".");
+        log.info(String.format("Robot Framework remote server started on port %d.", getLocalPort()));
     }
 
     /**

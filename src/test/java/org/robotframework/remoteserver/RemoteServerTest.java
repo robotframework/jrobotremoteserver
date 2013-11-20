@@ -44,10 +44,35 @@ public class RemoteServerTest {
         server.stop();
     }
 
+    @Test
+    public void putLibrariesAfterStarting() throws Exception {
+        server.start();
+        server.putLibrary("/1", StaticOne.class);
+        String result = (String) runKeyword("/1", "getName").get("return");
+        Assert.assertEquals(result, "StaticOne");
+    }
+
+    @Test
+    public void ephemeralPort() throws Exception {
+        RemoteServer server = new RemoteServer();
+        Assert.assertEquals(server.getLocalPort(), new Integer(-1));
+        server.putLibrary("/", StaticOne.class);
+        server.start();
+        int port = server.getLocalPort();
+        String result = (String) runKeyword(port, "/", "getName").get("return");
+        Assert.assertEquals(result, "StaticOne");
+        server.stop();
+        Assert.assertEquals(server.getLocalPort(), new Integer(-2));
+    }
+
     public XmlRpcClient getClient(String path) {
+        return getClient(path, 8270);
+    }
+
+    public XmlRpcClient getClient(String path, int port) {
         XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
         try {
-            config.setServerURL(new URL("http://127.0.0.1:8270" + path));
+            config.setServerURL(new URL("http://127.0.0.1:" + Integer.toString(port) + path));
         } catch (MalformedURLException e) {
             // ignore
         }
@@ -57,7 +82,11 @@ public class RemoteServerTest {
     }
 
     public Map runKeyword(String path, String keywordName, Object... params) {
-        XmlRpcClient client = getClient(path);
+        return runKeyword(8270, path, keywordName, params);
+    }
+
+    public Map runKeyword(int port, String path, String keywordName, Object... params) {
+        XmlRpcClient client = getClient(path, port);
         Map result = null;
         try {
             result = (Map) client.execute("run_keyword", new Object[] { keywordName, params });
