@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletConfig;
@@ -146,18 +147,19 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
     }
 
     private String getPage() {
+        Map<String, RemoteLibrary> map = new TreeMap<String, RemoteLibrary>(getLibraryMap());
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
                 + "<HTML><HEAD><TITLE>jrobotremoteserver</TITLE></HEAD><BODY>" + "<P>jrobotremoteserver serving:</P>"
                 + "<TABLE border='1' cellspacing='0' cellpadding='5'><TR><TH>Path</TH><TH>Library</TH></TR>");
-        if (libraryMap.isEmpty()) {
+        if (map.isEmpty()) {
             sb.append("<TR><TD COLSPAN=\"2\">No libraries mapped</TD></TR>");
         } else {
-            for (String path : libraryMap.keySet()) {
+            for (String path : map.keySet()) {
                 sb.append("<TR><TD>");
                 sb.append(path.toString());
                 sb.append("</TD><TD>");
-                sb.append(StringEscapeUtils.escapeHtml(libraryMap.get(path).getName()));
+                sb.append(StringEscapeUtils.escapeHtml(map.get(path).getName()));
                 sb.append("</TD></TR>");
             }
         }
