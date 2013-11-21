@@ -14,6 +14,7 @@ package org.robotframework.remoteserver.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,6 +66,14 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         }
         RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
         this.libraryMap.put(path, remoteLibrary);
+    }
+
+    /**
+     * @return a copy of the current library map. Keys are the paths and the
+     *         values are wrappers of the libraries being served.
+     */
+    public Map<String, RemoteLibrary> getLibraryMap() {
+        return new HashMap<String, RemoteLibrary>(libraryMap);
     }
 
     @Override

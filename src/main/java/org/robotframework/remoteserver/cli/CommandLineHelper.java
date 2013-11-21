@@ -26,6 +26,7 @@ public class CommandLineHelper {
     private String[] args;
     private int idx = 0;
     private int port = 0;
+    private boolean usedOldLibraryOption = false;
 
     public boolean getAllowStop() {
         return allowStop;
@@ -61,7 +62,9 @@ public class CommandLineHelper {
                 "    -p --port port                port to bind to, defaults to 0 (ephemeral)\n" + //
                 "    -a --allowstop true|false     whether to allow remote stop\n" + //
                 "    -H --host hostname            hostname of the interface to bind to\n" + //
-                "    -h -? --help                  print this help message\n\n";
+                "    -h -? --help                  print this help message\n\n" + //
+                " For backwards compatibility, one library can be added using the form\n" + //
+                "   --library classname:port\n";
     }
 
     public CommandLineHelper(String[] clargs) {
@@ -70,22 +73,18 @@ public class CommandLineHelper {
             while (idx < args.length) {
                 if (args[idx].equals("-l") || args[idx].equals("--library")) {
                     String[] parts = getValue("library").split(":", 2);
+                    String className = parts[0];
                     String path = "/";
                     if (parts.length == 2) {
                         path = parts[1];
                     }
-                    if (libraryMap.containsKey(path))
-                        throw new RuntimeException(String.format("Duplicate path [%s]", path));
-                    putLibrary(path, parts[0]);
+                    if (path.equals("") || path.matches("\\s+")) {
+                        throw new RuntimeException("Missing path for library " + className);
+                    }
+                    putLibrary(path, className);
                 } else if (args[idx].equals("-p") || args[idx].equals("--port")) {
                     String portString = getValue("port");
-                    try {
-                        port = Integer.valueOf(portString.trim());
-                        if (port < 1 || port > 65535)
-                            throw new Exception();
-                    } catch (Exception e) {
-                        throw new RuntimeException("Port must be 1-65535");
-                    }
+                    setPort(portString);
                 } else if (args[idx].equals("-H") || args[idx].equals("--host")) {
                     host = getValue("host");
                 } else if (args[idx].equals("-a") || args[idx].equals("--allowstop")) {
@@ -119,6 +118,11 @@ public class CommandLineHelper {
 
     private void putLibrary(String path, String className) {
         className = className.trim();
+        if (path.matches("\\d+")) {
+            setPort(path);
+            usedOldLibraryOption = true;
+            path = "/";
+        }
         Class<?> clazz;
         try {
             clazz = Class.forName(className);
@@ -128,6 +132,22 @@ public class CommandLineHelper {
         if (libraryMap.containsKey(path))
             throw new RuntimeException(String.format("Duplicate path [%s]", path));
         libraryMap.put(path, clazz);
+    }
+
+    private void setPort(String portString) {
+        if (usedOldLibraryOption) {
+            throw new RuntimeException(
+                    "Cannot use the port option or use multiple libraries when specifying libraries in the form classname:port");
+        }
+        int port;
+        try {
+            port = Integer.valueOf(portString.trim());
+            if (port < 1 || port > 65535)
+                throw new Exception();
+        } catch (Exception e) {
+            throw new RuntimeException("Port must be 1-65535");
+        }
+        this.port = port;
     }
 
 }

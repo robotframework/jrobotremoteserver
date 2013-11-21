@@ -25,6 +25,14 @@ public class CommandLineHelpertTest {
     }
 
     @Test
+    public void setPort() {
+        CommandLineHelper clh = new CommandLineHelper(new String[] { "--library", "java.lang.String:/one", "--port",
+                "4444" });
+        Assert.assertEquals(clh.getError(), null);
+        Assert.assertEquals(clh.getPort(), 4444);
+    }
+
+    @Test
     public void missingValues() {
         CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:5", "--host" });
         Assert.assertEquals(clh.getError(), "Missing value for option host");
@@ -41,10 +49,27 @@ public class CommandLineHelpertTest {
     }
 
     @Test
+    public void defaultPath() {
+        CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String" });
+        Assert.assertEquals(clh.getError(), null);
+        Map<String, Class<?>> expected = new HashMap<String, Class<?>>();
+        expected.put("/", String.class);
+        Assert.assertEquals(clh.getLibraryMap(), expected);
+    }
+
+    @Test
     public void samePath() {
-        CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String", "--library",
-                "java.lang.Object" });
-        Assert.assertEquals(clh.getError(), "Duplicate path [/]");
+        CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:/5", "--library",
+                "java.lang.Object:/5" });
+        Assert.assertEquals(clh.getError(), "Duplicate path [/5]");
+    }
+
+    @Test
+    public void missingPath() {
+        CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:" });
+        Assert.assertEquals(clh.getError(), "Missing path for library java.lang.String");
+        clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:   " });
+        Assert.assertEquals(clh.getError(), "Missing path for library java.lang.String");
     }
 
     @Test
@@ -52,6 +77,32 @@ public class CommandLineHelpertTest {
         CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "BadClassName" });
         Assert.assertEquals(clh.getError(),
                 "Failed to load class with name BadClassName: java.lang.ClassNotFoundException: BadClassName");
+    }
+
+    @Test
+    public void libraryWithPort() {
+        CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:8270" });
+        Assert.assertEquals(clh.getError(), null);
+        Map<String, Class<?>> expected = new HashMap<String, Class<?>>();
+        expected.put("/", String.class);
+        Assert.assertEquals(clh.getLibraryMap(), expected);
+        Assert.assertEquals(clh.getPort(), 8270);
+    }
+
+    @Test
+    public void multipleLibrariesWithPort() {
+        CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:8270", "-l",
+                "java.lang.String:8271" });
+        Assert.assertEquals(clh.getError(),
+                "Cannot use the port option or use multiple libraries when specifying libraries in the form classname:port");
+    }
+
+    @Test
+    public void setPortAndLibraryWithPort() {
+        CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:8270", "-p",
+                "8270" });
+        Assert.assertEquals(clh.getError(),
+                "Cannot use the port option or use multiple libraries when specifying libraries in the form classname:port");
     }
 
 }

@@ -66,7 +66,7 @@ public class RemoteServer {
 
     /**
      * @param port
-     *            The port to listen of for connections or 0 if any available
+     *            The port to listen on for connections or 0 if any available
      *            port may be used. Defaults to 0.
      */
     public void setPort(int port) {
@@ -140,6 +140,56 @@ public class RemoteServer {
     public void putLibrary(String path, Class<?> clazz) {
         servlet.putLibrary(path, clazz);
         log.info(String.format("Mapped path %s to library %s.", path, clazz.getName()));
+    }
+
+    /**
+     * This has been deprecated. Please use {@link #putLibrary} and
+     * {@link #setPort} instead.
+     * 
+     * Map the given test library to / and sets the port for the server. The
+     * server must be stopped when calling this.
+     * 
+     * @param className
+     *            class name of the test library
+     * @param port
+     *            port for the server to listen on
+     */
+    @Deprecated
+    public void addLibrary(String className, int port) {
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        addLibrary(clazz, port);
+    }
+
+    /**
+     * This has been deprecated. Please use {@link #putLibrary} and
+     * {@link #setPort} instead.
+     * 
+     * Map the given test library to / and sets the port for the server. The
+     * server must be stopped when calling this.
+     * 
+     * @param clazz
+     *            class of the test library
+     * @param port
+     *            port for the server to listen on
+     */
+    @Deprecated
+    public void addLibrary(Class<?> clazz, int port) {
+        if (!server.isStopped()) // old behavior
+            throw new IllegalStateException("Cannot add a library once the server is started");
+        if (connector.getPort() != 0 && connector.getPort() != port) {
+            throw new RuntimeException(
+                    "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
+        }
+        if (servlet.getLibraryMap().keySet().contains("/")) {
+            throw new RuntimeException("A library has already been mapped to /.");
+        }
+        setPort(port);
+        putLibrary("/", clazz);
     }
 
     /**
