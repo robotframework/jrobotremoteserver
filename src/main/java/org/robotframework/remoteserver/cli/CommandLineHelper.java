@@ -16,11 +16,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.robotframework.remoteserver.servlet.RemoteServerServlet;
-
 public class CommandLineHelper {
 
-    private Map<String, String> libraryMap = new HashMap<String, String>();
+    private Map<String, Class<?>> libraryMap = new HashMap<String, Class<?>>();
     private boolean allowStop = true;
     private String host = null;
     private String error = null;
@@ -41,7 +39,7 @@ public class CommandLineHelper {
         return port;
     }
 
-    public Map<String, String> getLibraryMap() {
+    public Map<String, Class<?>> getLibraryMap() {
         return libraryMap;
     }
 
@@ -54,10 +52,12 @@ public class CommandLineHelper {
     }
 
     public String getUsage() {
-        return "Usage:  org.robotframework.remoteserver.RemoteServer options\n\n" + //
+        return "Usage: org.robotframework.remoteserver.RemoteServer options\n\n" + //
                 "Options:\n" + //
-                "    -l --library classname[:path] library to serve and path to bind to. Path has a default value of /.\n" + //
-                "                                  The library option may be repeated to serve multiple libraries\n" + //
+                // //////////////////////////////////////////////////////////////////////////////
+                "    -l --library classname[:path] library to serve and path to map to. Path\n" + //
+                "                                  has a default value of /. The library option\n" + //
+                "                                  may be repeated to serve multiple libraries\n" + //
                 "    -p --port port                port to bind to, defaults to 0 (ephemeral)\n" + //
                 "    -a --allowstop true|false     whether to allow remote stop\n" + //
                 "    -H --host hostname            hostname of the interface to bind to\n" + //
@@ -76,7 +76,7 @@ public class CommandLineHelper {
                     }
                     if (libraryMap.containsKey(path))
                         throw new RuntimeException(String.format("Duplicate path [%s]", path));
-                    libraryMap.put(path, parts[0].trim());
+                    putLibrary(path, parts[0]);
                 } else if (args[idx].equals("-p") || args[idx].equals("--port")) {
                     String portString = getValue("port");
                     try {
@@ -115,6 +115,19 @@ public class CommandLineHelper {
             throw new RuntimeException("Missing value for option " + name);
         else
             return args[idx++ + 1];
+    }
+
+    private void putLibrary(String path, String className) {
+        className = className.trim();
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load class with name " + className + ": " + e.toString());
+        }
+        if (libraryMap.containsKey(path))
+            throw new RuntimeException(String.format("Duplicate path [%s]", path));
+        libraryMap.put(path, clazz);
     }
 
 }

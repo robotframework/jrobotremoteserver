@@ -115,7 +115,7 @@ public class RemoteServer {
             System.out.print(helper.getUsage());
             System.exit(0);
         } else if (helper.getError() != null) {
-            System.out.println(helper.getError());
+            System.out.println("Error: " + helper.getError());
             System.out.println();
             System.out.println(helper.getUsage());
             System.exit(1);
@@ -127,26 +127,6 @@ public class RemoteServer {
         remoteServer.setAllowStop(helper.getAllowStop());
         remoteServer.setHost(helper.getHost());
         remoteServer.start();
-    }
-
-    /**
-     * Map the given test library to the specified path.
-     * 
-     * @param className
-     *            class name of the test library
-     * @param path
-     *            path to map the test library to. path must:
-     *            <ul>
-     *            <li>start with a /</li>
-     *            <li>contain only alphanumeric characters or any of these: / -
-     *            . _ ~</li>
-     *            <li>not end in a /</li>
-     *            <li>not contain a repeating sequence of /s</li>
-     *            </ul>
-     */
-    public void putLibrary(String path, String className) {
-        servlet.putLibrary(path, className);
-        log.info(String.format("Added library %s", className));
     }
 
     /**

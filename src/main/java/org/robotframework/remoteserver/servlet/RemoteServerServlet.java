@@ -54,16 +54,6 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         }
     }
 
-    public void putLibrary(String path, String className) {
-        Class<?> clazz;
-        try {
-            clazz = Class.forName(className);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        putLibrary(path, clazz);
-    }
-
     public void putLibrary(String path, Class<?> clazz) {
         checkPath(path);
         RemoteLibraryFactory libraryFactory = createLibraryFactory();
