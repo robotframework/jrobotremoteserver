@@ -24,6 +24,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.robotframework.remoteserver.cli.CommandLineHelper;
 import org.robotframework.remoteserver.logging.Jetty2Log4J;
+import org.robotframework.remoteserver.servlet.IllegalPathException;
 import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 
 /**
@@ -114,16 +115,24 @@ public class RemoteServer {
         if (helper.getHelpRequested()) {
             System.out.print(helper.getUsage());
             System.exit(0);
-        } else if (helper.getError() != null) {
-            System.out.println("Error: " + helper.getError());
+        }
+        RemoteServer remoteServer = new RemoteServer();
+        String error = helper.getError();
+        if (error == null) {
+            try {
+                for (String path : helper.getLibraryMap().keySet())
+                    remoteServer.putLibrary(path, helper.getLibraryMap().get(path));
+            } catch (IllegalPathException e) {
+                error = e.getMessage();
+            }
+        }
+        if (error != null) {
+            System.out.println("Error: " + error);
             System.out.println();
             System.out.println(helper.getUsage());
             System.exit(1);
         }
-        RemoteServer remoteServer = new RemoteServer();
         remoteServer.setPort(helper.getPort());
-        for (String path : helper.getLibraryMap().keySet())
-            remoteServer.putLibrary(path, helper.getLibraryMap().get(path));
         remoteServer.setAllowStop(helper.getAllowStop());
         remoteServer.setHost(helper.getHost());
         remoteServer.start();

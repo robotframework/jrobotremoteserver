@@ -203,7 +203,10 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         } else if (!path.equals("/") && path.endsWith("/")) {
             throw new IllegalPathException(String.format("Path [%s] ends with a /.", path));
         } else if (!path.matches("[a-zA-Z0-9-._~/]+")) {
-            throw new IllegalPathException(String.format("Path [%s] ends with a /.", path));
+            throw new IllegalPathException(
+                    String.format(
+                            "Path [%s] contains disallowed characters (must contain only alphanumeric or any of these: -._~/).",
+                            path));
         }
     }
 }
