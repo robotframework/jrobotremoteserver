@@ -12,14 +12,67 @@
  */
 package org.robotframework.remoteserver.library;
 
+/**
+ * An interface for handling libraries in jrobotremoteserver. There is no reason
+ * for libraries to implement this.
+ * <p>
+ * User libraries are wrapped so that they can be handled in the same way. Use
+ * {@link #getImplementation()} to access the wrapped library.
+ * 
+ */
 public interface RemoteLibrary {
+
+    /**
+     * Returns the names of keywords in the library.
+     * 
+     * @return The names of keywords in the library.
+     */
     public String[] getKeywordNames();
 
-    public Object runKeyword(String keyword, Object[] args);
+    /**
+     * Executes the keyword with the given name.
+     * 
+     * @param name
+     *            name of the keyword to execute
+     * @param arguments
+     *            keyword arguments
+     * @return value returned by the keyword
+     */
+    public Object runKeyword(String name, Object[] arguments);
 
+    /**
+     * Gets the argument descriptors for the given keyword name.
+     * 
+     * @param keyword
+     *            name of the keyword to get argument descriptors for
+     * @return array of argument descriptors
+     */
     public String[] getKeywordArguments(String keyword);
 
-    public String getKeywordDocumentation(String keyword);
+    /**
+     * Gets the documentation string for the given keyword name.
+     * 
+     * @param name
+     *            name of the keyword to get documentation for
+     * @return keyword documentation string
+     */
+    public String getKeywordDocumentation(String name);
 
+    /**
+     * Gets the name of the remote library.
+     * 
+     * @return The name of the remote library, which is the same as the class
+     *         name
+     */
     public String getName();
+
+    /**
+     * Gets the underlying library implementation. The {@link RemoteLibrary}
+     * interface is intended to be used by wrapper classes. The original user
+     * library can be accessed with this method.
+     * 
+     * @return The underlying library implementation
+     */
+    public Object getImplementation();
+
 }

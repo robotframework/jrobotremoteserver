@@ -17,51 +17,56 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
+
     public RemoteLibrary createRemoteLibrary(Object library) {
-	Class<?> clazz = library.getClass();
-	if (isDynamic(clazz)) {
-	    Method getKeywordNames = getMethod(clazz, MethodType.GET_KEYWORD_NAMES);
-	    Method runKeyword = getMethod(clazz, MethodType.RUN_KEYWORD);
-	    Method getKeywordArguments = getMethod(clazz, MethodType.GET_KEYWORD_ARGUMENTS);
-	    Method getKeywordDocumentation = getMethod(clazz, MethodType.GET_KEYWORD_DOCUMENTATION);
-	    return new DynamicApiRemoteLibrary(library, getKeywordNames, runKeyword, getKeywordArguments,
-		    getKeywordDocumentation);
-	} else
-	    return new StaticApiRemoteLibrary(library);
+        if (library instanceof RemoteLibrary) {
+            return (RemoteLibrary) library;
+        }
+        Class<?> clazz = library.getClass();
+        if (isDynamic(clazz)) {
+            Method getKeywordNames = getMethod(clazz, MethodType.GET_KEYWORD_NAMES);
+            Method runKeyword = getMethod(clazz, MethodType.RUN_KEYWORD);
+            Method getKeywordArguments = getMethod(clazz, MethodType.GET_KEYWORD_ARGUMENTS);
+            Method getKeywordDocumentation = getMethod(clazz, MethodType.GET_KEYWORD_DOCUMENTATION);
+            return new DynamicApiRemoteLibrary(library, getKeywordNames, runKeyword, getKeywordArguments,
+                    getKeywordDocumentation);
+        } else
+            return new StaticApiRemoteLibrary(library);
     }
 
     protected static boolean isDynamic(Class<?> clazz) {
-	return getMethod(clazz, MethodType.GET_KEYWORD_NAMES) != null
-		&& getMethod(clazz, MethodType.RUN_KEYWORD) != null;
+        return getMethod(clazz, MethodType.GET_KEYWORD_NAMES) != null
+                && getMethod(clazz, MethodType.RUN_KEYWORD) != null;
     }
 
     protected static Method getMethod(Class<?> clazz, MethodType type) {
-	for (Method m : clazz.getMethods()) {
-	    if (!Modifier.isPublic(m.getModifiers()))
-		continue;
-	    String name = m.getName();
-	    Class<?>[] pTypes = m.getParameterTypes();
-	    if (type.equals(MethodType.GET_KEYWORD_ARGUMENTS)
-		    && (name.equals("getKeywordArguments") || name.equals("get_keyword_arguments"))
-		    && m.getReturnType() == String[].class && Arrays.equals(pTypes, new Class<?>[] { String.class }))
-		return m;
-	    if (type.equals(MethodType.GET_KEYWORD_DOCUMENTATION)
-		    && (name.equals("getKeywordDocumentation") || name.equals("get_keyword_documentation"))
-		    && m.getReturnType() == String.class && Arrays.equals(pTypes, new Class<?>[] { String.class }))
-		return m;
-	    if (type.equals(MethodType.GET_KEYWORD_NAMES)
-		    && (name.equals("getKeywordNames") || name.equals("get_keyword_names"))
-		    && m.getReturnType() == String[].class && pTypes.length == 0)
-		return m;
-	    if (type.equals(MethodType.RUN_KEYWORD) && (name.equals("runKeyword") || name.equals("run_keyword"))
-		    && m.getReturnType().equals(Object.class)
-		    && Arrays.equals(pTypes, new Class<?>[] { String.class, Object[].class }))
-		return m;
-	}
-	return null;
+        for (Method m : clazz.getMethods()) {
+            if (!Modifier.isPublic(m.getModifiers()))
+                continue;
+            String name = m.getName();
+            Class<?>[] pTypes = m.getParameterTypes();
+            if (type.equals(MethodType.GET_KEYWORD_ARGUMENTS)
+                    && (name.equals("getKeywordArguments") || name.equals("get_keyword_arguments"))
+                    && m.getReturnType() == String[].class && Arrays.equals(pTypes, new Class<?>[] { String.class }))
+                return m;
+            if (type.equals(MethodType.GET_KEYWORD_DOCUMENTATION)
+                    && (name.equals("getKeywordDocumentation") || name.equals("get_keyword_documentation"))
+                    && m.getReturnType() == String.class && Arrays.equals(pTypes, new Class<?>[] { String.class }))
+                return m;
+            if (type.equals(MethodType.GET_KEYWORD_NAMES)
+                    && (name.equals("getKeywordNames") || name.equals("get_keyword_names"))
+                    && m.getReturnType() == String[].class && pTypes.length == 0)
+                return m;
+            if (type.equals(MethodType.RUN_KEYWORD) && (name.equals("runKeyword") || name.equals("run_keyword"))
+                    && m.getReturnType().equals(Object.class)
+                    && Arrays.equals(pTypes, new Class<?>[] { String.class, Object[].class }))
+                return m;
+        }
+        return null;
     }
 
     enum MethodType {
-	GET_KEYWORD_ARGUMENTS, GET_KEYWORD_DOCUMENTATION, GET_KEYWORD_NAMES, RUN_KEYWORD;
+        GET_KEYWORD_ARGUMENTS, GET_KEYWORD_DOCUMENTATION, GET_KEYWORD_NAMES, RUN_KEYWORD;
     }
+
 }

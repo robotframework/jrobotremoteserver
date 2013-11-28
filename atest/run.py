@@ -36,9 +36,9 @@ if '-h' in clargs or '--help' in clargs:
 
 interpreter = clargs.pop(0) if clargs else 'python'
 libraries = \
-        'org.robotframework.examplelib.FullDynamic:8270,' + \
-        'org.robotframework.examplelib.MinDynamic:8271,' + \
-        'org.robotframework.examplelib.Static:8272'
+        'org.robotframework.examplelib.FullDynamic:/FullDynamic,' + \
+        'org.robotframework.examplelib.MinDynamic:/MinDynamic,' + \
+        'org.robotframework.examplelib.Static:/Static'
 if clargs:
     libraries = clargs.pop(0)
 
@@ -47,12 +47,12 @@ libraries = [x.strip() for x in libraries.split(',')]
 outputs = []
 
 for entry in libraries:
-    name, _, port = entry.partition(':')
+    name, _, path = entry.partition(':')
     name = name.rsplit('.', 1)[1]
     OUTPUT = join(RESULTS, 'output-' + name + '.xml')
     outputs.append(OUTPUT)
 
-    args = [interpreter, '-m', 'robot.run', '--name', name, '--variable', 'PORT:' + str(port),
+    args = [interpreter, '-m', 'robot.run', '--name', name, '--variable', 'PATH:' + path,
             '--output', OUTPUT, '--log', 'NONE', '--report', 'NONE']
     if 'min' in name.lower() or 'static' in name.lower():
         args.extend(['--exclude', 'argsknown'])
@@ -63,7 +63,7 @@ for entry in libraries:
     print
     statuschecker.process_output(OUTPUT)
     
-servercontroller.stop(port)
+servercontroller.stop(8270, "/Static")
 rc = robot.rebot(*outputs, outputdir=RESULTS)
 if rc == 0:
     print 'All tests passed'

@@ -18,90 +18,136 @@ import java.util.Map;
 
 public class CommandLineHelper {
 
-    private Map<Integer, String> libraryMap = new HashMap<Integer, String>();
+    private Map<String, Class<?>> libraryMap = new HashMap<String, Class<?>>();
     private boolean allowStop = true;
     private String host = null;
     private String error = null;
     private boolean helpRequested = false;
     private String[] args;
     private int idx = 0;
+    private int port = 0;
+    private boolean usedOldLibraryOption = false;
 
     public boolean getAllowStop() {
-	return allowStop;
+        return allowStop;
     }
 
     public String getHost() {
-	return host;
+        return host;
     }
 
-    public Map<Integer, String> getLibraryMap() {
-	return libraryMap;
+    public int getPort() {
+        return port;
+    }
+
+    public Map<String, Class<?>> getLibraryMap() {
+        return libraryMap;
     }
 
     public String getError() {
-	return error;
+        return error;
     }
 
     public boolean getHelpRequested() {
-	return helpRequested;
+        return helpRequested;
     }
 
     public String getUsage() {
-	return "Usage:  org.robotframework.remoteserver.RemoteServer options\n\n" + //
-		"Options:\n" + //
-		"    -l --library classname:port   test library to serve (can be repeated)\n" + //
-		"    -a --allowstop true|false     whether to allow remote stop\n" + //
-		"    -H --host hostname            hostname of the interface to bind to\n" + //
-		"    -h -? --help                  print this help message";
+        return "Usage: org.robotframework.remoteserver.RemoteServer options\n\n" + //
+                "Options:\n" + //
+                // //////////////////////////////////////////////////////////////////////////////
+                "    -l --library classname[:path] library to serve and path to map to. Path\n" + //
+                "                                  has a default value of /. The library option\n" + //
+                "                                  may be repeated to serve multiple libraries\n" + //
+                "    -p --port port                port to bind to, defaults to 0 (ephemeral)\n" + //
+                "    -a --allowstop true|false     whether to allow remote stop\n" + //
+                "    -H --host hostname            hostname of the interface to bind to\n" + //
+                "    -h -? --help                  print this help message\n\n" + //
+                " For backwards compatibility, one library can be added using the form\n" + //
+                "   --library classname:port\n";
     }
 
     public CommandLineHelper(String[] clargs) {
-	args = clargs;
-	try {
-	    while (idx < args.length) {
-		if (args[idx].equals("-l") || args[idx].equals("--library")) {
-		    String[] parts = getValue("library").split(":");
-		    if (parts.length != 2)
-			throw new RuntimeException("Value for library must be in the format classname:port");
-		    int port;
-		    try {
-			port = Integer.valueOf(parts[1].trim());
-			if (port < 1 || port > 65535)
-			    throw new Exception();
-		    } catch (Exception e) {
-			throw new RuntimeException("Port must be 1-65535");
-		    }
-		    if (libraryMap.containsKey(port))
-			throw new RuntimeException("Cannot serve more than one library from the same port");
-		    libraryMap.put(port, parts[0].trim());
-		} else if (args[idx].equals("-H") || args[idx].equals("--host")) {
-		    host = getValue("host");
-		} else if (args[idx].equals("-a") || args[idx].equals("--allowstop")) {
-		    String value = getValue("allowstop");
-		    if (value.equalsIgnoreCase("false"))
-			allowStop = false;
-		    else if (value.equalsIgnoreCase("true"))
-			allowStop = true;
-		    else
-			throw new RuntimeException("Value for option allowstop must be true or false");
-		} else if (Arrays.asList("-h", "-?", "--help").contains(args[idx])) {
-		    helpRequested = true;
-		    return;
-		} else
-		    throw new RuntimeException("Unkown option: " + args[idx]);
-		idx++;
-	    }
-	    if (libraryMap.isEmpty())
-		throw new RuntimeException("You must specify at least one library");
-	} catch (Exception e) {
-	    error = e.getMessage();
-	}
+        args = clargs;
+        try {
+            while (idx < args.length) {
+                if (args[idx].equals("-l") || args[idx].equals("--library")) {
+                    String[] parts = getValue("library").split(":", 2);
+                    String className = parts[0];
+                    String path = "/";
+                    if (parts.length == 2) {
+                        path = parts[1];
+                    }
+                    if (path.equals("") || path.matches("\\s+")) {
+                        throw new RuntimeException("Missing path for library " + className);
+                    }
+                    putLibrary(path, className);
+                } else if (args[idx].equals("-p") || args[idx].equals("--port")) {
+                    String portString = getValue("port");
+                    setPort(portString);
+                } else if (args[idx].equals("-H") || args[idx].equals("--host")) {
+                    host = getValue("host");
+                } else if (args[idx].equals("-a") || args[idx].equals("--allowstop")) {
+                    String value = getValue("allowstop");
+                    if (value.equalsIgnoreCase("false"))
+                        allowStop = false;
+                    else if (value.equalsIgnoreCase("true"))
+                        allowStop = true;
+                    else
+                        throw new RuntimeException("Value for option allowstop must be true or false");
+                } else if (Arrays.asList("-h", "-?", "--help").contains(args[idx])) {
+                    helpRequested = true;
+                    return;
+                } else
+                    throw new RuntimeException("Unkown option: " + args[idx]);
+                idx++;
+            }
+            if (libraryMap.isEmpty())
+                throw new RuntimeException("You must specify at least one library");
+        } catch (Exception e) {
+            error = e.getMessage();
+        }
     }
 
     private String getValue(String name) {
-	if (idx == args.length - 1 || (args[idx + 1].startsWith("-")))
-	    throw new RuntimeException("Missing value for option " + name);
-	else
-	    return args[idx++ + 1];
+        if (idx == args.length - 1 || (args[idx + 1].startsWith("-")))
+            throw new RuntimeException("Missing value for option " + name);
+        else
+            return args[idx++ + 1];
     }
+
+    private void putLibrary(String path, String className) {
+        className = className.trim();
+        if (path.matches("\\d+")) {
+            setPort(path);
+            usedOldLibraryOption = true;
+            path = "/";
+        }
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(className);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load class with name " + className + ": " + e.toString());
+        }
+        if (libraryMap.containsKey(path))
+            throw new RuntimeException(String.format("Duplicate path [%s]", path));
+        libraryMap.put(path, clazz);
+    }
+
+    private void setPort(String portString) {
+        if (usedOldLibraryOption) {
+            throw new RuntimeException(
+                    "Cannot use the port option or use multiple libraries when specifying libraries in the form classname:port");
+        }
+        int port;
+        try {
+            port = Integer.valueOf(portString.trim());
+            if (port < 1 || port > 65535)
+                throw new Exception();
+        } catch (Exception e) {
+            throw new RuntimeException("Port must be 1-65535");
+        }
+        this.port = port;
+    }
+
 }

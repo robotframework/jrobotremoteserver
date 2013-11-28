@@ -14,34 +14,43 @@ package org.robotframework.remoteserver.library;
 
 import org.robotframework.remoteserver.javalib.SingleClassLibrary;
 
-
 public class StaticApiRemoteLibrary implements RemoteLibrary {
 
     private Object library;
     private SingleClassLibrary handler;
 
     protected StaticApiRemoteLibrary(Object library) {
-	handler = new SingleClassLibrary(library);
-	this.library = library;
+        handler = new SingleClassLibrary(library);
+        this.library = library;
     }
 
+    @Override
     public String[] getKeywordNames() {
-	return handler.getKeywordNames();
+        return handler.getKeywordNames();
     }
 
+    @Override
     public Object runKeyword(String keywordName, Object[] args) {
-	return handler.runKeyword(keywordName, args);
+        return handler.runKeyword(keywordName, args);
     }
 
+    @Override
     public String[] getKeywordArguments(String keyword) {
-	return new String[] {"*args"};
+        return new String[] { "*args" };
     }
 
+    @Override
     public String getKeywordDocumentation(String keyword) {
-	return "";
+        return "";
     }
 
+    @Override
     public String getName() {
-	return library.getClass().getName();
+        return library.getClass().getName();
+    }
+
+    @Override
+    public Object getImplementation() {
+        return library;
     }
 }
