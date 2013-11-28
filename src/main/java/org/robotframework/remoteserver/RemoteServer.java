@@ -23,6 +23,7 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.robotframework.remoteserver.cli.CommandLineHelper;
+import org.robotframework.remoteserver.library.RemoteLibrary;
 import org.robotframework.remoteserver.logging.Jetty2Log4J;
 import org.robotframework.remoteserver.servlet.IllegalPathException;
 import org.robotframework.remoteserver.servlet.RemoteServerServlet;
@@ -145,10 +146,13 @@ public class RemoteServer {
      *            class of the test library
      * @param path
      *            path to map the test library to
+     * @return the previous library mapped to the path, or null if there was no
+     *         mapping for the path
      */
-    public void putLibrary(String path, Class<?> clazz) {
-        servlet.putLibrary(path, clazz);
+    public RemoteLibrary putLibrary(String path, Class<?> clazz) {
+        RemoteLibrary oldLibrary = servlet.putLibrary(path, clazz);
         log.info(String.format("Mapped path %s to library %s.", path, clazz.getName()));
+        return oldLibrary;
     }
 
     /**

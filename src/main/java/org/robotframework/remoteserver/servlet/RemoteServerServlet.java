@@ -56,7 +56,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         }
     }
 
-    public void putLibrary(String path, Class<?> clazz) {
+    public RemoteLibrary putLibrary(String path, Class<?> clazz) {
         checkPath(path);
         RemoteLibraryFactory libraryFactory = createLibraryFactory();
         Object library;
@@ -66,7 +66,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
             throw new RuntimeException(e);
         }
         RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
-        this.libraryMap.put(path, remoteLibrary);
+        return this.libraryMap.put(path, remoteLibrary);
     }
 
     /**
