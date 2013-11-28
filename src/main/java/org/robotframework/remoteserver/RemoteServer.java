@@ -156,6 +156,18 @@ public class RemoteServer {
     }
 
     /**
+     * Removes the library mapped to the given path if the mapping exists
+     * 
+     * @param path
+     *            path for the library whose mapping is to be removed
+     * @return the previous library associated with the path, or null if there
+     *         was no mapping for the path.
+     */
+    public RemoteLibrary removeLibrary(String path) {
+        return servlet.removeLibrary(path);
+    }
+
+    /**
      * This has been deprecated. Please use {@link #putLibrary} and
      * {@link #setPort} instead.
      * 

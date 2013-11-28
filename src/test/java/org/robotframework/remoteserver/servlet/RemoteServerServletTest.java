@@ -58,12 +58,23 @@ public class RemoteServerServletTest {
     }
 
     @Test
-    public void putLibraryReturnsOldLibrary() {
+    public void putLibrary() {
         RemoteServerServlet servlet = new RemoteServerServlet();
         RemoteLibrary lib = servlet.putLibrary("/", StaticOne.class);
         Assert.assertNull(lib);
         RemoteLibrary origLib = servlet.getLibraryMap().get("/");
         lib = servlet.putLibrary("/", StaticTwo.class);
+        Assert.assertEquals(lib, origLib);
+    }
+
+    @Test
+    public void removeLibrary() {
+        RemoteServerServlet servlet = new RemoteServerServlet();
+        RemoteLibrary lib = servlet.removeLibrary("/");
+        Assert.assertNull(lib);
+        servlet.putLibrary("/", StaticOne.class);
+        RemoteLibrary origLib = servlet.getLibraryMap().get("/");
+        lib = servlet.removeLibrary("/");
         Assert.assertEquals(lib, origLib);
     }
 

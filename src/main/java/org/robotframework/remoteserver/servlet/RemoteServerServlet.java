@@ -70,6 +70,18 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
     }
 
     /**
+     * Removes the library mapped to the given path if the mapping exists
+     * 
+     * @param path
+     *            path for the library whose mapping is to be removed
+     * @return the previous library associated with the path, or null if there
+     *         was no mapping for the path.
+     */
+    public RemoteLibrary removeLibrary(String path) {
+        return libraryMap.remove(path);
+    }
+
+    /**
      * @return a copy of the current library map. Keys are the paths and the
      *         values are wrappers of the libraries being served.
      */
