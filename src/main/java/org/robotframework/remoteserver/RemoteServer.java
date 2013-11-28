@@ -59,6 +59,8 @@ public class RemoteServer {
     }
 
     /**
+     * Returns the actual port the server is listening on.
+     * 
      * @return The actual port the server's connector is listening on or -1 if
      *         it has not been opened, or -2 if it has been closed.
      */
@@ -67,30 +69,38 @@ public class RemoteServer {
     }
 
     /**
+     * Sets the port to listen on.
+     * 
      * @param port
      *            The port to listen on for connections or 0 if any available
-     *            port may be used. Defaults to 0.
+     *            port may be used. Defaults port is 0.
      */
     public void setPort(int port) {
         connector.setPort(port);
     }
 
     /**
-     * @return whether this server allows remote stopping
+     * Returns <code>true</code> if this server allows remote stopping.
+     * 
+     * @return <code>true</code> if this server allows remote stopping
      */
     public boolean getAllowStop() {
         return allowStop;
     }
 
     /**
+     * Allow or disallow stopping the server remotely.
+     * 
      * @param allowed
-     *            whether to allow stopping the server remotely
+     *            <code>true</code> to allow stopping the server remotely
      */
     public void setAllowStop(boolean allowed) {
         allowStop = allowed;
     }
 
     /**
+     * Returns the hostname set with {@link #setHost(String)}.
+     * 
      * @return the hostname set with {@link #setHost(String)}
      */
     public String getHost() {
@@ -140,7 +150,15 @@ public class RemoteServer {
     }
 
     /**
-     * Map the given test library to the specified path.
+     * Map the given test library to the specified path. Paths must:
+     * <ul>
+     * <li>start with a /</li>
+     * <li>contain only alphanumeric characters or any of these: / - . _ ~</li>
+     * <li>not end in a /</li>
+     * <li>not contain a repeating sequence of /s</li>
+     * </ul>
+     * 
+     * Example: <code>putLibrary("/myLib", com.example.MyLibrary);</code>
      * 
      * @param clazz
      *            class of the test library
@@ -156,7 +174,7 @@ public class RemoteServer {
     }
 
     /**
-     * Removes the library mapped to the given path if the mapping exists
+     * Removes the library mapped to the given path if the mapping exists.
      * 
      * @param path
      *            path for the library whose mapping is to be removed

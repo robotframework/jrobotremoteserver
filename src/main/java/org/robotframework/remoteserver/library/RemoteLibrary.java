@@ -15,45 +15,62 @@ package org.robotframework.remoteserver.library;
 /**
  * An interface for handling libraries in jrobotremoteserver. There is no reason
  * for libraries to implement this.
+ * <p>
+ * User libraries are wrapped so that they can be handled in the same way. Use
+ * {@link #getImplementation()} to access the wrapped library.
  * 
  */
 public interface RemoteLibrary {
 
     /**
-     * @return The keywords in the library
+     * Returns the names of keywords in the library.
+     * 
+     * @return The names of keywords in the library.
      */
     public String[] getKeywordNames();
 
     /**
-     * @param keyword
-     *            keyword to execute
-     * @param args
+     * Executes the keyword with the given name.
+     * 
+     * @param name
+     *            name of the keyword to execute
+     * @param arguments
      *            keyword arguments
      * @return value returned by the keyword
      */
-    public Object runKeyword(String keyword, Object[] args);
+    public Object runKeyword(String name, Object[] arguments);
 
     /**
+     * Gets the argument descriptors for the given keyword name.
+     * 
      * @param keyword
-     *            keyword to get argument descriptors for.
+     *            name of the keyword to get argument descriptors for
      * @return array of argument descriptors
      */
     public String[] getKeywordArguments(String keyword);
 
     /**
-     * @param keyword
-     *            keyword to get documentation for.
+     * Gets the documentation string for the given keyword name.
+     * 
+     * @param name
+     *            name of the keyword to get documentation for
      * @return keyword documentation string
      */
-    public String getKeywordDocumentation(String keyword);
+    public String getKeywordDocumentation(String name);
 
     /**
+     * Gets the name of the remote library.
+     * 
      * @return The name of the remote library, which is the same as the class
-     *         name.
+     *         name
      */
     public String getName();
 
     /**
+     * Gets the underlying library implementation. The {@link RemoteLibrary}
+     * interface is intended to be used by wrapper classes. The original user
+     * library can be accessed with this method.
+     * 
      * @return The underlying library implementation
      */
     public Object getImplementation();

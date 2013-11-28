@@ -56,6 +56,24 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         }
     }
 
+    /**
+     * Map the given test library to the specified path. Paths must:
+     * <ul>
+     * <li>start with a /</li>
+     * <li>contain only alphanumeric characters or any of these: / - . _ ~</li>
+     * <li>not end in a /</li>
+     * <li>not contain a repeating sequence of /s</li>
+     * </ul>
+     * 
+     * Example: <code>putLibrary("/myLib", com.example.MyLibrary);</code>
+     * 
+     * @param clazz
+     *            class of the test library
+     * @param path
+     *            path to map the test library to
+     * @return the previous library mapped to the path, or null if there was no
+     *         mapping for the path
+     */
     public RemoteLibrary putLibrary(String path, Class<?> clazz) {
         checkPath(path);
         RemoteLibraryFactory libraryFactory = createLibraryFactory();
@@ -179,6 +197,13 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         return sb.toString();
     }
 
+    /**
+     * Returns the library to use in the current context. This should only be
+     * used while a request is being processed and only on the same thread that
+     * is handling the request.
+     * 
+     * @return the library to use in the current context
+     */
     public RemoteLibrary getLibrary() {
         return currLibrary.get();
     }
@@ -195,6 +220,15 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         remoteServer = server;
     }
 
+    /**
+     * Cleans up the path of an incoming request. Repeating /s are reduced to
+     * one /. Trailing /s are removed. A <code>null</code> or empty path is
+     * converted to /.
+     * 
+     * @param path
+     *            the path the client requested
+     * @return cleaned up path
+     */
     private static String cleanPath(String path) {
         path = path == null ? "/" : path;
         if (!path.startsWith("/")) {
