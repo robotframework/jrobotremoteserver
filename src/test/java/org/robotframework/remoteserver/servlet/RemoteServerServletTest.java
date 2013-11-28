@@ -43,6 +43,7 @@ public class RemoteServerServletTest {
             try { // should fail on first write when in CLOSE_WAIT but doesn't
                 for (int i = 0; i < 100; i++) {
                     s.getOutputStream().write(5);
+                    Thread.sleep(200);
                     s.getOutputStream().flush();
                 }
             } catch (SocketException e) {

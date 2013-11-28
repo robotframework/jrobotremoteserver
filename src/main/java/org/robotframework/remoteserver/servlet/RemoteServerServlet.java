@@ -47,15 +47,6 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
     private RemoteServer remoteServer;
     private Map<String, RemoteLibrary> libraryMap = new ConcurrentHashMap<String, RemoteLibrary>();
 
-    public RemoteServerServlet() {
-    }
-
-    public RemoteServerServlet(RemoteServer remoteServer, Map<String, Class<?>> libraryMap) {
-        for (String path : libraryMap.keySet()) {
-            putLibrary(path, libraryMap.get(path));
-        }
-    }
-
     /**
      * Map the given test library to the specified path. Paths must:
      * <ul>
