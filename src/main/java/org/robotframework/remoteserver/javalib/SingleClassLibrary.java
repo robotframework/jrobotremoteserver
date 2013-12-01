@@ -18,41 +18,53 @@ package org.robotframework.remoteserver.javalib;
 import java.lang.reflect.InvocationTargetException;
 
 import org.robotframework.javalib.factory.KeywordFactory;
-import org.robotframework.javalib.keyword.Keyword;
+import org.robotframework.javalib.library.KeywordDocumentationRepository;
 import org.robotframework.javalib.library.KeywordFactoryBasedLibrary;
 
-public class SingleClassLibrary extends KeywordFactoryBasedLibrary<Keyword> {
+public class SingleClassLibrary extends KeywordFactoryBasedLibrary<OverloadableKeyword> implements
+        KeywordDocumentationRepository {
 
-    private KeywordFactory<Keyword> keywordFactory;
+    private KeywordFactory<OverloadableKeyword> keywordFactory;
     private Object keywordBean;
 
     public SingleClassLibrary(Object keywordBean) {
-	this.keywordBean = keywordBean;
+        this.keywordBean = keywordBean;
     }
 
     @Override
-    protected KeywordFactory<Keyword> createKeywordFactory() {
-	if (keywordFactory == null) {
-	    keywordFactory = new SimpleKeywordFactory(keywordBean);
-	}
-	return keywordFactory;
+    protected KeywordFactory<OverloadableKeyword> createKeywordFactory() {
+        if (keywordFactory == null) {
+            keywordFactory = new SimpleKeywordFactory(keywordBean);
+        }
+        return keywordFactory;
     }
 
     @Override
     public Object runKeyword(String keywordName, Object[] args) {
-	try {
-	    return super.runKeyword(keywordName, args);
-	} catch (RuntimeException e) {
-	    throw retrieveInnerException(e);
-	}
+        try {
+            return super.runKeyword(keywordName, args);
+        } catch (RuntimeException e) {
+            throw retrieveInnerException(e);
+        }
+    }
+
+    @Override
+    public String[] getKeywordArguments(String keywordName) {
+        return createKeywordFactory().createKeyword(keywordName).getArguments();
+    }
+
+    @Override
+    public String getKeywordDocumentation(String keywordName) {
+        return "";
     }
 
     private RuntimeException retrieveInnerException(RuntimeException e) {
-	Throwable cause = e.getCause();
-	if (InvocationTargetException.class.equals(cause.getClass())) {
-	    Throwable original = cause.getCause();
-	    return new RuntimeException(original.getMessage(), original);
-	}
-	return e;
+        Throwable cause = e.getCause();
+        if (InvocationTargetException.class.equals(cause.getClass())) {
+            Throwable original = cause.getCause();
+            return new RuntimeException(original.getMessage(), original);
+        }
+        return e;
     }
+
 }

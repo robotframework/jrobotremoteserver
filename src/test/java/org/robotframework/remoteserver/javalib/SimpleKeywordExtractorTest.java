@@ -14,7 +14,7 @@ public class SimpleKeywordExtractorTest {
     @Test
     public void overloadedMethodWrongNumberOfArgs() {
         SimpleKeywordExtractor keywordExtractor = new SimpleKeywordExtractor();
-        Map<String, Keyword> keywordMap = keywordExtractor.extractKeywords(new OverloadedMethods());
+        Map<String, OverloadableKeyword> keywordMap = keywordExtractor.extractKeywords(new OverloadedMethods());
         try {
             keywordMap.get("myKeyword").execute(new Object[] {"name", 42});
         } catch (RuntimeException e) {
@@ -27,7 +27,7 @@ public class SimpleKeywordExtractorTest {
     @Test
     public void nonOverloadedMethodWrongNumberOfArgs() {
         SimpleKeywordExtractor keywordExtractor = new SimpleKeywordExtractor();
-        Map<String, Keyword> keywordMap = keywordExtractor.extractKeywords(new StaticOne());
+        Map<String, OverloadableKeyword> keywordMap = keywordExtractor.extractKeywords(new StaticOne());
         try {
             keywordMap.get("getName").execute(new Object[] {"badArg"});
         } catch (RuntimeException e) {

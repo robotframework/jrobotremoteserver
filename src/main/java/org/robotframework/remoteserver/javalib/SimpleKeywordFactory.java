@@ -22,53 +22,52 @@ import java.util.Map;
 
 import org.robotframework.javalib.beans.annotation.IKeywordExtractor;
 import org.robotframework.javalib.factory.KeywordFactory;
-import org.robotframework.javalib.keyword.Keyword;
 import org.robotframework.javalib.util.IKeywordNameNormalizer;
 import org.robotframework.javalib.util.KeywordNameNormalizer;
 
-public class SimpleKeywordFactory implements KeywordFactory<Keyword> {
-    private Map<String, Keyword> keywords = new HashMap<String, Keyword>();
+public class SimpleKeywordFactory implements KeywordFactory<OverloadableKeyword> {
+    private Map<String, OverloadableKeyword> keywords = new HashMap<String, OverloadableKeyword>();
     private IKeywordNameNormalizer keywordNameNormalizer = new KeywordNameNormalizer();
     private List<String> keywordNames = new ArrayList<String>();
 
     public SimpleKeywordFactory(Object keywordBean) {
-	extractKeywordsFromKeywordBean(keywordBean);
+        extractKeywordsFromKeywordBean(keywordBean);
     }
 
-    public Keyword createKeyword(String keywordName) {
-	String normalizedKeywordName = keywordNameNormalizer.normalize(keywordName);
-	return keywords.get(normalizedKeywordName);
+    public OverloadableKeyword createKeyword(String keywordName) {
+        String normalizedKeywordName = keywordNameNormalizer.normalize(keywordName);
+        return keywords.get(normalizedKeywordName);
     }
 
     public String[] getKeywordNames() {
-	return (String[]) keywordNames.toArray(new String[0]);
+        return (String[]) keywordNames.toArray(new String[0]);
     }
 
     protected void extractKeywordsFromKeywordBean(Object keywordBean) {
-	IKeywordExtractor<Keyword> keywordExtractor = createKeywordExtractor();
-	    Map<String, Keyword> extractedKeywords = keywordExtractor.extractKeywords(keywordBean);
-	    addKeywordNames(extractedKeywords);
-	    addKeywords(extractedKeywords);
+        IKeywordExtractor<OverloadableKeyword> keywordExtractor = createKeywordExtractor();
+        Map<String, OverloadableKeyword> extractedKeywords = keywordExtractor.extractKeywords(keywordBean);
+        addKeywordNames(extractedKeywords);
+        addKeywords(extractedKeywords);
     }
 
-    IKeywordExtractor<Keyword> createKeywordExtractor() {
-	return new SimpleKeywordExtractor();
+    IKeywordExtractor<OverloadableKeyword> createKeywordExtractor() {
+        return new SimpleKeywordExtractor();
     }
 
-    private void addKeywords(Map<String, Keyword> extractedKeywords) {
-	for (String keywordName : extractedKeywords.keySet()) {
-	    handleDuplicateKeywordNames(keywordName);
-	    keywords.put(keywordNameNormalizer.normalize(keywordName), extractedKeywords.get(keywordName));
-	}
+    private void addKeywords(Map<String, OverloadableKeyword> extractedKeywords) {
+        for (String keywordName : extractedKeywords.keySet()) {
+            handleDuplicateKeywordNames(keywordName);
+            keywords.put(keywordNameNormalizer.normalize(keywordName), extractedKeywords.get(keywordName));
+        }
     }
 
     private void handleDuplicateKeywordNames(String keywordName) {
-	if (keywords.containsKey(keywordNameNormalizer.normalize(keywordName))) {
-	    throw new RuntimeException("Two keywords with name '" + keywordName + "' found!");
-	}
+        if (keywords.containsKey(keywordNameNormalizer.normalize(keywordName))) {
+            throw new RuntimeException("Two keywords with name '" + keywordName + "' found!");
+        }
     }
 
-    private void addKeywordNames(Map<String, Keyword> extractedKeywords) {
-	keywordNames.addAll(extractedKeywords.keySet());
+    private void addKeywordNames(Map<String, OverloadableKeyword> extractedKeywords) {
+        keywordNames.addAll(extractedKeywords.keySet());
     }
 }

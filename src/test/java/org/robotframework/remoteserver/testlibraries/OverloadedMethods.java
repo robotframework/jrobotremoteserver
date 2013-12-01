@@ -14,4 +14,12 @@ public class OverloadedMethods {
         return "int overload";
     }
 
+    public String defaults(String required) {
+        return defaults("default");
+    }
+
+    public String defaults(String required, String optional) {
+        return String.format("%s,%s", required, optional);
+    }
+
 }
