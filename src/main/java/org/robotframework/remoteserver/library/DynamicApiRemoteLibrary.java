@@ -12,9 +12,10 @@
  */
 package org.robotframework.remoteserver.library;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import org.robotframework.remoteserver.library.RemoteLibrary;
+import java.util.Arrays;
+import java.util.List;
 
 public class DynamicApiRemoteLibrary implements RemoteLibrary {
     private Object library;
@@ -35,7 +36,12 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
     @Override
     public String[] getKeywordNames() {
         try {
-            return (String[]) getKeywordNames.invoke(library, new Object[] {});
+            Object names = getKeywordNames.invoke(library, new Object[] {});
+            if (names instanceof List) {
+                return (String[]) ((List<?>) names).toArray();
+            } else {
+                return (String[]) names;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -44,9 +50,12 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
     @Override
     public Object runKeyword(String keyword, Object[] args) {
         try {
+            if (runKeyword.getParameterTypes()[1].equals(List.class)) {
+                return runKeyword.invoke(library, keyword, Arrays.asList(args));
+            }
             return runKeyword.invoke(library, keyword, args);
         } catch (Exception e) {
-            if (e.getClass().equals(java.lang.reflect.InvocationTargetException.class))
+            if (e.getClass().equals(InvocationTargetException.class))
                 throw new RuntimeException(e.getCause().getMessage(), e.getCause());
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -57,7 +66,12 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
         if (getKeywordArguments == null)
             return new String[] { "*args" };
         try {
-            return (String[]) getKeywordArguments.invoke(library, keyword);
+            Object args = getKeywordArguments.invoke(library, keyword);
+            if (args instanceof List) {
+                return (String[]) ((List<?>) args).toArray();
+            } else {
+                return (String[]) args;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }

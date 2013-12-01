@@ -15,6 +15,7 @@ package org.robotframework.remoteserver.library;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.List;
 
 public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
 
@@ -47,7 +48,8 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
             Class<?>[] pTypes = m.getParameterTypes();
             if (type.equals(MethodType.GET_KEYWORD_ARGUMENTS)
                     && (name.equals("getKeywordArguments") || name.equals("get_keyword_arguments"))
-                    && m.getReturnType() == String[].class && Arrays.equals(pTypes, new Class<?>[] { String.class }))
+                    && (m.getReturnType() == String[].class || m.getReturnType() == List.class)
+                    && Arrays.equals(pTypes, new Class<?>[] { String.class }))
                 return m;
             if (type.equals(MethodType.GET_KEYWORD_DOCUMENTATION)
                     && (name.equals("getKeywordDocumentation") || name.equals("get_keyword_documentation"))
@@ -55,11 +57,13 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
                 return m;
             if (type.equals(MethodType.GET_KEYWORD_NAMES)
                     && (name.equals("getKeywordNames") || name.equals("get_keyword_names"))
-                    && m.getReturnType() == String[].class && pTypes.length == 0)
+                    && (m.getReturnType() == String[].class || m.getReturnType() == List.class) && pTypes.length == 0)
                 return m;
-            if (type.equals(MethodType.RUN_KEYWORD) && (name.equals("runKeyword") || name.equals("run_keyword"))
+            if (type.equals(MethodType.RUN_KEYWORD)
+                    && (name.equals("runKeyword") || name.equals("run_keyword"))
                     && m.getReturnType().equals(Object.class)
-                    && Arrays.equals(pTypes, new Class<?>[] { String.class, Object[].class }))
+                    && (Arrays.equals(pTypes, new Class<?>[] { String.class, Object[].class }) || Arrays.equals(pTypes,
+                            new Class<?>[] { String.class, List.class })))
                 return m;
         }
         return null;
