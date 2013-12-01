@@ -6,4 +6,14 @@ public class StaticOne {
         return this.getClass().getSimpleName();
     }
 
+    public int squareOf(int number) {
+        return number * number;
+    }
+
+    public void variableArgs(String str, String...strings) {
+    }
+
+    public void onlyVariableArgs(String...strings) {
+    }
+
 }

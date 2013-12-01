@@ -23,25 +23,26 @@ import java.util.Map;
 
 import org.robotframework.javalib.keyword.Keyword;
 
-public class OverloadableKeyword implements Keyword
-{
+public class OverloadableKeyword implements Keyword {
 
     private Map<Integer, List<KeywordOverload>> keywordMap = new HashMap<Integer, List<KeywordOverload>>();
     private String name;
     private Object keywordBean;
+    private boolean usesVarArgs = false;
 
-    public OverloadableKeyword (Object keywordBean, Method method) {
+    public OverloadableKeyword(Object keywordBean, Method method) {
         name = method.getName();
         this.keywordBean = keywordBean;
         addOverload(method);
     }
 
-    public Object execute(Object[] arguments)
-    {
+    public Object execute(Object[] arguments) {
         KeywordOverload selectedKeyword = null;
         Integer argCount = arguments.length;
-        if (keywordMap.containsKey(VARARGS)) {
-            selectedKeyword = keywordMap.get(VARARGS).get(0);
+        if (usesVarArgs) {
+            for (List<KeywordOverload> kws : keywordMap.values()) {
+                selectedKeyword = kws.get(0);
+            }
         } else if (keywordMap.containsKey(argCount)) {
             List<KeywordOverload> kwList = keywordMap.get(argCount);
             if (kwList.size() == 1) {
@@ -54,23 +55,27 @@ public class OverloadableKeyword implements Keyword
                     }
                 }
                 if (selectedKeyword == null) {
-                    throw new IllegalArgumentException(String.format("No overload of %s can take the given arguments", name));
+                    throw new IllegalArgumentException(String.format("No overload of %s can take the given arguments",
+                            name));
                 }
-            } 
+            }
         } else {
             if (keywordMap.size() == 1) {
-                throw new IllegalArgumentException(String.format("%s takes %d argument(s), received %d.", name, keywordMap.keySet().toArray()[0], argCount));
+                throw new IllegalArgumentException(String.format("%s takes %d argument(s), received %d.", name,
+                        keywordMap.keySet().toArray()[0], argCount));
             } else {
-                throw new IllegalArgumentException(String.format("No overload of %s takes %d argument(s).", name, argCount));
+                throw new IllegalArgumentException(String.format("No overload of %s takes %d argument(s).", name,
+                        argCount));
             }
         }
         return selectedKeyword.execute(arguments);
     }
 
     public void addOverload(Method method) {
-        Integer argCount = getArgumentCount(method);
-        if (keywordMap.containsKey(VARARGS) || (!keywordMap.isEmpty() && argCount == VARARGS)) {
-            throw new RuntimeException(String.format("Method %s has overloads and one or more take variable arguments.", name));
+        Integer argCount = method.getParameterTypes().length;
+        if (usesVarArgs || (!keywordMap.isEmpty() && hasVariableArgs(method))) {
+            throw new RuntimeException(String.format(
+                    "Method %s has overloads and one or more take variable arguments.", name));
         } else if (keywordMap.containsKey(argCount)) {
             keywordMap.get(argCount).add(new KeywordOverload(keywordBean, method));
         } else {
@@ -78,16 +83,39 @@ public class OverloadableKeyword implements Keyword
             overloadList.add(new KeywordOverload(keywordBean, method));
             keywordMap.put(argCount, overloadList);
         }
-    }
-
-    private Integer getArgumentCount(Method method) {
-        Integer argCount = method.getParameterTypes().length;
-        if (argCount > 0 && method.getParameterTypes()[argCount - 1].isArray()) {
-            return VARARGS;
+        if (hasVariableArgs(method)) {
+            usesVarArgs = true;
         }
-        return argCount;
     }
 
-    private final Integer VARARGS = -1;
+    public String[] getArguments() {
+        int min = Integer.MAX_VALUE;
+        int max = 0;
+        for (int argCount : keywordMap.keySet()) {
+            if (argCount < min) {
+                min = argCount;
+            }
+            if (argCount > max) {
+                max = argCount;
+            }
+        }
+        String[] arguments = new String[max];
+        for (int i = 0; i < max; i++) {
+            if (i < min) {
+                arguments[i] = String.format("arg%d", i + 1);
+            } else {
+                arguments[i] = String.format("arg%d=", i + 1);
+            }
+        }
+        if (usesVarArgs) {
+            arguments[max - 1] = "*varargs";
+        }
+        return arguments;
+    }
+
+    private boolean hasVariableArgs(Method method) {
+        Integer argCount = method.getParameterTypes().length;
+        return (argCount > 0 && method.getParameterTypes()[argCount - 1].isArray());
+    }
 
 }

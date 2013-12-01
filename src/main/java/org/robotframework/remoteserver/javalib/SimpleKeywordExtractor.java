@@ -21,12 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.robotframework.javalib.beans.annotation.IKeywordExtractor;
-import org.robotframework.javalib.keyword.Keyword;
 
-public class SimpleKeywordExtractor implements IKeywordExtractor<Keyword> {
+public class SimpleKeywordExtractor implements IKeywordExtractor<OverloadableKeyword> {
 
-    @SuppressWarnings("unchecked")
-    public Map<String, Keyword> extractKeywords(Object keywordBean) {
+    public Map<String, OverloadableKeyword> extractKeywords(Object keywordBean) {
         Map<String, OverloadableKeyword> overloadableKeywords = new HashMap<String, OverloadableKeyword>();
         Method[] methods = keywordBean.getClass().getMethods();
 
@@ -35,7 +33,7 @@ public class SimpleKeywordExtractor implements IKeywordExtractor<Keyword> {
                 createOrUpdateKeyword(overloadableKeywords, keywordBean, method);
             }
         }
-        return (Map<String, Keyword>)(Map<String,?>) overloadableKeywords;
+        return overloadableKeywords;
     }
 
     private void createOrUpdateKeyword(Map<String, OverloadableKeyword> extractedKeywords, Object keywordBean, Method method) {
