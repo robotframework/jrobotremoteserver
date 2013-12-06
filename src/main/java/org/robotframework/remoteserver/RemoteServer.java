@@ -12,6 +12,8 @@
  */
 package org.robotframework.remoteserver;
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
@@ -183,6 +185,17 @@ public class RemoteServer {
      */
     public RemoteLibrary removeLibrary(String path) {
         return servlet.removeLibrary(path);
+    }
+
+    /**
+     * Gets a copy of the current library map. Keys in the map are the paths and
+     * the values are {@link RemoteLibrary} wrappers of the libraries being
+     * served.
+     * 
+     * @return a copy of the current library map
+     */
+    public Map<String, RemoteLibrary> getLibraryMap() {
+        return servlet.getLibraryMap();
     }
 
     /**

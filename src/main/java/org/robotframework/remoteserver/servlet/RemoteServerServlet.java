@@ -91,8 +91,11 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
     }
 
     /**
-     * @return a copy of the current library map. Keys are the paths and the
-     *         values are wrappers of the libraries being served.
+     * Gets a copy of the current library map. Keys in the map are the paths and
+     * the values are {@link RemoteLibrary} wrappers of the libraries being
+     * served.
+     * 
+     * @return a copy of the current library map
      */
     public Map<String, RemoteLibrary> getLibraryMap() {
         return new HashMap<String, RemoteLibrary>(libraryMap);

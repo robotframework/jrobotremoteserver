@@ -86,7 +86,14 @@ public class RemoteServerTest {
         } catch (Exception e) {
             ex = e;
         }
-        Assert.assertEquals(ex.getMessage(), "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
+        Assert.assertEquals(ex.getMessage(),
+                "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
+    }
+
+    @Test
+    public void libraryMap() {
+        server.putLibrary("/", StaticOne.class);
+        Assert.assertTrue(server.getLibraryMap().containsKey("/"));
     }
 
     public XmlRpcClient getClient(String path) {
