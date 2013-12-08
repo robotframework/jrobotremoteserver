@@ -12,6 +12,8 @@
  */
 package org.robotframework.remoteserver.library;
 
+import java.util.Map;
+
 /**
  * An interface for handling libraries in jrobotremoteserver. There is no reason
  * for libraries to implement this.
@@ -35,10 +37,12 @@ public interface RemoteLibrary {
      * @param name
      *            name of the keyword to execute
      * @param arguments
+     *            positional arguments to the keyword
+     * @param kwargs
      *            keyword arguments
      * @return value returned by the keyword
      */
-    public Object runKeyword(String name, Object[] arguments);
+    public Object runKeyword(String name, Object[] arguments, Map<String, Object> kwargs);
 
     /**
      * Gets the argument descriptors for the given keyword name.

@@ -12,6 +12,8 @@
  */
 package org.robotframework.remoteserver.library;
 
+import java.util.Map;
+
 import org.robotframework.remoteserver.javalib.SingleClassLibrary;
 
 public class StaticApiRemoteLibrary implements RemoteLibrary {
@@ -30,7 +32,10 @@ public class StaticApiRemoteLibrary implements RemoteLibrary {
     }
 
     @Override
-    public Object runKeyword(String keywordName, Object[] args) {
+    public Object runKeyword(String keywordName, Object[] args, Map<String, Object> kwargs) {
+        if (kwargs != null && !kwargs.isEmpty()) {
+            throw new RuntimeException("Keyword arguments not yet supported for static API libraries.");
+        }
         return handler.runKeyword(keywordName, args);
     }
 

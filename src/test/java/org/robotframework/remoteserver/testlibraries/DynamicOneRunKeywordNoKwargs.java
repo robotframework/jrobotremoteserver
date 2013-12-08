@@ -1,14 +1,15 @@
 package org.robotframework.remoteserver.testlibraries;
 
-public class DynamicOne extends StaticOne {
+public class DynamicOneRunKeywordNoKwargs extends StaticOne {
 
     public String[] getKeywordNames() {
-        return new String[] {"getName"};
+        return new String[] {"getArgs"};
     }
 
-    public Object runKeyword(String name, Object... args) {
-        if (name.equals("genName")) {
-            return getName();
+    public Object runKeyword(String name, Object[] args) {
+        if (name.equals("getArgs")) {
+            System.out.println(getArgs(args));
+            return getArgs(args);
         } else {
             throw new RuntimeException();
         }

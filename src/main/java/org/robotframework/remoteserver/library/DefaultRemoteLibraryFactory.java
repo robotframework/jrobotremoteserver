@@ -14,8 +14,10 @@ package org.robotframework.remoteserver.library;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
 
@@ -23,54 +25,86 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
         if (library instanceof RemoteLibrary) {
             return (RemoteLibrary) library;
         }
-        Class<?> clazz = library.getClass();
-        if (isDynamic(clazz)) {
-            Method getKeywordNames = getMethod(clazz, MethodType.GET_KEYWORD_NAMES);
-            Method runKeyword = getMethod(clazz, MethodType.RUN_KEYWORD);
-            Method getKeywordArguments = getMethod(clazz, MethodType.GET_KEYWORD_ARGUMENTS);
-            Method getKeywordDocumentation = getMethod(clazz, MethodType.GET_KEYWORD_DOCUMENTATION);
-            return new DynamicApiRemoteLibrary(library, getKeywordNames, runKeyword, getKeywordArguments,
-                    getKeywordDocumentation);
-        } else
+        List<Method> methods = getPublicMethods(library.getClass());
+        Method getKeywordNames = getGetKeywordNames(methods);
+        Method runKeyword = getRunKeyword(methods);
+        if (getKeywordNames == null || runKeyword == null) {
             return new StaticApiRemoteLibrary(library);
+        }
+        Method getKeywordArguments = getGetKeywordArguments(methods);
+        Method getKeywordDocumentation = getGetKeywordDocumentation(methods);
+        return new DynamicApiRemoteLibrary(library, getKeywordNames, runKeyword, getKeywordArguments,
+                getKeywordDocumentation);
     }
 
-    protected static boolean isDynamic(Class<?> clazz) {
-        return getMethod(clazz, MethodType.GET_KEYWORD_NAMES) != null
-                && getMethod(clazz, MethodType.RUN_KEYWORD) != null;
-    }
-
-    protected static Method getMethod(Class<?> clazz, MethodType type) {
+    private List<Method> getPublicMethods(Class<?> clazz) {
+        List<Method> methods = new ArrayList<Method>();
         for (Method m : clazz.getMethods()) {
-            if (!Modifier.isPublic(m.getModifiers()))
-                continue;
-            String name = m.getName();
+            if (Modifier.isPublic(m.getModifiers())) {
+                methods.add(m);
+            }
+        }
+        return methods;
+    }
+
+    private Method getGetKeywordNames(List<Method> methods) {
+        for (Method m : methods) {
+            if (((m.getName().equals("getKeywordNames") || (m.getName().equals("get_keyword_names")))
+                    && (m.getReturnType() == String[].class || m.getReturnType() == List.class) && m
+                        .getParameterTypes().length == 0)) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    private static List<Class<?>[]> runKeywordParamArrays = new ArrayList<Class<?>[]>();
+    static {
+        runKeywordParamArrays.add(new Class<?>[] { String.class, Object[].class, Map.class });
+        runKeywordParamArrays.add(new Class<?>[] { String.class, List.class, Map.class });
+        runKeywordParamArrays.add(new Class<?>[] { String.class, Object[].class });
+        runKeywordParamArrays.add(new Class<?>[] { String.class, List.class });
+    }
+
+    private Method getRunKeyword(List<Method> methods) {
+        Method matchingMethod = null;
+        for (Method m : methods) {
             Class<?>[] pTypes = m.getParameterTypes();
-            if (type.equals(MethodType.GET_KEYWORD_ARGUMENTS)
-                    && (name.equals("getKeywordArguments") || name.equals("get_keyword_arguments"))
+            if ((m.getName().equals("runKeyword") || m.getName().equals("run_keyword"))
+                    && m.getReturnType().equals(Object.class)) {
+                for (Class<?>[] paramArray : runKeywordParamArrays) {
+                    if (Arrays.equals(pTypes, paramArray)) {
+                        if (pTypes.length == 3) {
+                            return m;
+                        } else {
+                            matchingMethod = m;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return matchingMethod;
+    }
+
+    private Method getGetKeywordArguments(List<Method> methods) {
+        for (Method m : methods) {
+            if ((m.getName().equals("getKeywordArguments") || m.getName().equals("get_keyword_arguments"))
                     && (m.getReturnType() == String[].class || m.getReturnType() == List.class)
-                    && Arrays.equals(pTypes, new Class<?>[] { String.class }))
-                return m;
-            if (type.equals(MethodType.GET_KEYWORD_DOCUMENTATION)
-                    && (name.equals("getKeywordDocumentation") || name.equals("get_keyword_documentation"))
-                    && m.getReturnType() == String.class && Arrays.equals(pTypes, new Class<?>[] { String.class }))
-                return m;
-            if (type.equals(MethodType.GET_KEYWORD_NAMES)
-                    && (name.equals("getKeywordNames") || name.equals("get_keyword_names"))
-                    && (m.getReturnType() == String[].class || m.getReturnType() == List.class) && pTypes.length == 0)
-                return m;
-            if (type.equals(MethodType.RUN_KEYWORD)
-                    && (name.equals("runKeyword") || name.equals("run_keyword"))
-                    && m.getReturnType().equals(Object.class)
-                    && (Arrays.equals(pTypes, new Class<?>[] { String.class, Object[].class }) || Arrays.equals(pTypes,
-                            new Class<?>[] { String.class, List.class })))
+                    && Arrays.equals(m.getParameterTypes(), new Class<?>[] { String.class }))
                 return m;
         }
         return null;
     }
 
-    enum MethodType {
-        GET_KEYWORD_ARGUMENTS, GET_KEYWORD_DOCUMENTATION, GET_KEYWORD_NAMES, RUN_KEYWORD;
+    private Method getGetKeywordDocumentation(List<Method> methods) {
+        for (Method m : methods) {
+            if ((m.getName().equals("getKeywordDocumentation") || m.getName().equals("get_keyword_documentation"))
+                    && m.getReturnType() == String.class
+                    && Arrays.equals(m.getParameterTypes(), new Class<?>[] { String.class }))
+                return m;
+        }
+        return null;
     }
 
 }

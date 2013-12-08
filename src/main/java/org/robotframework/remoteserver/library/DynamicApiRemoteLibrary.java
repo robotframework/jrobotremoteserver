@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class DynamicApiRemoteLibrary implements RemoteLibrary {
     private Object library;
@@ -48,7 +49,10 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
     }
 
     @Override
-    public Object runKeyword(String keyword, Object[] args) {
+    public Object runKeyword(String keyword, Object[] args, Map<String, Object> kwargs) {
+        if (kwargs != null && !kwargs.isEmpty()) {
+            throw new RuntimeException("Keyword arguments not yet supported for dynamic API libraries.");
+        }
         try {
             if (runKeyword.getParameterTypes()[1].equals(List.class)) {
                 return runKeyword.invoke(library, keyword, Arrays.asList(args));
