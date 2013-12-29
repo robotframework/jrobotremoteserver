@@ -125,11 +125,11 @@ public class ServerMethods {
     }
 
     /**
-     * Get an array of argument descriptors for the given keyword.
+     * Get an array of argument specifications for the given keyword.
      * 
      * @param keyword
      *            The keyword to lookup.
-     * @return A string array of argument descriptors for the given keyword.
+     * @return A string array of argument specifications for the given keyword.
      */
     public String[] get_keyword_arguments(String keyword) {
         if (keyword.equalsIgnoreCase("stop_remote_server")) {

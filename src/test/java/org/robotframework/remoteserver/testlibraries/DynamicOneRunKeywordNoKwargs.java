@@ -8,7 +8,6 @@ public class DynamicOneRunKeywordNoKwargs extends StaticOne {
 
     public Object runKeyword(String name, Object[] args) {
         if (name.equals("getArgs")) {
-            System.out.println(getArgs(args));
             return getArgs(args);
         } else {
             throw new RuntimeException();

@@ -48,8 +48,8 @@ public interface RemoteLibrary {
      * Gets the argument descriptors for the given keyword name.
      * 
      * @param keyword
-     *            name of the keyword to get argument descriptors for
-     * @return array of argument descriptors
+     *            name of the keyword to get argument specifications for
+     * @return array of argument specifications
      */
     public String[] getKeywordArguments(String keyword);
 

@@ -38,7 +38,8 @@ interpreter = clargs.pop(0) if clargs else 'python'
 libraries = \
         'org.robotframework.examplelib.FullDynamic:/FullDynamic,' + \
         'org.robotframework.examplelib.MinDynamic:/MinDynamic,' + \
-        'org.robotframework.examplelib.Static:/Static'
+        'org.robotframework.examplelib.Static:/Static,' + \
+        'org.robotframework.examplelib.MinDynamicKwargs:/MinDynamicKwargs'
 if clargs:
     libraries = clargs.pop(0)
 
@@ -56,6 +57,11 @@ for entry in libraries:
             '--output', OUTPUT, '--log', 'NONE', '--report', 'NONE']
     if 'min' in name.lower() or 'static' in name.lower():
         args.extend(['--exclude', 'argsknown'])
+    if 'kwargs' in name.lower():
+        args.extend(['--include', 'kwargs'])
+    else:
+        args.extend(['--exclude', 'kwargs'])
+    args.extend(['--loglevel','DEBUG'])
     args.extend([join(BASE, 'tests')])
     print 'Running tests with command:\n%s' % ' '.join(args)
     subprocess.call(args)
