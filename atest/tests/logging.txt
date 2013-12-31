@@ -1,4 +1,4 @@
-| *** Settings *** |
+﻿| *** Settings *** |
 | Suite Setup    | Set Debug Log Level |
 | Suite Teardown | Reset Log Level |
 | Resource       | resource.txt |
@@ -34,7 +34,7 @@
 |    | Should Be Equal | ${ret} | ${EMPTY} |
 
 | Log Control Char |
-|    | [Documentation] | Fails with ExpatError when running tests on Jython 2.5.\nLOG 1:1 INFO >< |
+|    | [Documentation] | Expected unicode char has a \x01 in it.\nLOG 1:1 INFO ģ |
 |    | Log Control Char |
 
 | Logg To Out And Err |

@@ -15,6 +15,7 @@ package org.robotframework.remoteserver.library;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,14 +51,17 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
 
     @Override
     public Object runKeyword(String keyword, Object[] args, Map<String, Object> kwargs) {
-        if (kwargs != null && !kwargs.isEmpty()) {
-            throw new RuntimeException("Keyword arguments not yet supported for dynamic API libraries.");
+        if (kwargs != null && !kwargs.isEmpty() && runKeyword.getParameterTypes().length == 2) {
+            throw new RuntimeException("This library does not support keyword arguments.");
+        }
+        Object[] invokeArgs = new Object[runKeyword.getParameterTypes().length];
+        invokeArgs[0] = keyword;
+        invokeArgs[1] = runKeyword.getParameterTypes()[1].equals(List.class) ? Arrays.asList(args) : args;
+        if (invokeArgs.length == 3) {
+            invokeArgs[2] = kwargs;
         }
         try {
-            if (runKeyword.getParameterTypes()[1].equals(List.class)) {
-                return runKeyword.invoke(library, keyword, Arrays.asList(args));
-            }
-            return runKeyword.invoke(library, keyword, args);
+            return runKeyword.invoke(library, invokeArgs);
         } catch (Exception e) {
             if (e.getClass().equals(InvocationTargetException.class))
                 throw new RuntimeException(e.getCause().getMessage(), e.getCause());
