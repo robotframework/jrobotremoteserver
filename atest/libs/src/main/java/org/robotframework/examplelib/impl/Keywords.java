@@ -110,7 +110,7 @@ public class Keywords
 
     @RobotKeyword
     public void logControlChar() {
-        System.out.println((char) 1);
+        System.out.println("\u0123");
     }
 
     @RobotKeyword
@@ -254,8 +254,8 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames("arg")
-    public void controlCharAsArgument(char arg) {
-        shouldBeEqual(arg, "");
+    public void controlCharAsArgument(String arg) {
+        shouldBeEqual(arg, "\1");
     }
 
     @RobotKeyword
@@ -596,8 +596,8 @@ public class Keywords
     }
 
     @RobotKeyword
-    public char returnControlChar() {
-        return (char)1;
+    public String returnControlChar() {
+        return "\1";
     }
 
     @RobotKeyword
