@@ -34,8 +34,9 @@ public class ServerMethods {
 
     private Log log;
     private Context context;
-    private static String[] ignoredExceptions = new String[] { "AssertionError", "AssertionFailedError", "Exception",
-            "Error", "RuntimeError", "RuntimeException", "DataError", "TimeoutError", "RemoteError" };
+    private static List<String> genericExceptions = Arrays.asList(new String[] { "AssertionError",
+            "AssertionFailedError", "Exception", "Error", "RuntimeError", "RuntimeException", "DataError",
+            "TimeoutError", "RemoteError" });
 
     public ServerMethods(Context context) {
         log = LogFactory.getLog(ServerMethods.class);
@@ -185,11 +186,17 @@ public class ServerMethods {
 
     private String getError(Throwable thrown) {
         String simpleName = thrown.getClass().getSimpleName();
-        for (String ignoredName : ignoredExceptions)
-            if (simpleName.equals(ignoredName)) {
-                return StringUtils.defaultIfEmpty(thrown.getMessage(), simpleName);
-            }
-        return String.format("%s: %s", thrown.getClass().getName(), thrown.getMessage());
+        boolean suppressName = false;
+        try {
+            suppressName = thrown.getClass().getField("ROBOT_SUPPRESS_NAME").getBoolean(thrown);
+        } catch (Exception e) {
+            // ignore
+        }
+        if (genericExceptions.contains(simpleName) || suppressName) {
+            return StringUtils.defaultIfEmpty(thrown.getMessage(), simpleName);
+        } else {
+            return String.format("%s: %s", thrown.getClass().getName(), thrown.getMessage());
+        }
     }
 
     protected Object arraysToLists(Object arg) {
