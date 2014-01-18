@@ -75,11 +75,11 @@ public class ServerMethods {
      * @return remote result Map containing the execution results
      */
     public Map<String, Object> run_keyword(String keyword, Object[] args, Map<String, Object> kwargs) {
-        HashMap<String, Object> kr = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<String, Object>();
         StdStreamRedirecter redirector = new StdStreamRedirecter();
         redirector.redirectStdStreams();
         try {
-            kr.put("status", "PASS");
+            result.put("status", "PASS");
             Object retObj = "";
             if (keyword.equalsIgnoreCase("stop_remote_server")) {
                 retObj = stopRemoteServer();
@@ -97,23 +97,23 @@ public class ServerMethods {
                 }
             }
             if (retObj != null && !retObj.equals("")) {
-                kr.put("return", retObj);
+                result.put("return", retObj);
             }
         } catch (Throwable e) {
-            kr.put("status", "FAIL");
+            result.put("status", "FAIL");
             Throwable t = e.getCause() == null ? e : e.getCause();
-            kr.put("error", getError(t));
-            kr.put("traceback", ExceptionUtils.getStackTrace(t));
+            result.put("error", getError(t));
+            result.put("traceback", ExceptionUtils.getStackTrace(t));
         } finally {
             String stdOut = StringUtils.defaultString(redirector.getStdOutAsString());
             String stdErr = StringUtils.defaultString(redirector.getStdErrAsString());
             if (!stdOut.isEmpty() || !stdErr.isEmpty()) {
                 String delimiter = stdOut.isEmpty() || stdErr.isEmpty() ? "" : "\n";
-                kr.put("output", stdOut + delimiter + stdErr);
+                result.put("output", stdOut + delimiter + stdErr);
             }
             redirector.resetStdStreams();
         }
-        return kr;
+        return result;
     }
 
     /**
