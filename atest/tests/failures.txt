@@ -26,6 +26,10 @@
 |    | [Documentation] | FAIL org.robotframework.examplelib.impl.MyException: My message |
 |    | Custom Exception |
 
+| Suppressed Name Exception |
+|    | [Documentation] | FAIL name suppressed |
+|    | Suppressed Name Exception |
+
 | Failure Deeper |
 |    | [Documentation] | FAIL Finally failing |
 |    | Failure Deeper |

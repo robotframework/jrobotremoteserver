@@ -158,6 +158,11 @@ public class Keywords
     }
 
     @RobotKeyword
+    public static void suppressedNameException() throws SuppressedNameException {
+        throw new SuppressedNameException();
+    }
+
+    @RobotKeyword
     @ArgumentNames({"rounds=10"})
     public static void failureDeeper(Object...args) {
         Integer rounds = args.length > 0 ? (Integer) args[0] : 10;
