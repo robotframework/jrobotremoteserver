@@ -89,7 +89,7 @@ def test(port, path, attempts=1):
             errmsg = err.faultString
             break
         else:
-            print "%s remote server running on port %s, path %s" % (ret['return'], port, path)
+            print "Remote server running on port %s, path %s" % (port, path)
             return True
     print "Failed to connect to remote server on port %s path %s: %s" % (port, path, errmsg)
     return False

@@ -24,10 +24,10 @@ public class RemoteServerTest {
         server.putLibrary("/", StaticOne.class);
         server.start();
         String result = (String) runKeyword("/", "stop_remote_server").get("output");
-        Assert.assertEquals(result, "This Robot Framework remote server does not allow stopping\n");
+        Assert.assertEquals(result, "This Robot Framework remote server does not allow stopping");
         server.setAllowStop(true);
         result = (String) runKeyword("/", "stop_remote_server").get("output");
-        Assert.assertEquals(result, "Robot Framework remote server stopping\n");
+        Assert.assertEquals(result, "Robot Framework remote server stopping");
     }
 
     @Test
@@ -74,7 +74,8 @@ public class RemoteServerTest {
         } catch (Exception e) {
             ex = e;
         }
-        Assert.assertEquals(ex.getMessage(), "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
+        Assert.assertEquals(ex.getMessage(),
+                "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
     }
 
     @Test
@@ -94,6 +95,15 @@ public class RemoteServerTest {
     public void libraryMap() {
         server.putLibrary("/", StaticOne.class);
         Assert.assertTrue(server.getLibraryMap().containsKey("/"));
+    }
+
+    @Test
+    public void onlyRequiredEntriesInResultsWhenPassed() throws Exception {
+        server.putLibrary("/1", StaticOne.class);
+        server.start();
+        Map<?, ?> results = runKeyword("/1", "noReturnValue");
+        Assert.assertEquals(results.get("status"), "PASS");
+        Assert.assertEquals(results.size(), 1);
     }
 
     public XmlRpcClient getClient(String path) {

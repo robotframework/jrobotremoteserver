@@ -19,6 +19,9 @@ public class StaticOne {
     public void onlyVariableArgs(String... strings) {
     }
 
+    public void noReturnValue() {
+    }
+
     protected String getArgs(Object[] args) {
         return getArgs(args, null, false);
     }

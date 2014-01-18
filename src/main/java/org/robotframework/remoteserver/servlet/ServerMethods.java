@@ -80,8 +80,6 @@ public class ServerMethods {
         redirector.redirectStdStreams();
         try {
             kr.put("status", "PASS");
-            kr.put("error", "");
-            kr.put("traceback", "");
             Object retObj = "";
             if (keyword.equalsIgnoreCase("stop_remote_server")) {
                 retObj = stopRemoteServer();
@@ -98,15 +96,21 @@ public class ServerMethods {
                     }
                 }
             }
-            kr.put("return", retObj);
+            if (retObj != null && !retObj.equals("")) {
+                kr.put("return", retObj);
+            }
         } catch (Throwable e) {
             kr.put("status", "FAIL");
-            kr.put("return", "");
             Throwable t = e.getCause() == null ? e : e.getCause();
             kr.put("error", getError(t));
             kr.put("traceback", ExceptionUtils.getStackTrace(t));
         } finally {
-            kr.put("output", redirector.getStdOutAsString() + "\n" + redirector.getStdErrAsString());
+            String stdOut = StringUtils.defaultString(redirector.getStdOutAsString());
+            String stdErr = StringUtils.defaultString(redirector.getStdErrAsString());
+            if (!stdOut.isEmpty() || !stdErr.isEmpty()) {
+                String delimiter = stdOut.isEmpty() || stdErr.isEmpty() ? "" : "\n";
+                kr.put("output", stdOut + delimiter + stdErr);
+            }
             redirector.resetStdStreams();
         }
         return kr;
