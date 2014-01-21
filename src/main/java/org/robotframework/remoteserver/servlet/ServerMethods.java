@@ -37,6 +37,7 @@ public class ServerMethods {
     private static List<String> genericExceptions = Arrays.asList(new String[] { "AssertionError",
             "AssertionFailedError", "Exception", "Error", "RuntimeError", "RuntimeException", "DataError",
             "TimeoutError", "RemoteError" });
+    String[] logLevelPrefixes = new String[] { "*TRACE*", "*DEBUG*", "*INFO*", "*HTML*", "*WARN*" };
 
     public ServerMethods(Context context) {
         log = LogFactory.getLog(ServerMethods.class);
@@ -108,8 +109,23 @@ public class ServerMethods {
             String stdOut = StringUtils.defaultString(redirector.getStdOutAsString());
             String stdErr = StringUtils.defaultString(redirector.getStdErrAsString());
             if (!stdOut.isEmpty() || !stdErr.isEmpty()) {
-                String delimiter = stdOut.isEmpty() || stdErr.isEmpty() ? "" : "\n";
-                result.put("output", stdOut + delimiter + stdErr);
+                StringBuilder output = new StringBuilder(stdOut);
+                if (!stdOut.isEmpty() && !stdErr.isEmpty()) {
+                    if (!stdOut.endsWith("\n")) {
+                        output.append("\n");
+                    }
+                    boolean addLevel = true;
+                    for (String prefix : logLevelPrefixes) {
+                        if (stdErr.startsWith(prefix)) {
+                            addLevel = false;
+                            break;
+                        }
+                    }
+                    if (addLevel) {
+                        output.append("*INFO*");
+                    }
+                }
+                result.put("output", output.append(stdErr).toString());
             }
             redirector.resetStdStreams();
         }

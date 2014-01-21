@@ -37,6 +37,8 @@
 |    | [Documentation] | Expected unicode char has a \x01 in it.\nLOG 1:1 INFO ģ |
 |    | Log Control Char |
 
-| Logg To Out And Err |
-|    | [Documentation] | LOG 1 INFO To out\nTo err is human |
-|    | Log To Out And Err |
+| Logging both through stdout and stderr |
+|   | [Documentation] | LOG 1:1 INFO stdout\nLOG 1:2 INFO stderr\nLOG 2:1 DEBUG stdout-continue\nLOG 2:2 INFO stderr\nLOG 3:1 INFO o\no2\nLOG 3:2 DEBUG e\nLOG 3:3 INFO e2 |
+|   | Logging both to stdout and stderr | stdout | stderr |
+|   | Logging both to stdout and stderr | *DEBUG* stdout | stderr | -continue |
+|   | Logging both to stdout and stderr | o\n | *DEBUG* e\n | o2 | *INFO* e2 |

@@ -22,22 +22,18 @@ import org.robotframework.javalib.annotation.RobotKeywords;
  * Various type declarations are used on purpose to provide more coverage
  */
 @RobotKeywords
-public class Keywords
-{
+public class Keywords {
 
-    private final String unicode = "Hyv\u00E4\u00E4 y\u00F6t\u00E4. "
-            + "\u0421\u043F\u0430\u0441\u0438\u0431\u043E!";
-    
+    private final String unicode = "Hyv\u00E4\u00E4 y\u00F6t\u00E4. " + "\u0421\u043F\u0430\u0441\u0438\u0431\u043E!";
+
     // Common keywords
 
     @RobotKeyword("Documentation")
-    public void hasDocumentation()
-    {
+    public void hasDocumentation() {
     }
 
     @ArgumentNames({ "name" })
-    public void hasArgumentDocumentation(String name)
-    {
+    public void hasArgumentDocumentation(String name) {
     }
 
     @RobotKeyword
@@ -45,24 +41,21 @@ public class Keywords
         return "Java";
     }
 
-    @RobotKeyword("This keyword passes.\n"
-                + "\n"
-                + "See `Failing`, `Logging`, and `Returning` for other basic keywords.")
-    public void passing() {}
+    @RobotKeyword("This keyword passes.\n" + "\n"
+            + "See `Failing`, `Logging`, and `Returning` for other basic keywords.")
+    public void passing() {
+    }
 
     @RobotKeyword("This keyword fails with provided `message`")
-    @ArgumentNames({"message"})
+    @ArgumentNames({ "message" })
     public static void failing(String message) {
         throw new AssertionError(message);
     }
 
-    @RobotKeyword("This keywords logs given `message` with given `level`\n"
-                + "\n"
-                + "Example:"
-                + "| Logging | Hello, world! |      |"
-                + "| Logging | Warning!!!    | WARN |")
-    @ArgumentNames({"message", "level=INFO"})
-    public void logging(String message, String...args) {
+    @RobotKeyword("This keywords logs given `message` with given `level`\n" + "\n" + "Example:"
+            + "| Logging | Hello, world! |      |" + "| Logging | Warning!!!    | WARN |")
+    @ArgumentNames({ "message", "level=INFO" })
+    public void logging(String message, String... args) {
         String level = args.length > 0 ? args[0] : "INFO";
         System.out.println(String.format("*%s* %s", level, message));
     }
@@ -114,10 +107,15 @@ public class Keywords
     }
 
     @RobotKeyword
-    public void logToOutAndErr() {
-        System.err.print("To err");
-        System.out.print("To out");
-        System.err.print(" is human");
+    @ArgumentNames({ "*varargs" })
+    public void loggingBothToStdoutAndStderr(String... messages) {
+        for (int i = 0; i < messages.length; i++) {
+            if (i % 2 == 0) {
+                System.out.print(messages[i]);
+            } else {
+                System.err.print(messages[i]);
+            }
+        }
     }
 
     // Failures
@@ -149,7 +147,7 @@ public class Keywords
 
     @RobotKeyword
     public static void zeroDivision() {
-        System.out.println(1/0);
+        System.out.println(1 / 0);
     }
 
     @RobotKeyword
@@ -163,12 +161,12 @@ public class Keywords
     }
 
     @RobotKeyword
-    @ArgumentNames({"rounds=10"})
-    public static void failureDeeper(Object...args) {
+    @ArgumentNames({ "rounds=10" })
+    public static void failureDeeper(Object... args) {
         Integer rounds = args.length > 0 ? (Integer) args[0] : 10;
         if (rounds == 1)
             throw new RuntimeException("Finally failing");
-        failureDeeper(rounds-1);
+        failureDeeper(rounds - 1);
     }
 
     @RobotKeyword
@@ -191,22 +189,22 @@ public class Keywords
     }
 
     @RobotKeyword
-    @ArgumentNames({"arg1", "arg2"})
+    @ArgumentNames({ "arg1", "arg2" })
     public Object twoArguments(Object arg1, Object arg2) {
         System.out.print(String.format("%s %s", arg1, arg2)); //
         return String.format("%s %s", arg1, arg2);
     }
 
     @RobotKeyword
-    @ArgumentNames({"arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7"})
-    public Object sevenArguments(Object arg1, Object arg2, Object arg3, Object arg4,
-                                 Object arg5, Object arg6, Object arg7) {
+    @ArgumentNames({ "arg1", "arg2", "arg3", "arg4", "arg5", "arg6", "arg7" })
+    public Object sevenArguments(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6,
+            Object arg7) {
         return String.format("%s %s %s %s %s %s %s", arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }
 
     @RobotKeyword
-    @ArgumentNames({"arg1", "arg2='2'", "arg3=3"})
-    public Object argumentsWithDefaultValues(Object arg1, Object...args) {
+    @ArgumentNames({ "arg1", "arg2='2'", "arg3=3" })
+    public Object argumentsWithDefaultValues(Object arg1, Object... args) {
         Object arg2 = args.length > 0 ? args[0] : "2";
         Object arg3 = args.length > 1 ? args[1] : 3;
         return String.format("%s %s %s", arg1, arg2, arg3);
@@ -214,7 +212,7 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames("*args")
-    public String variableNumberOfArguments(Object...args) {
+    public String variableNumberOfArguments(Object... args) {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (Object arg : args) {
@@ -227,8 +225,8 @@ public class Keywords
     }
 
     @RobotKeyword
-    @ArgumentNames({"req", "default='world", "*varargs"})
-    public String requiredDefaultsAndVarargs(Object req, Object...varargs) {
+    @ArgumentNames({ "req", "default='world", "*varargs" })
+    public String requiredDefaultsAndVarargs(Object req, Object... varargs) {
         Object deefault = varargs.length > 0 ? varargs[0] : "world";
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s %s", req, deefault));
@@ -362,19 +360,19 @@ public class Keywords
         List inner = new ArrayList();
         inner.add(Arrays.asList(1, "", "<MyObject>", new HashMap()));
         exp.add(inner);
-        //exp.add(4);
+        // exp.add(4);
         shouldBeEqual(arg, exp);
     }
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void mapAsArgument(Map<Object,Object> arg) {
+    public void mapAsArgument(Map<Object, Object> arg) {
         shouldBeEqual(arg, returnMap());
-    }  
+    }
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void emptyMapAsArgument(Map<?,?> arg) {
+    public void emptyMapAsArgument(Map<?, ?> arg) {
         shouldBeEqual(arg, new HashMap());
     }
 
@@ -389,7 +387,7 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void mapContainingNoneAsArgument(Map<?,?> arg) {
+    public void mapContainingNoneAsArgument(Map<?, ?> arg) {
         Map exp = new HashMap();
         exp.put("As value", "");
         exp.put("", "As key");
@@ -398,7 +396,7 @@ public class Keywords
 
     @RobotKeyword
     @ArgumentNames({ "arg" })
-    public void mapContainingObjectsAsArgument(Map<?,?> arg) {
+    public void mapContainingObjectsAsArgument(Map<?, ?> arg) {
         Map exp = new HashMap();
         exp.put("As value", "<MyObject1>");
         exp.put("<MyObject2>", "As key");
@@ -454,7 +452,7 @@ public class Keywords
     public int returnInt() {
         return 12;
     }
-    
+
     @RobotKeyword
     public Integer returnInteger() {
         return 42;
@@ -501,8 +499,9 @@ public class Keywords
     }
 
     @RobotKeyword
-    public void returnNothing() {}
-    
+    public void returnNothing() {
+    }
+
     @RobotKeyword
     public Object returnNull() {
         return null;
@@ -525,7 +524,7 @@ public class Keywords
 
     @RobotKeyword
     public List<Object> returnListContainingNull() {
-        return Arrays.asList(new Object[] {null});
+        return Arrays.asList(new Object[] { null });
     }
 
     @RobotKeyword
@@ -536,10 +535,11 @@ public class Keywords
     @RobotKeyword
     public List<Object> returnNestedList() {
         List<Object> outer = new ArrayList<Object>();
-        List<Object> inner = Arrays.asList(new Object[] {true, false});
+        List<Object> inner = Arrays.asList(new Object[] { true, false });
         outer.add(inner);
-        List<Object> inner2 = new ArrayList<Object>(Arrays.asList(new Object[] {1, null, new MyObject(""), new HashMap<Object, Object>()}));
-        inner =  new ArrayList<Object>();
+        List<Object> inner2 = new ArrayList<Object>(Arrays.asList(new Object[] { 1, null, new MyObject(""),
+                new HashMap<Object, Object>() }));
+        inner = new ArrayList<Object>();
         inner.add(inner2);
         outer.add(inner);
         return outer;
@@ -639,7 +639,7 @@ public class Keywords
     public byte returnByte() {
         return 67;
     }
-    
+
     @RobotKeyword
     public Byte returnByteObject() {
         return 127;
@@ -657,12 +657,12 @@ public class Keywords
 
     @RobotKeyword
     public Byte[] returnArrayOfByte() {
-        return new Byte[] { (byte) -57, (byte) 21};
+        return new Byte[] { (byte) -57, (byte) 21 };
     }
 
     @RobotKeyword
     public byte[] returnPrimitiveArrayOfByte() {
-        return new byte[] { (byte) -4, (byte) 8};
+        return new byte[] { (byte) -4, (byte) 8 };
     }
 
     @RobotKeyword
@@ -724,7 +724,7 @@ public class Keywords
     public boolean[] returnPrimitiveArrayOfBoolean() {
         return new boolean[] { true, false };
     }
-    
+
     @RobotKeyword
     public Date returnDate() {
         return new Date(0);
@@ -737,7 +737,7 @@ public class Keywords
         queue.add(new MyObject("second"));
         return queue;
     }
-    
+
     @RobotKeyword
     public Queue<String> returnEmptyQueue() {
         return new PriorityQueue();
@@ -763,10 +763,11 @@ public class Keywords
         shouldBeEqual(a, b, "");
     }
 
-    /* The equals method of any class is too precise in most classes to use directly, especially on
-     * PyObject's subclasses.  This method considers equality to mean all Lists and array have
-     * the same elements in the same order.  For maps, order is ignored and keys are assumed to be
-     * strings.
+    /*
+     * The equals method of any class is too precise in most classes to use
+     * directly, especially on PyObject's subclasses. This method considers
+     * equality to mean all Lists and array have the same elements in the same
+     * order. For maps, order is ignored and keys are assumed to be strings.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void shouldBeEqual(Object a, Object b, String where) {
@@ -778,17 +779,18 @@ public class Keywords
             return;
         else if (a instanceof List || b instanceof List) {
             if (!(a instanceof List && b instanceof List))
-                throw new AssertionError(String.format("%sOne is List other is not: %s %s", where, a.getClass(), b.getClass()));
+                throw new AssertionError(String.format("%sOne is List other is not: %s %s", where, a.getClass(),
+                        b.getClass()));
             List la = new ArrayList((List) a);
             List lb = new ArrayList((List) b);
             if (la.size() != lb.size())
                 throw new AssertionError(String.format("%ssize of a: %s != size of b: %s", where, la.size(), lb.size()));
             for (int i = 0; i < la.size(); i++)
                 shouldBeEqual(la.get(i), lb.get(i), String.format("%slist(%d)>", where, i));
-        }
-        else if (a instanceof Map || b instanceof Map) {
+        } else if (a instanceof Map || b instanceof Map) {
             if (!(a instanceof Map && b instanceof Map))
-                throw new AssertionError(String.format("%sOne is Map other is not: %s %s", where, a.getClass(), b.getClass()));
+                throw new AssertionError(String.format("%sOne is Map other is not: %s %s", where, a.getClass(),
+                        b.getClass()));
             Map ma = (Map) a;
             Map mb = (Map) b;
             int sa = ma.entrySet().size();
@@ -809,18 +811,17 @@ public class Keywords
                     throw new AssertionError(String.format("%sa missing key %s", where, key));
                 shouldBeEqual(entry.getValue(), ma.get(key), String.format("%skey(%s) of a>", where, key));
             }
-        }
-        else if (a instanceof Object[] || b instanceof Object[]) {
+        } else if (a instanceof Object[] || b instanceof Object[]) {
             if (!(a instanceof Object[] && b instanceof Object[]))
-                throw new AssertionError(String.format("%sOne is an array and the other is not: %s %s", where, a.getClass(), b.getClass()));
+                throw new AssertionError(String.format("%sOne is an array and the other is not: %s %s", where,
+                        a.getClass(), b.getClass()));
             Object[] aa = (Object[]) a;
             Object[] ab = (Object[]) b;
             if (aa.length != ab.length)
                 throw new AssertionError(String.format("%ssize of a: %s != size of b: %s", where, aa.length, ab.length));
             for (int i = 0; i < aa.length; i++)
                 shouldBeEqual(aa, ab, String.format("%sarray(%d)>", where, i));
-        }
-        else
+        } else
             throw new AssertionError(String.format("%sNot equal: %s:%s %s:%s", where, a.getClass(), a, b.getClass(), b));
     }
 }
