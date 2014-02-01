@@ -29,8 +29,7 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
 import org.apache.xmlrpc.webserver.XmlRpcServletServer;
-import org.robotframework.remoteserver.RemoteServer;
-import org.robotframework.remoteserver.context.Context;
+import org.robotframework.remoteserver.context.RemoteServerContext;
 import org.robotframework.remoteserver.library.DefaultRemoteLibraryFactory;
 import org.robotframework.remoteserver.library.RemoteLibrary;
 import org.robotframework.remoteserver.library.RemoteLibraryFactory;
@@ -40,31 +39,14 @@ import org.robotframework.remoteserver.xmlrpc.TypeFactory;
 /**
  * This servlet uses the same instance of a test library to process all requests
  */
-public class RemoteServerServlet extends XmlRpcServlet implements Context {
+public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerContext {
     private static final long serialVersionUID = -7981676271855172976L;
     private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<HttpServletRequest>();
     private static final ThreadLocal<RemoteLibrary> currLibrary = new ThreadLocal<RemoteLibrary>();
-    private RemoteServer remoteServer;
     private Map<String, RemoteLibrary> libraryMap = new ConcurrentHashMap<String, RemoteLibrary>();
+    private boolean allowStop = true;
 
-    /**
-     * Map the given test library to the specified path. Paths must:
-     * <ul>
-     * <li>start with a /</li>
-     * <li>contain only alphanumeric characters or any of these: / - . _ ~</li>
-     * <li>not end in a /</li>
-     * <li>not contain a repeating sequence of /s</li>
-     * </ul>
-     * 
-     * Example: <code>putLibrary("/myLib", com.example.MyLibrary);</code>
-     * 
-     * @param clazz
-     *            class of the test library
-     * @param path
-     *            path to map the test library to
-     * @return the previous library mapped to the path, or null if there was no
-     *         mapping for the path
-     */
+    @Override
     public RemoteLibrary putLibrary(String path, Class<?> clazz) {
         checkPath(path);
         RemoteLibraryFactory libraryFactory = createLibraryFactory();
@@ -78,27 +60,24 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         return this.libraryMap.put(path, remoteLibrary);
     }
 
-    /**
-     * Removes the library mapped to the given path if the mapping exists
-     * 
-     * @param path
-     *            path for the library whose mapping is to be removed
-     * @return the previous library associated with the path, or null if there
-     *         was no mapping for the path.
-     */
+    @Override
     public RemoteLibrary removeLibrary(String path) {
         return libraryMap.remove(path);
     }
 
-    /**
-     * Gets a copy of the current library map. Keys in the map are the paths and
-     * the values are {@link RemoteLibrary} wrappers of the libraries being
-     * served.
-     * 
-     * @return a copy of the current library map
-     */
+    @Override
     public Map<String, RemoteLibrary> getLibraryMap() {
         return new HashMap<String, RemoteLibrary>(libraryMap);
+    }
+
+    @Override
+    public boolean getAllowStop() {
+        return allowStop;
+    }
+
+    @Override
+    public void setAllowStop(boolean allowed) {
+        allowStop = allowed;
     }
 
     @Override
@@ -135,11 +114,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
          * hitting the limit of open sockets on some Windows systems. adding
          * this header gets Jetty to close the socket.
          */
-        String path = req.getServletPath() == null ? "" : req.getServletPath();
-        if (req.getPathInfo() != null) {
-            path += req.getPathInfo();
-        }
-        path = cleanPath(path);
+        String path = cleanPath(req.getPathInfo());
         if (libraryMap.containsKey(path)) {
             currLibrary.set(libraryMap.get(path));
             if ("HTTP/1.0".equals(req.getProtocol()))
@@ -159,14 +134,8 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         out.print(body);
     }
 
-    /**
-     * The request is shared so that more context, such as the client address,
-     * can be obtained
-     * 
-     * @return {@link HttpServletRequest} object that contains the request the
-     *         client has made of the servlet
-     */
-    public static HttpServletRequest getRequest() {
+    @Override
+    public HttpServletRequest getRequest() {
         return request.get();
     }
 
@@ -206,14 +175,6 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
         return new DefaultRemoteLibraryFactory();
     }
 
-    public RemoteServer getRemoteServer() {
-        return remoteServer;
-    }
-
-    public void setRemoteServer(RemoteServer server) {
-        remoteServer = server;
-    }
-
     /**
      * Cleans up the path of an incoming request. Repeating /s are reduced to
      * one /. Trailing /s are removed. A <code>null</code> or empty path is
@@ -249,4 +210,5 @@ public class RemoteServerServlet extends XmlRpcServlet implements Context {
                             path));
         }
     }
+
 }

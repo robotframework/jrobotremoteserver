@@ -50,12 +50,10 @@ public class RemoteServer {
     protected Server server = new Server();
     private RemoteServerServlet servlet = new RemoteServerServlet();
     private SelectChannelConnector connector = new SelectChannelConnector();
-    private boolean allowStop = true;
 
     public RemoteServer() {
         connector.setName("jrobotremoteserver");
         server.setConnectors(new Connector[] { connector });
-        servlet.setRemoteServer(this);
         ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
         servletContextHandler.addServlet(new ServletHolder(servlet), "/");
     }
@@ -87,7 +85,7 @@ public class RemoteServer {
      * @return <code>true</code> if this server allows remote stopping
      */
     public boolean getAllowStop() {
-        return allowStop;
+        return servlet.getAllowStop();
     }
 
     /**
@@ -97,7 +95,7 @@ public class RemoteServer {
      *            <code>true</code> to allow stopping the server remotely
      */
     public void setAllowStop(boolean allowed) {
-        allowStop = allowed;
+        servlet.setAllowStop(allowed);
     }
 
     /**
