@@ -22,7 +22,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.robotframework.javalib.util.StdStreamRedirecter;
-import org.robotframework.remoteserver.context.Context;
 
 /**
  * Contains the XML-RPC methods that implement the remote library interface.
@@ -33,15 +32,15 @@ import org.robotframework.remoteserver.context.Context;
 public class ServerMethods {
 
     private Log log;
-    private Context context;
+    private RemoteServerServlet servlet;
     private static List<String> genericExceptions = Arrays.asList(new String[] { "AssertionError",
             "AssertionFailedError", "Exception", "Error", "RuntimeError", "RuntimeException", "DataError",
             "TimeoutError", "RemoteError" });
     String[] logLevelPrefixes = new String[] { "*TRACE*", "*DEBUG*", "*INFO*", "*HTML*", "*WARN*" };
 
-    public ServerMethods(Context context) {
+    public ServerMethods(RemoteServerServlet servlet) {
         log = LogFactory.getLog(ServerMethods.class);
-        this.context = context;
+        this.servlet = servlet;
     }
 
     /**
@@ -52,7 +51,7 @@ public class ServerMethods {
      */
     public String[] get_keyword_names() {
         try {
-            String[] names = context.getLibrary().getKeywordNames();
+            String[] names = servlet.getLibrary().getKeywordNames();
             if (names == null || names.length == 0)
                 throw new RuntimeException("No keywords found in the test library");
             String[] newNames = Arrays.copyOf(names, names.length + 1);
@@ -86,12 +85,12 @@ public class ServerMethods {
                 retObj = stopRemoteServer();
             } else {
                 try {
-                    retObj = context.getLibrary().runKeyword(keyword, args, kwargs);
+                    retObj = servlet.getLibrary().runKeyword(keyword, args, kwargs);
                 } catch (Exception e) {
                     if (illegalArgumentIn(e)) {
                         for (int i = 0; i < args.length; i++)
                             args[i] = arraysToLists(args[i]);
-                        retObj = context.getLibrary().runKeyword(keyword, args, kwargs);
+                        retObj = servlet.getLibrary().runKeyword(keyword, args, kwargs);
                     } else {
                         throw (e);
                     }
@@ -157,7 +156,7 @@ public class ServerMethods {
             return new String[0];
         }
         try {
-            String[] args = context.getLibrary().getKeywordArguments(keyword);
+            String[] args = servlet.getLibrary().getKeywordArguments(keyword);
             return args == null ? new String[0] : args;
         } catch (Throwable e) {
             log.warn("", e);
@@ -177,7 +176,7 @@ public class ServerMethods {
             return "Stops the remote server.\n\nThe server may be configured so that users cannot stop it.";
         }
         try {
-            String doc = context.getLibrary().getKeywordDocumentation(keyword);
+            String doc = servlet.getLibrary().getKeywordDocumentation(keyword);
             return doc == null ? "" : doc;
         } catch (Throwable e) {
             log.warn("", e);
@@ -195,9 +194,19 @@ public class ServerMethods {
     }
 
     protected boolean stopRemoteServer() throws Exception {
-        if (context.getRemoteServer().getAllowStop()) {
+        if (servlet.getAllowStop()) {
             System.out.print("Robot Framework remote server stopping");
-            context.getRemoteServer().stop(2000);
+            new Thread("remote-server-stopper") {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        // ignore
+                    }
+                    System.exit(0);
+                }
+            }.start();
         } else {
             System.out.print("This Robot Framework remote server does not allow stopping");
         }
