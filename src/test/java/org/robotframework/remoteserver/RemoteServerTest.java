@@ -1,12 +1,9 @@
 package org.robotframework.remoteserver;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import static org.robotframework.remoteserver.RemoteLibraryClient.runKeyword;
+
 import java.util.Map;
 
-import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.robotframework.remoteserver.testlibraries.StaticOne;
 import org.robotframework.remoteserver.testlibraries.StaticTwo;
 import org.testng.Assert;
@@ -104,37 +101,6 @@ public class RemoteServerTest {
         Map<?, ?> results = runKeyword("/1", "noReturnValue");
         Assert.assertEquals(results.get("status"), "PASS");
         Assert.assertEquals(results.size(), 1);
-    }
-
-    public XmlRpcClient getClient(String path) {
-        return getClient(path, 8270);
-    }
-
-    public XmlRpcClient getClient(String path, int port) {
-        XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-        try {
-            config.setServerURL(new URL("http://127.0.0.1:" + Integer.toString(port) + path));
-        } catch (MalformedURLException e) {
-            // ignore
-        }
-        XmlRpcClient client = new XmlRpcClient();
-        client.setConfig(config);
-        return client;
-    }
-
-    public Map runKeyword(String path, String keywordName, Object... params) {
-        return runKeyword(8270, path, keywordName, params);
-    }
-
-    public Map runKeyword(int port, String path, String keywordName, Object... params) {
-        XmlRpcClient client = getClient(path, port);
-        Map result = null;
-        try {
-            result = (Map) client.execute("run_keyword", new Object[] { keywordName, params });
-        } catch (XmlRpcException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     @BeforeMethod
