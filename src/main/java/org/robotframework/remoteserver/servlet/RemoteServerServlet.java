@@ -114,7 +114,8 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
          * hitting the limit of open sockets on some Windows systems. adding
          * this header gets Jetty to close the socket.
          */
-        String path = cleanPath(req.getPathInfo());
+        String path = req.getPathInfo() == null ? req.getServletPath() : req.getPathInfo();
+        path = cleanPath(path);
         if (libraryMap.containsKey(path)) {
             currLibrary.set(libraryMap.get(path));
             if ("HTTP/1.0".equals(req.getProtocol()))
