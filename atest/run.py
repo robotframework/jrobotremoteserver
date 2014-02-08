@@ -55,7 +55,7 @@ for entry in libraries:
 
     args = [interpreter, '-m', 'robot.run', '--name', name, '--variable', 'PATH:' + path,
             '--output', OUTPUT, '--log', 'NONE', '--report', 'NONE']
-    if 'min' in name.lower() or 'static' in name.lower():
+    if 'MinDynamic' in name:
         args.extend(['--exclude', 'argsknown'])
     if 'kwargs' in name.lower():
         args.extend(['--include', 'kwargs'])

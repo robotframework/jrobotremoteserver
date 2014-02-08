@@ -16,6 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.robotframework.javalib.annotation.ArgumentNames;
 import org.robotframework.javalib.annotation.RobotKeyword;
+import org.robotframework.javalib.annotation.RobotKeywordOverload;
 import org.robotframework.javalib.annotation.RobotKeywords;
 
 /*
@@ -226,9 +227,17 @@ public class Keywords {
 
     @RobotKeyword
     @ArgumentNames({ "arg1", "arg2='2'", "arg3=3" })
-    public Object argumentsWithDefaultValues(Object arg1, Object... args) {
-        Object arg2 = args.length > 0 ? args[0] : "2";
-        Object arg3 = args.length > 1 ? args[1] : 3;
+    public Object argumentsWithDefaultValues(Object arg1) {
+        return argumentsWithDefaultValues(arg1, "2");
+    }
+
+    @RobotKeywordOverload
+    public Object argumentsWithDefaultValues(Object arg1, Object arg2) {
+        return argumentsWithDefaultValues(arg1, arg2, "3");
+    }
+
+    @RobotKeywordOverload
+    public Object argumentsWithDefaultValues(Object arg1, Object arg2, Object arg3) {
         return String.format("%s %s %s", arg1, arg2, arg3);
     }
 
