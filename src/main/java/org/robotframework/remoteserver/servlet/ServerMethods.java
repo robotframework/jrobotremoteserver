@@ -215,17 +215,22 @@ public class ServerMethods {
 
     private String getError(Throwable thrown) {
         String simpleName = thrown.getClass().getSimpleName();
-        boolean suppressName = false;
-        try {
-            suppressName = thrown.getClass().getField("ROBOT_SUPPRESS_NAME").getBoolean(thrown);
-        } catch (Exception e) {
-            // ignore
-        }
+        boolean suppressName = isFlagSet("ROBOT_SUPPRESS_NAME", thrown);
         if (genericExceptions.contains(simpleName) || suppressName) {
             return StringUtils.defaultIfEmpty(thrown.getMessage(), simpleName);
         } else {
             return String.format("%s: %s", thrown.getClass().getName(), thrown.getMessage());
         }
+    }
+
+    private boolean isFlagSet(String name, Throwable thrown) {
+        boolean flag = false;
+        try {
+            flag = thrown.getClass().getField(name).getBoolean(thrown);
+        } catch (Exception e) {
+            // ignore
+        }
+        return flag;
     }
 
     protected Object arraysToLists(Object arg) {

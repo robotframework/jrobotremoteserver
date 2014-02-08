@@ -156,7 +156,11 @@ public class Keywords {
     }
 
     @RobotKeyword
-    public static void suppressedNameException() throws SuppressedNameException {
+    @ArgumentNames({ "subClass" })
+    public static void suppressedNameException(boolean subClass) throws SuppressedNameException {
+        if (subClass) {
+            throw new SpecificSuppressedNameException();
+        }
         throw new SuppressedNameException();
     }
 

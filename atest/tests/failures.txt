@@ -27,8 +27,8 @@
 |    | Custom Exception |
 
 | Suppressed Name Exception |
-|    | [Documentation] | FAIL name suppressed |
-|    | Suppressed Name Exception |
+|    | Run Keyword And Expect Error | name suppressed | Suppressed Name Exception | ${True} |
+|    | Run Keyword And Expect Error | name suppressed | Suppressed Name Exception | ${False} |
 
 | Failure Deeper |
 |    | [Documentation] | FAIL Finally failing |
