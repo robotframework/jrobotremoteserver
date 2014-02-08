@@ -22,9 +22,12 @@ public class RemoteServerTest {
         server.start();
         String result = (String) runKeyword("/", "stop_remote_server").get("output");
         Assert.assertEquals(result, "This Robot Framework remote server does not allow stopping");
+        Thread.sleep(2000);
+        result = (String) runKeyword("/", "getName").get("return");
+        Assert.assertEquals(result, "StaticOne");
         server.setAllowStop(true);
-        result = (String) runKeyword("/", "stop_remote_server").get("output");
-        Assert.assertEquals(result, "Robot Framework remote server stopping");
+        // actually stopping the server through the keyword will exit the JVM
+        // executing the acceptance tests will stop the server
     }
 
     @Test
