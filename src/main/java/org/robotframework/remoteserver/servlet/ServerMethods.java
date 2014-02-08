@@ -101,9 +101,17 @@ public class ServerMethods {
             }
         } catch (Throwable e) {
             result.put("status", "FAIL");
-            Throwable t = e.getCause() == null ? e : e.getCause();
-            result.put("error", getError(t));
-            result.put("traceback", ExceptionUtils.getStackTrace(t));
+            Throwable thrown = e.getCause() == null ? e : e.getCause();
+            result.put("error", getError(thrown));
+            result.put("traceback", ExceptionUtils.getStackTrace(thrown));
+            boolean continuable = isFlagSet("ROBOT_CONTINUE_ON_FAILURE", thrown);
+            if (continuable) {
+                result.put("continuable", true);
+            }
+            boolean fatal = isFlagSet("ROBOT_EXIT_ON_FAILURE", thrown);
+            if (fatal) {
+                result.put("fatal", true);
+            }
         } finally {
             String stdOut = StringUtils.defaultString(redirector.getStdOutAsString());
             String stdErr = StringUtils.defaultString(redirector.getStdErrAsString());
@@ -215,17 +223,22 @@ public class ServerMethods {
 
     private String getError(Throwable thrown) {
         String simpleName = thrown.getClass().getSimpleName();
-        boolean suppressName = false;
-        try {
-            suppressName = thrown.getClass().getField("ROBOT_SUPPRESS_NAME").getBoolean(thrown);
-        } catch (Exception e) {
-            // ignore
-        }
+        boolean suppressName = isFlagSet("ROBOT_SUPPRESS_NAME", thrown);
         if (genericExceptions.contains(simpleName) || suppressName) {
             return StringUtils.defaultIfEmpty(thrown.getMessage(), simpleName);
         } else {
             return String.format("%s: %s", thrown.getClass().getName(), thrown.getMessage());
         }
+    }
+
+    private boolean isFlagSet(String name, Throwable thrown) {
+        boolean flag = false;
+        try {
+            flag = thrown.getClass().getField(name).getBoolean(thrown);
+        } catch (Exception e) {
+            // ignore
+        }
+        return flag;
     }
 
     protected Object arraysToLists(Object arg) {
