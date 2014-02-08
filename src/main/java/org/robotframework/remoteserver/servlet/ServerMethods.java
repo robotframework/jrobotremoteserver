@@ -101,9 +101,17 @@ public class ServerMethods {
             }
         } catch (Throwable e) {
             result.put("status", "FAIL");
-            Throwable t = e.getCause() == null ? e : e.getCause();
-            result.put("error", getError(t));
-            result.put("traceback", ExceptionUtils.getStackTrace(t));
+            Throwable thrown = e.getCause() == null ? e : e.getCause();
+            result.put("error", getError(thrown));
+            result.put("traceback", ExceptionUtils.getStackTrace(thrown));
+            boolean continuable = isFlagSet("ROBOT_CONTINUE_ON_FAILURE", thrown);
+            if (continuable) {
+                result.put("continuable", true);
+            }
+            boolean fatal = isFlagSet("ROBOT_EXIT_ON_FAILURE", thrown);
+            if (fatal) {
+                result.put("fatal", true);
+            }
         } finally {
             String stdOut = StringUtils.defaultString(redirector.getStdOutAsString());
             String stdErr = StringUtils.defaultString(redirector.getStdErrAsString());

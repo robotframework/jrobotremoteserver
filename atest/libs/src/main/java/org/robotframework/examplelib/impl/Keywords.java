@@ -178,6 +178,24 @@ public class Keywords {
         throw new RuntimeException(unicode);
     }
 
+    @RobotKeyword
+    @ArgumentNames({ "message" })
+    static public void notSpecial(String message) {
+        throw new SpecialException(message,  false, false);
+    }
+
+    @RobotKeyword
+    @ArgumentNames({ "message" })
+    static public void continuable(String message) {
+        throw new SpecialException(message, true, false);
+    }
+
+    @RobotKeyword
+    @ArgumentNames({ "message" })
+    static public void fatal(String message) {
+        throw new SpecialException(message, false, true);
+    }
+
     // Arguments counts
 
     @RobotKeyword
