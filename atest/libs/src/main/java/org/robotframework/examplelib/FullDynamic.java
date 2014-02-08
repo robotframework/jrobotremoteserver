@@ -16,11 +16,11 @@ public class FullDynamic {
      * AnnotationLibrary re-throws all exceptions as RuntimeExceptions. Unwrap
      * it to obtain the original exception.
      */
-    public Object runKeyword(String keywordName, Object[] args) throws Exception {
+    public Object runKeyword(String keywordName, Object[] args) throws Throwable {
         try {
             return lib.runKeyword(keywordName, args);
         } catch (RuntimeException e) {
-            throw (Exception) e.getCause();
+            throw e.getCause();
         }
     }
 

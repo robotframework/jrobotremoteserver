@@ -8,7 +8,7 @@ public class MinDynamic{
         return lib.getKeywordNames();
     }
     
-    public Object runKeyword(String keywordName, Object[] args) throws Exception {
+    public Object runKeyword(String keywordName, Object[] args) throws Throwable {
         return lib.runKeyword(keywordName, args);
     }
 }
