@@ -41,7 +41,7 @@ public class StaticApiRemoteLibrary implements RemoteLibrary {
 
     @Override
     public String[] getKeywordArguments(String keyword) {
-        return new String[] { "*args" };
+        return handler.getKeywordArguments(keyword);
     }
 
     @Override
