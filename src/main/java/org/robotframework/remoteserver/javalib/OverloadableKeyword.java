@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.robotframework.javalib.keyword.Keyword;
 
 public class OverloadableKeyword implements Keyword {
@@ -29,6 +31,7 @@ public class OverloadableKeyword implements Keyword {
     private String name;
     private Object keywordBean;
     private boolean usesVarArgs = false;
+    private static Log log = LogFactory.getLog(OverloadableKeyword.class);
 
     public OverloadableKeyword(Object keywordBean, Method method) {
         name = method.getName();
@@ -74,8 +77,9 @@ public class OverloadableKeyword implements Keyword {
     public void addOverload(Method method) {
         Integer argCount = method.getParameterTypes().length;
         if (usesVarArgs || (!keywordMap.isEmpty() && hasVariableArgs(method))) {
-            throw new RuntimeException(String.format(
-                    "Method %s has overloads and one or more take variable arguments.", name));
+            log.warn(String.format("Overloads with variable arguments not supported. Ignoring overload %s",
+                    method.toString()));
+            return;
         } else if (keywordMap.containsKey(argCount)) {
             keywordMap.get(argCount).add(new KeywordOverload(keywordBean, method));
         } else {

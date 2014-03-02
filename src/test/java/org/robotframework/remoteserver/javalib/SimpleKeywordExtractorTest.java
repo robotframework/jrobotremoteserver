@@ -37,16 +37,4 @@ public class SimpleKeywordExtractorTest {
         throw new RuntimeException("No exception thrown");
     }
 
-    @Test
-    public void conflictingOverloadVariableArguments() {
-        SimpleKeywordExtractor keywordExtractor = new SimpleKeywordExtractor();
-        try {
-            keywordExtractor.extractKeywords(new ConflictingOverloadVariableArguments());
-        } catch (RuntimeException e) {
-            Assert.assertEquals(e.getMessage(), "Method myKeyword has overloads and one or more take variable arguments.");
-            return;
-        }
-        throw new RuntimeException("No exception thrown");
-    }
-
 }
