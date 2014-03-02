@@ -32,7 +32,7 @@ public class StaticApiRemoteLibrary implements RemoteLibrary {
     }
 
     @Override
-    public Object runKeyword(String keywordName, Object[] args, Map<String, Object> kwargs) {
+    public Object runKeyword(String keywordName, Object[] args, Map<String, Object> kwargs) throws Throwable {
         if (kwargs != null && !kwargs.isEmpty()) {
             throw new RuntimeException("Keyword arguments not yet supported for static API libraries.");
         }

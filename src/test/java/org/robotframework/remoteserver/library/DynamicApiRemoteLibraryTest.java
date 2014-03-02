@@ -31,7 +31,7 @@ public class DynamicApiRemoteLibraryTest {
     }
 
     @Test
-    public void libraryUsingLists() throws Exception {
+    public void libraryUsingLists() throws Throwable {
         DynamicUsingLists lib = new DynamicUsingLists();
         Method gkn = DynamicUsingLists.class.getMethod("getKeywordNames");
         Method rk = DynamicUsingLists.class.getMethod("runKeyword", new Class<?>[] { String.class, List.class });
@@ -43,7 +43,7 @@ public class DynamicApiRemoteLibraryTest {
     }
 
     @Test
-    public void kwargsNotSupported() throws Exception {
+    public void kwargsNotSupported() throws Throwable {
         DynamicApiRemoteLibrary wrapper = getWrapper(DynamicOneRunKeywordNoKwargs.class);
         String msg = null;
         try {
@@ -55,14 +55,14 @@ public class DynamicApiRemoteLibraryTest {
     }
 
     @Test
-    public void oneRunKeywordNoKwargs() throws Exception {
+    public void oneRunKeywordNoKwargs() throws Throwable {
         DynamicApiRemoteLibrary wrapper = getWrapper(DynamicOneRunKeywordNoKwargs.class);
         String result = (String) wrapper.runKeyword("getArgs", new Object[] { "eggs" }, new HashMap<String, Object>());
         Assert.assertEquals(result, "['eggs']");
     }
 
     @Test
-    public void oneRunKeywordWithKwargs() throws Exception {
+    public void oneRunKeywordWithKwargs() throws Throwable {
         DynamicApiRemoteLibrary wrapper = getWrapper(DynamicOneRunKeywordKwargs.class);
         String result = (String) wrapper.runKeyword("getArgs", new Object[] { "spam" }, noKwargs);
         Assert.assertEquals(result, "['spam']{}");
@@ -71,7 +71,7 @@ public class DynamicApiRemoteLibraryTest {
     }
 
     @Test
-    public void oneRunKeywordWithKwargsWithList() throws Exception {
+    public void oneRunKeywordWithKwargsWithList() throws Throwable {
         DynamicApiRemoteLibrary wrapper = getWrapper(DynamicOneRunKeywordKwargsList.class);
         String result = (String) wrapper.runKeyword("getArgs", new Object[] { "spam" }, noKwargs);
         Assert.assertEquals(result, "['spam']{}");

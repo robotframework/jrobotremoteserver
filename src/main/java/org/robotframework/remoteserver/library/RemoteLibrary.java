@@ -42,7 +42,7 @@ public interface RemoteLibrary {
      *            keyword arguments
      * @return value returned by the keyword
      */
-    public Object runKeyword(String name, Object[] arguments, Map<String, Object> kwargs);
+    public Object runKeyword(String name, Object[] arguments, Map<String, Object> kwargs) throws Throwable;
 
     /**
      * Gets the argument descriptors for the given keyword name.

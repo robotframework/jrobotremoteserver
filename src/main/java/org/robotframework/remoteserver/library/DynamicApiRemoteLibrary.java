@@ -15,7 +15,6 @@ package org.robotframework.remoteserver.library;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
     }
 
     @Override
-    public Object runKeyword(String keyword, Object[] args, Map<String, Object> kwargs) {
+    public Object runKeyword(String keyword, Object[] args, Map<String, Object> kwargs) throws Throwable {
         if (kwargs != null && !kwargs.isEmpty() && runKeyword.getParameterTypes().length == 2) {
             throw new RuntimeException("This library does not support keyword arguments.");
         }
@@ -62,10 +61,8 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
         }
         try {
             return runKeyword.invoke(library, invokeArgs);
-        } catch (Exception e) {
-            if (e.getClass().equals(InvocationTargetException.class))
-                throw new RuntimeException(e.getCause().getMessage(), e.getCause());
-            throw new RuntimeException(e.getMessage(), e);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 

@@ -259,6 +259,9 @@ public class ServerMethods {
     }
 
     private boolean illegalArgumentIn(Throwable t) {
+        if (t.getClass().equals(IllegalArgumentException.class)) {
+            return true;
+        }
         Throwable inner = t;
         while (inner.getCause() != null) {
             inner = inner.getCause();

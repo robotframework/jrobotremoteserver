@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class StaticApiRemoteLibraryTest {
 
     @Test
-    public void keywordNaming() {
+    public void keywordNaming() throws Throwable {
         StaticApiRemoteLibrary lib = new StaticApiRemoteLibrary(new StaticOne());
         assertEquals(lib.runKeyword("get name", new Object[] {}, null), "StaticOne");
         assertEquals(lib.runKeyword("_g e tn_a __ m_e_", new Object[] {}, null), "StaticOne");
