@@ -1,4 +1,6 @@
-/* Licensed under the Apache License, Version 2.0 (the "License");
+/* Copyright 2014 Kevin Ormbrek
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
@@ -32,7 +34,9 @@ public interface RemoteLibrary {
     public String[] getKeywordNames();
 
     /**
-     * Executes the keyword with the given name.
+     * Executes the keyword with the given name. As some library implementations
+     * may be case-, space-, or underscore-sensitive, it is best to use the name
+     * as returned from {@link #getKeywordNames()}.
      * 
      * @param name
      *            name of the keyword to execute

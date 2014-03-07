@@ -18,7 +18,7 @@ public class RemoteServerTest {
     public void allowRemoteStop() throws Exception {
         Assert.assertEquals(server.getAllowStop(), true);
         server.setAllowStop(false);
-        server.putLibrary("/", StaticOne.class);
+        server.putLibrary("/", new StaticOne());
         server.start();
         String result = (String) runKeyword("/", "stop_remote_server").get("output");
         Assert.assertEquals(result, "This Robot Framework remote server does not allow stopping");
@@ -32,12 +32,12 @@ public class RemoteServerTest {
 
     @Test
     public void serverIsRestartable() throws Exception {
-        server.putLibrary("/1", StaticOne.class);
+        server.putLibrary("/1", new StaticOne());
         server.start();
         String result = (String) runKeyword("/1", "getName").get("return");
         Assert.assertEquals(result, "StaticOne");
         server.stop();
-        server.putLibrary("/2", StaticTwo.class);
+        server.putLibrary("/2", new StaticTwo());
         server.start();
         result = (String) runKeyword("/2", "getName").get("return");
         Assert.assertEquals(result, "StaticTwo");
@@ -47,7 +47,7 @@ public class RemoteServerTest {
     @Test
     public void putLibrariesAfterStarting() throws Exception {
         server.start();
-        server.putLibrary("/1", StaticOne.class);
+        server.putLibrary("/1", new StaticOne());
         String result = (String) runKeyword("/1", "getName").get("return");
         Assert.assertEquals(result, "StaticOne");
     }
@@ -56,7 +56,7 @@ public class RemoteServerTest {
     public void ephemeralPort() throws Exception {
         RemoteServer server = new RemoteServer();
         Assert.assertEquals(server.getLocalPort(), new Integer(-1));
-        server.putLibrary("/", StaticOne.class);
+        server.putLibrary("/", new StaticOne());
         server.start();
         int port = server.getLocalPort();
         String result = (String) runKeyword(port, "/", "getName").get("return");
@@ -93,13 +93,13 @@ public class RemoteServerTest {
 
     @Test
     public void libraryMap() {
-        server.putLibrary("/", StaticOne.class);
+        server.putLibrary("/", new StaticOne());
         Assert.assertTrue(server.getLibraryMap().containsKey("/"));
     }
 
     @Test
     public void onlyRequiredEntriesInResultsWhenPassed() throws Exception {
-        server.putLibrary("/1", StaticOne.class);
+        server.putLibrary("/1", new StaticOne());
         server.start();
         Map<?, ?> results = runKeyword("/1", "noReturnValue");
         Assert.assertEquals(results.get("status"), "PASS");

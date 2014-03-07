@@ -1,4 +1,6 @@
-/* Licensed under the Apache License, Version 2.0 (the "License");
+/* Copyright 2014 Kevin Ormbrek
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
@@ -47,17 +49,11 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
     private boolean allowStop = true;
 
     @Override
-    public RemoteLibrary putLibrary(String path, Class<?> clazz) {
+    public RemoteLibrary putLibrary(String path, Object library) {
         checkPath(path);
         RemoteLibraryFactory libraryFactory = createLibraryFactory();
-        Object library;
-        try {
-            library = clazz.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
-        return this.libraryMap.put(path, remoteLibrary);
+        return libraryMap.put(path, remoteLibrary);
     }
 
     @Override

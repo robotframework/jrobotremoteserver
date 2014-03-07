@@ -1,4 +1,6 @@
-/* Licensed under the Apache License, Version 2.0 (the "License");
+/* Copyright 2014 Kevin Ormbrek
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
@@ -158,18 +160,19 @@ public class RemoteServer {
      * <li>not contain a repeating sequence of /s</li>
      * </ul>
      * 
-     * Example: <code>putLibrary("/myLib", com.example.MyLibrary);</code>
+     * Example: <code>putLibrary("/myLib", new MyLibrary());</code>
      * 
-     * @param clazz
-     *            class of the test library
+     * @param library
+     *            instance of the test library
      * @param path
      *            path to map the test library to
      * @return the previous library mapped to the path, or null if there was no
      *         mapping for the path
      */
-    public RemoteLibrary putLibrary(String path, Class<?> clazz) {
-        RemoteLibrary oldLibrary = servlet.putLibrary(path, clazz);
-        log.info(String.format("Mapped path %s to library %s.", path, clazz.getName()));
+    public RemoteLibrary putLibrary(String path, Object library) {
+        RemoteLibrary oldLibrary = servlet.putLibrary(path, library);
+        String name = servlet.getLibraryMap().get(path).getName();
+        log.info(String.format("Mapped path %s to library %s.", path, name));
         return oldLibrary;
     }
 
@@ -242,8 +245,14 @@ public class RemoteServer {
         if (servlet.getLibraryMap().keySet().contains("/")) {
             throw new RuntimeException("A library has already been mapped to /.");
         }
+        Object library;
+        try {
+            library = clazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         setPort(port);
-        putLibrary("/", clazz);
+        putLibrary("/", library);
     }
 
     /**

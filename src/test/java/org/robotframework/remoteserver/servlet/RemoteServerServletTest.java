@@ -20,7 +20,7 @@ public class RemoteServerServletTest {
         RemoteServer server = new RemoteServer();
         try {
             server.setPort(8270);
-            server.putLibrary("/", StaticOne.class);
+            server.putLibrary("/", new StaticOne());
             server.start();
             Socket s = new Socket((String) null, 8270);
 
@@ -61,10 +61,10 @@ public class RemoteServerServletTest {
     @Test
     public void putLibrary() {
         RemoteServerServlet servlet = new RemoteServerServlet();
-        RemoteLibrary lib = servlet.putLibrary("/", StaticOne.class);
+        RemoteLibrary lib = servlet.putLibrary("/", new StaticOne());
         Assert.assertNull(lib);
         RemoteLibrary origLib = servlet.getLibraryMap().get("/");
-        lib = servlet.putLibrary("/", StaticTwo.class);
+        lib = servlet.putLibrary("/", new StaticTwo());
         Assert.assertEquals(lib, origLib);
     }
 
@@ -73,7 +73,7 @@ public class RemoteServerServletTest {
         RemoteServerServlet servlet = new RemoteServerServlet();
         RemoteLibrary lib = servlet.removeLibrary("/");
         Assert.assertNull(lib);
-        servlet.putLibrary("/", StaticOne.class);
+        servlet.putLibrary("/", new StaticOne());
         RemoteLibrary origLib = servlet.getLibraryMap().get("/");
         lib = servlet.removeLibrary("/");
         Assert.assertEquals(lib, origLib);

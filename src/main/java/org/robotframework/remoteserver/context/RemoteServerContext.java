@@ -1,3 +1,17 @@
+/* Copyright 2014 Kevin Ormbrek
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.robotframework.remoteserver.context;
 
 import java.util.Map;
@@ -42,16 +56,16 @@ public interface RemoteServerContext {
      * <li>not contain a repeating sequence of /s</li>
      * </ul>
      * 
-     * Example: <code>putLibrary("/myLib", com.example.MyLibrary);</code>
+     * Example: <code>putLibrary("/myLib", new MyLibrary());</code>
      * 
-     * @param clazz
-     *            class of the test library
+     * @param library
+     *            instance of the test library
      * @param path
      *            path to map the test library to
      * @return the previous library mapped to the path, or null if there was no
      *         mapping for the path
      */
-    public RemoteLibrary putLibrary(String path, Class<?> clazz);
+    public RemoteLibrary putLibrary(String path, Object library);
 
     /**
      * Removes the library mapped to the given path if the mapping exists

@@ -22,7 +22,7 @@ public class AlternativeContainerTest {
         properties.put("port", 9999);
         server.arguments = properties;
         RemoteServerServlet servlet = new RemoteServerServlet();
-        servlet.putLibrary("/one", StaticOne.class);
+        servlet.putLibrary("/one", new StaticOne());
         server.addServlet("/foo/bar", servlet);
         server.addDefaultServlets(null);
         server.runInBackground();

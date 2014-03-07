@@ -1,4 +1,6 @@
-/* Licensed under the Apache License, Version 2.0 (the "License");
+/* Copyright 2014 Kevin Ormbrek
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
@@ -18,7 +20,7 @@ import java.util.Map;
 
 public class CommandLineHelper {
 
-    private Map<String, Class<?>> libraryMap = new HashMap<String, Class<?>>();
+    private Map<String, Object> libraryMap = new HashMap<String, Object>();
     private boolean allowStop = true;
     private String host = null;
     private String error = null;
@@ -40,7 +42,7 @@ public class CommandLineHelper {
         return port;
     }
 
-    public Map<String, Class<?>> getLibraryMap() {
+    public Map<String, Object> getLibraryMap() {
         return libraryMap;
     }
 
@@ -129,9 +131,15 @@ public class CommandLineHelper {
         } catch (Exception e) {
             throw new RuntimeException("Failed to load class with name " + className + ": " + e.toString());
         }
+        Object library;
+        try {
+            library = clazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create library instance: " + e.toString());
+        }
         if (libraryMap.containsKey(path))
             throw new RuntimeException(String.format("Duplicate path [%s]", path));
-        libraryMap.put(path, clazz);
+        libraryMap.put(path, library);
     }
 
     private void setPort(String portString) {

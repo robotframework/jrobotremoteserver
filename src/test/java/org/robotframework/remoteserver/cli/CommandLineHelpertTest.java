@@ -1,8 +1,5 @@
 package org.robotframework.remoteserver.cli;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -18,10 +15,9 @@ public class CommandLineHelpertTest {
     public void moreThanOneLibrary() {
         CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:/one", "--library",
                 "java.lang.Object:/two" });
-        Map<String, Class<?>> expected = new HashMap<String, Class<?>>();
-        expected.put("/one", String.class);
-        expected.put("/two", Object.class);
-        Assert.assertEquals(clh.getLibraryMap(), expected);
+        Assert.assertEquals(clh.getLibraryMap().size(), 2);
+        Assert.assertEquals(clh.getLibraryMap().get("/one").getClass(), String.class);
+        Assert.assertEquals(clh.getLibraryMap().get("/two").getClass(), Object.class);
     }
 
     @Test
@@ -52,9 +48,8 @@ public class CommandLineHelpertTest {
     public void defaultPath() {
         CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String" });
         Assert.assertEquals(clh.getError(), null);
-        Map<String, Class<?>> expected = new HashMap<String, Class<?>>();
-        expected.put("/", String.class);
-        Assert.assertEquals(clh.getLibraryMap(), expected);
+        Assert.assertEquals(clh.getLibraryMap().size(), 1);
+        Assert.assertEquals(clh.getLibraryMap().get("/").getClass(), String.class);
     }
 
     @Test
@@ -83,9 +78,8 @@ public class CommandLineHelpertTest {
     public void libraryWithPort() {
         CommandLineHelper clh = new CommandLineHelper(new String[] { "-l", "java.lang.String:8270" });
         Assert.assertEquals(clh.getError(), null);
-        Map<String, Class<?>> expected = new HashMap<String, Class<?>>();
-        expected.put("/", String.class);
-        Assert.assertEquals(clh.getLibraryMap(), expected);
+        Assert.assertEquals(clh.getLibraryMap().size(), 1);
+        Assert.assertEquals(clh.getLibraryMap().get("/").getClass(), String.class);
         Assert.assertEquals(clh.getPort(), 8270);
     }
 
