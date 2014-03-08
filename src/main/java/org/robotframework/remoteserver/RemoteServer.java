@@ -35,6 +35,8 @@ import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 /**
  * Remote server for Robot Framework implemented in Java. Takes one or more test
  * libraries and exposes their methods via XML-RPC using an embedded web server.
+ * To use a different web server, use
+ * {@link org.robotframework.remoteserver.servlet.RemoteServerServlet} instead.
  * 
  * @see <a
  *      href="https://github.com/ombre42/jrobotremoteserver/wiki">jrobotremoteserver
@@ -122,6 +124,12 @@ public class RemoteServer {
         connector.setHost(hostName);
     }
 
+    /**
+     * Main method for command line usage.
+     * 
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         configureLogging();
         CommandLineHelper helper = new CommandLineHelper(args);
@@ -257,9 +265,8 @@ public class RemoteServer {
 
     /**
      * A non-blocking method for stopping the remote server that allows requests
-     * to complete within the given timeout before shutting down the server.
-     * This method exists to allow stopping the server remotely. New connections
-     * will not be accepted after calling this.
+     * to complete within the given timeout before shutting down the server. New
+     * connections will not be accepted after calling this.
      * 
      * @param timeoutMS
      *            the milliseconds to wait for existing request to complete

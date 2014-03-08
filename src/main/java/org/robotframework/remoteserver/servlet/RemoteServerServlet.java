@@ -39,7 +39,10 @@ import org.robotframework.remoteserver.xmlrpc.ReflectiveHandlerMapping;
 import org.robotframework.remoteserver.xmlrpc.TypeFactory;
 
 /**
- * This servlet uses the same instance of a test library to process all requests
+ * This servlet can be used with servlet containers such as GlassFish,
+ * WebSphere, Tiny Java Web Server, etc. The paths for the library mapping are
+ * relative to the servlet path. When a remote stop is performed,
+ * <code>System.exit(0)</code> is executed.
  */
 public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerContext {
     private static final long serialVersionUID = -7981676271855172976L;
@@ -108,7 +111,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
          * when the client is Jython 2.5.x (old xmlrpclib using HTTP/1.0), the
          * server's sockets got stuck in FIN_WAIT_2 for some time, eventually
          * hitting the limit of open sockets on some Windows systems. adding
-         * this header gets Jetty to close the socket.
+         * this header gets the web server to close the socket.
          */
         String path = req.getPathInfo() == null ? req.getServletPath() : req.getPathInfo();
         path = cleanPath(path);
