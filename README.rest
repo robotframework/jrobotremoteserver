@@ -7,3 +7,11 @@ jrobotremoteserver is a `remote server <https://code.google.com/p/robotframework
 Documentation can be found on the project `wiki <https://github.com/ombre42/jrobotremoteserver/wiki>`_.
 
 The original jrobotremoteserver can be found on `Google Code <http://code.google.com/p/jrobotremoteserver/>`_.
+
+License
+-------
+
+jrobotremoteserver is open source software provided under under `Apache License
+2.0`__.
+
+__ http://apache.org/licenses/LICENSE-2.0
