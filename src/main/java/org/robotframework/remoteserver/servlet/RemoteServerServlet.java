@@ -26,7 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
@@ -51,7 +51,6 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
     private Map<String, RemoteLibrary> libraryMap = new ConcurrentHashMap<String, RemoteLibrary>();
     private boolean allowStop = true;
 
-    @Override
     public RemoteLibrary putLibrary(String path, Object library) {
         checkPath(path);
         RemoteLibraryFactory libraryFactory = createLibraryFactory();
@@ -59,22 +58,18 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
         return libraryMap.put(path, remoteLibrary);
     }
 
-    @Override
     public RemoteLibrary removeLibrary(String path) {
         return libraryMap.remove(path);
     }
 
-    @Override
     public Map<String, RemoteLibrary> getLibraryMap() {
         return new HashMap<String, RemoteLibrary>(libraryMap);
     }
 
-    @Override
     public boolean getAllowStop() {
         return allowStop;
     }
 
-    @Override
     public void setAllowStop(boolean allowed) {
         allowStop = allowed;
     }
@@ -134,7 +129,6 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
         out.print(body);
     }
 
-    @Override
     public HttpServletRequest getRequest() {
         return request.get();
     }
@@ -152,7 +146,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
                 sb.append("<TR><TD>");
                 sb.append(path.toString());
                 sb.append("</TD><TD>");
-                sb.append(StringEscapeUtils.escapeHtml(map.get(path).getName()));
+                sb.append(StringEscapeUtils.escapeHtml4(map.get(path).getName()));
                 sb.append("</TD></TR>");
             }
         }

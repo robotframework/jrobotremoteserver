@@ -7,3 +7,5 @@ atest/results
 *.pyc
 *.class
 .pydevproject
+/.idea/
+/target/

@@ -15,7 +15,6 @@
 package org.robotframework.remoteserver;
 
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
@@ -126,9 +125,9 @@ public class RemoteServer {
 
     /**
      * Main method for command line usage.
-     * 
+     *
      * @param args
-     * @throws Exception
+     * @throws Exception If server cannot be started
      */
     public static void main(String[] args) throws Exception {
         configureLogging();
@@ -271,6 +270,7 @@ public class RemoteServer {
      * @param timeoutMS
      *            the milliseconds to wait for existing request to complete
      *            before stopping the server
+     * @throws Exception If server cannot be stopped
      */
     public void stop(int timeoutMS) throws Exception {
         log.info("Robot Framework remote server stopping");
@@ -294,8 +294,8 @@ public class RemoteServer {
 
     /**
      * Stops the remote server immediately.
-     * 
-     * @throws Exception
+     *
+     * @throws Exception If server cannot be stopped
      */
     public void stop() throws Exception {
         stop(0);
@@ -303,8 +303,8 @@ public class RemoteServer {
 
     /**
      * Starts the remote server. Add test libraries first before calling this.
-     * 
-     * @throws Exception
+     *
+     * @throws Exception If server cannot be started
      */
     public void start() throws Exception {
         log.info("Robot Framework remote server starting");

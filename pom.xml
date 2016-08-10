@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.ombre42</groupId>
+	<groupId>com.github.aenniw</groupId>
 	<artifactId>jrobotremoteserver</artifactId>
-	<version>3.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<version>3.2-SNAPSHOT</version>
+	<packaging>bundle</packaging>
 	<name>jrobotremoteserver</name>
-	<url>https://github.com/ombre42/jrobotremoteserver</url>
+	<url>https://github.com/aenniw/jrobotremoteserver</url>
 	<licenses>
 		<license>
 			<name>Apache 2</name>
@@ -21,6 +21,10 @@
 		<developer>
 			<name>David Luu</name>
 			<email>mangaroo@gmail.com</email>
+		</developer>
+		<developer>
+			<name>Martin Mihálek</name>
+			<email>aenniw@gmail.com</email>
 		</developer>
 	</developers>
 	<parent>
@@ -38,14 +42,24 @@
 			<version>3.1.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>7.6.3.v20120416</version>
+			<groupId>org.robotframework</groupId>
+			<artifactId>javalib-core</artifactId>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.4</version>
+			<groupId>org.apache.ws.commons.util</groupId>
+			<artifactId>ws-commons-util</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>8.0.4.v20111024</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -53,14 +67,9 @@
 			<version>1.2.16</version>
 		</dependency>
 		<dependency>
-			<groupId>org.robotframework</groupId>
-			<artifactId>javalib-core</artifactId>
-			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>xmlrpc</groupId>
+			<groupId>org.apache.xmlrpc</groupId>
 			<artifactId>xmlrpc-client</artifactId>
-			<version>3.0</version>
+			<version>3.1.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -68,11 +77,6 @@
 			<artifactId>testng</artifactId>
 			<version>6.3.1</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
@@ -84,54 +88,38 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2-beta-5</version>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
 				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
+					<instructions>
+						<Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+						<Import-Package>
+							!org.apache.commons.lang3.*,
+							!org.apache.ws.commons.*,
+							!org.robotframework.*,
+							!org.apache.xmlrpc.*,
+							*
+						</Import-Package>
+						<Export-Package>
+							org.apache.commons.lang3.*,
+							org.apache.ws.commons.*,
+							org.robotframework.*,
+							org.apache.xmlrpc.*
+						</Export-Package>
+					</instructions>
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.2</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.8.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
 	<description>Serves remote test libraries for Robot Framework that are implemented in Java.</description>
 	<scm>
-		<connection>scm:git:git@github.com:ombre42/jrobotremoteserver.git</connection>
-		<developerConnection>scm:git:git@github.com:ombre42/jrobotremoteserver.git</developerConnection>
-		<url>git@github.com:ombre42/jrobotremoteserver.git</url>
+		<connection>scm:git:git@github.com:aenniw/jrobotremoteserver.git</connection>
+		<developerConnection>scm:git:git@github.com:aenniw/jrobotremoteserver.git</developerConnection>
+		<url>git@github.com:aenniw/jrobotremoteserver.git</url>
 	</scm>
 </project>
