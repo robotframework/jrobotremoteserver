@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
-import org.robotframework.remoteserver.RemoteServer;
+import org.robotframework.remoteserver.RemoteServerImpl;
 import org.robotframework.remoteserver.library.RemoteLibrary;
 import org.robotframework.remoteserver.testlibraries.StaticOne;
 import org.robotframework.remoteserver.testlibraries.StaticTwo;
@@ -17,7 +17,7 @@ public class RemoteServerServletTest {
 
     @Test
     public void serverClosesHttp10Connections() throws Exception {
-        RemoteServer server = new RemoteServer();
+        RemoteServerImpl server = new RemoteServerImpl();
         try {
             server.setPort(8270);
             server.putLibrary("/", new StaticOne());

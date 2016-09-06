@@ -1,9 +1,6 @@
 package org.robotframework.remoteserver;
 
-import static org.robotframework.remoteserver.RemoteLibraryClient.runKeyword;
-
 import java.util.Map;
-
 import org.robotframework.remoteserver.testlibraries.StaticOne;
 import org.robotframework.remoteserver.testlibraries.StaticTwo;
 import org.testng.Assert;
@@ -11,8 +8,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class RemoteServerTest {
-    RemoteServer server;
+import static org.robotframework.remoteserver.RemoteLibraryClient.runKeyword;
+
+public class RemoteServerImplTest {
+    RemoteServerImpl server;
 
     @Test
     public void allowRemoteStop() throws Exception {
@@ -54,15 +53,15 @@ public class RemoteServerTest {
 
     @Test
     public void ephemeralPort() throws Exception {
-        RemoteServer server = new RemoteServer();
-        Assert.assertEquals(server.getLocalPort(), new Integer(-1));
+        RemoteServerImpl server = new RemoteServerImpl();
+        Assert.assertEquals(server.getPort(), -1);
         server.putLibrary("/", new StaticOne());
         server.start();
-        int port = server.getLocalPort();
+        int port = server.getPort();
         String result = (String) runKeyword(port, "/", "getName").get("return");
         Assert.assertEquals(result, "StaticOne");
         server.stop();
-        Assert.assertEquals(server.getLocalPort(), new Integer(-2));
+        Assert.assertEquals(server.getPort(), -2);
     }
 
     @Test
@@ -108,7 +107,7 @@ public class RemoteServerTest {
 
     @BeforeMethod
     public void setup() throws Exception {
-        server = new RemoteServer();
+        server = new RemoteServerImpl();
         server.setPort(8270);
     }
 

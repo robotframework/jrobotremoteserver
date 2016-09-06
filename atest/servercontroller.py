@@ -48,7 +48,7 @@ def start(libraries=
     print 'CLASSPATH: %s' % os.environ['CLASSPATH']
     results = _get_result_directory()
     port = "8270"
-    args = ['java', 'org.robotframework.remoteserver.RemoteServer', '--port', port]
+    args = ['java', 'org.robotframework.remoteserver.RemoteServerImpl', '--port', port]
     libraries = [x.strip() for x in libraries.split(',')]
     paths = [x.partition(':')[2] for x in libraries]
     for lib in libraries:

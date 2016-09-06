@@ -1,0 +1,14 @@
+before_cache:
+  - rm -fr $HOME/.m2/
+cache:
+  directories:
+    - $HOME/.m2/
+before_install:
+  - sudo apt-get -qq update
+
+language: java
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk8
+  - openjdk7
