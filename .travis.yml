@@ -3,12 +3,22 @@ before_cache:
 cache:
   directories:
     - $HOME/.m2/
-before_install:
-  - sudo apt-get -qq update
 
 language: java
 jdk:
   - oraclejdk8
   - oraclejdk7
-  - openjdk8
-  - openjdk7
+before_deploy:
+  - mvn javadoc:jar
+  - export BIN=$(ls target/jrobotremoteserver-*-SNAPSHOT.jar)
+  - export DOCS=$(ls target/jrobotremoteserver-*-SNAPSHOT-javadoc.jar)
+
+deploy:
+  provider: releases
+  api_key: "${GH_TOKEN}"
+  file:
+    - "${BIN}"
+    - "${DOCS}"
+  skip_cleanup: true
+  on:
+    tags: true
