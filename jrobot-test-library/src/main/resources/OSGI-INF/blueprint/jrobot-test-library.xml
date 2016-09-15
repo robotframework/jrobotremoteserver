@@ -1,0 +1,10 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <!-- References -->
+    <reference id="robot-remote-server" interface="org.robotframework.remoteserver.RemoteServer"/>
+    <!-- Beans -->
+    <bean id="testing-lib" class="org.robotframework.test.TestLibrary">
+        <argument ref="robot-remote-server"/>
+    </bean>
+    <!-- Services -->
+</blueprint>
+

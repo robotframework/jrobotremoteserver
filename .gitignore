@@ -5,7 +5,7 @@ test-output
 .project
 atest/results
 *.pyc
-*.class
 .pydevproject
 /.idea/
 /target/
+*.iml
