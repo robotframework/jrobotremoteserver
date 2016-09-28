@@ -12,8 +12,7 @@ Start Karaf
     ${rc}    Run Keyword If    ${rc} != 0    Run and Return RC    ${KARAF_ROOT}/bin/start
     Should Be Equal As Integers    ${rc}    0
     Wait Until Keyword Succeeds    10    1    Karaf Status    Running
-    #Let the karaf properly start
-    Sleep    2s
+    Wait Until Keyword Succeeds    120    1    Run On Karaf    info
 
 Stop Karaf
     [Documentation]    Stops karaf container instance
