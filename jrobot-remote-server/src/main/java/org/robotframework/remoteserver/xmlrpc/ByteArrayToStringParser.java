@@ -16,9 +16,7 @@ package org.robotframework.remoteserver.xmlrpc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import javax.xml.namespace.QName;
-
 import org.apache.ws.commons.util.Base64;
 import org.apache.xmlrpc.parser.TypeParserImpl;
 import org.xml.sax.Attributes;
@@ -70,6 +68,7 @@ public class ByteArrayToStringParser extends TypeParserImpl {
         if (level++ == 0) {
             baos = new ByteArrayOutputStream();
             decoder = new Base64.Decoder(1024) {
+
                 protected void writeBuffer(byte[] pBytes, int pOffset, int pLen) throws IOException {
                     baos.write(pBytes, pOffset, pLen);
                 }

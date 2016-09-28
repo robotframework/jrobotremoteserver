@@ -22,18 +22,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.robotframework.javalib.keyword.Keyword;
 
 public class OverloadableKeyword implements Keyword {
 
-    private Map<Integer, List<KeywordOverload>> keywordMap = new HashMap<Integer, List<KeywordOverload>>();
+    private static Log log = LogFactory.getLog(OverloadableKeyword.class);
+    private Map<Integer, List<KeywordOverload>> keywordMap = new HashMap<>();
     private String name;
     private Object keywordBean;
     private boolean usesVarArgs = false;
-    private static Log log = LogFactory.getLog(OverloadableKeyword.class);
 
     public OverloadableKeyword(Object keywordBean, Method method) {
         name = method.getName();
@@ -60,17 +59,18 @@ public class OverloadableKeyword implements Keyword {
                     }
                 }
                 if (selectedKeyword == null) {
-                    throw new IllegalArgumentException(String.format("No overload of %s can take the given arguments",
-                            name));
+                    throw new IllegalArgumentException(
+                            String.format("No overload of %s can take the given arguments", name));
                 }
             }
         } else {
             if (keywordMap.size() == 1) {
-                throw new IllegalArgumentException(String.format("%s takes %d argument(s), received %d.", name,
-                        keywordMap.keySet().toArray()[0], argCount));
+                throw new IllegalArgumentException(
+                        String.format("%s takes %d argument(s), received %d.", name, keywordMap.keySet().toArray()[0],
+                                argCount));
             } else {
-                throw new IllegalArgumentException(String.format("No overload of %s takes %d argument(s).", name,
-                        argCount));
+                throw new IllegalArgumentException(
+                        String.format("No overload of %s takes %d argument(s).", name, argCount));
             }
         }
         return selectedKeyword.execute(arguments);
@@ -85,7 +85,7 @@ public class OverloadableKeyword implements Keyword {
         } else if (keywordMap.containsKey(argCount)) {
             keywordMap.get(argCount).add(new KeywordOverload(keywordBean, method));
         } else {
-            List<KeywordOverload> overloadList = new ArrayList<KeywordOverload>();
+            List<KeywordOverload> overloadList = new ArrayList<>();
             overloadList.add(new KeywordOverload(keywordBean, method));
             keywordMap.put(argCount, overloadList);
         }

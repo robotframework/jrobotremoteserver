@@ -14,8 +14,6 @@
  */
 package org.robotframework.remoteserver.xmlrpc;
 
-import java.util.Iterator;
-
 import org.apache.xmlrpc.common.TypeFactory;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
 import org.apache.xmlrpc.serializer.ObjectArraySerializer;
@@ -25,14 +23,13 @@ import org.xml.sax.SAXException;
 public class IterableSerializer extends ObjectArraySerializer {
 
     public IterableSerializer(TypeFactory pTypeFactory, XmlRpcStreamConfig pConfig) {
-	super(pTypeFactory, pConfig);
+        super(pTypeFactory, pConfig);
     }
 
     protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {
-	Iterable<?> obj = (Iterable<?>) pObject;
-	Iterator<?> iter = obj.iterator();
-	while (iter.hasNext()) {
-	    writeObject(pHandler, iter.next());
-	}
+        Iterable<?> obj = (Iterable<?>) pObject;
+        for (Object anObj : obj) {
+            writeObject(pHandler, anObj);
+        }
     }
 }

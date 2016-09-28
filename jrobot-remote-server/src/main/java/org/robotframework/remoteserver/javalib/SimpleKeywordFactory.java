@@ -21,16 +21,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.robotframework.javalib.beans.annotation.IKeywordExtractor;
 import org.robotframework.javalib.factory.KeywordFactory;
 import org.robotframework.javalib.util.IKeywordNameNormalizer;
 import org.robotframework.javalib.util.KeywordNameNormalizer;
 
 public class SimpleKeywordFactory implements KeywordFactory<OverloadableKeyword> {
-    private Map<String, OverloadableKeyword> keywords = new HashMap<String, OverloadableKeyword>();
+
+    private Map<String, OverloadableKeyword> keywords = new HashMap<>();
     private IKeywordNameNormalizer keywordNameNormalizer = new KeywordNameNormalizer();
-    private List<String> keywordNames = new ArrayList<String>();
+    private List<String> keywordNames = new ArrayList<>();
 
     public SimpleKeywordFactory(Object keywordBean) {
         extractKeywordsFromKeywordBean(keywordBean);
@@ -42,7 +42,7 @@ public class SimpleKeywordFactory implements KeywordFactory<OverloadableKeyword>
     }
 
     public String[] getKeywordNames() {
-        return (String[]) keywordNames.toArray(new String[0]);
+        return keywordNames.toArray(new String[0]);
     }
 
     protected void extractKeywordsFromKeywordBean(Object keywordBean) {

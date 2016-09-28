@@ -15,5 +15,6 @@
 package org.robotframework.remoteserver.library;
 
 public interface RemoteLibraryFactory {
-    public RemoteLibrary createRemoteLibrary(Object library);
+
+    RemoteLibrary createRemoteLibrary(Object library);
 }

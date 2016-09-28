@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DynamicApiRemoteLibrary implements RemoteLibrary {
+
     private Object library;
     private Method getKeywordNames;
     private Method runKeyword;
@@ -36,10 +37,9 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
         this.getKeywordDocumentation = getKeywordDocumentation;
     }
 
-    @Override
-    public String[] getKeywordNames() {
+    @Override public String[] getKeywordNames() {
         try {
-            Object names = getKeywordNames.invoke(library, new Object[] {});
+            Object names = getKeywordNames.invoke(library);
             if (names instanceof List) {
                 return (String[]) ((List<?>) names).toArray();
             } else {
@@ -50,8 +50,7 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
         }
     }
 
-    @Override
-    public Object runKeyword(String keyword, Object[] args, Map<String, Object> kwargs) throws Throwable {
+    @Override public Object runKeyword(String keyword, Object[] args, Map<String, Object> kwargs) throws Throwable {
         if (kwargs != null && !kwargs.isEmpty() && runKeyword.getParameterTypes().length == 2) {
             throw new RuntimeException("This library does not support keyword arguments.");
         }
@@ -68,10 +67,9 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
         }
     }
 
-    @Override
-    public String[] getKeywordArguments(String keyword) {
+    @Override public String[] getKeywordArguments(String keyword) {
         if (getKeywordArguments == null)
-            return new String[] { "*args" };
+            return new String[] {"*args"};
         try {
             Object args = getKeywordArguments.invoke(library, keyword);
             if (args instanceof List) {
@@ -84,8 +82,7 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
         }
     }
 
-    @Override
-    public String getKeywordDocumentation(String keyword) {
+    @Override public String getKeywordDocumentation(String keyword) {
         if (getKeywordDocumentation == null)
             return "";
         try {
@@ -95,13 +92,11 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
         }
     }
 
-    @Override
-    public String getName() {
+    @Override public String getName() {
         return library.getClass().getName();
     }
 
-    @Override
-    public Object getImplementation() {
+    @Override public Object getImplementation() {
         return library;
     }
 }

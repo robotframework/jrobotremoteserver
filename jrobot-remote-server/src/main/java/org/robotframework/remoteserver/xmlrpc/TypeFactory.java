@@ -16,7 +16,6 @@ package org.robotframework.remoteserver.xmlrpc;
 
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
@@ -41,19 +40,20 @@ public class TypeFactory extends TypeFactoryImpl {
     private static final TypeSerializer DOUBLE_SERIALIZER = new DoubleSerializer();
     private static final TypeSerializer BOOLEAN_SERIALIZER = new BooleanSerializer();
     private static final TypeSerializer NULL_SERIALIZER = new org.apache.xmlrpc.serializer.StringSerializer() {
-        @Override
-        public void write(ContentHandler pHandler, Object pObject) throws SAXException {
+
+        @Override public void write(ContentHandler pHandler, Object pObject) throws SAXException {
             write(pHandler, null, "");
         }
     };
     private static final TypeSerializer CHAR_ARRAY_SERIALIZER = new TypeSerializerImpl() {
+
         public void write(ContentHandler pHandler, Object pObject) throws SAXException {
             char[] chars = (char[]) pObject;
             write(pHandler, null, chars);
         }
     };
-    private TypeSerializer primitiveArraySerializer;
     private static final TypeParser BYTE_ARRAY_PARSER = new ByteArrayToStringParser();
+    private TypeSerializer primitiveArraySerializer;
 
     public TypeFactory(XmlRpcController pController) {
         super(pController);
@@ -81,10 +81,10 @@ public class TypeFactory extends TypeFactoryImpl {
         else if (pObject instanceof char[])
             return CHAR_ARRAY_SERIALIZER;
         else if (pObject.getClass().isArray()) { // object[] & char[] handled
-                                                 // before this
+            // before this
             primitiveArraySerializer = new ObjectArraySerializer(this, pConfig) {
-                @Override
-                protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {
+
+                @Override protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {
                     Object[] array;
                     if (pObject instanceof byte[])
                         array = ArrayUtils.toObject((byte[]) pObject);
@@ -102,8 +102,8 @@ public class TypeFactory extends TypeFactoryImpl {
                         array = ArrayUtils.toObject((boolean[]) pObject);
                     else
                         // should never happen
-                        throw new SAXException(String.format("Array of type %s[] not handled!", pObject.getClass()
-                                .getComponentType().getName()));
+                        throw new SAXException(String.format("Array of type %s[] not handled!",
+                                pObject.getClass().getComponentType().getName()));
                     super.writeData(pHandler, array);
                 }
             };
@@ -112,8 +112,7 @@ public class TypeFactory extends TypeFactoryImpl {
             return STRING_SERIALIZER;
     }
 
-    @Override
-    public TypeParser getParser(XmlRpcStreamConfig pConfig, NamespaceContextImpl pContext, String pURI,
+    @Override public TypeParser getParser(XmlRpcStreamConfig pConfig, NamespaceContextImpl pContext, String pURI,
             String pLocalName) {
         if (ByteArraySerializer.BASE_64_TAG.equals(pLocalName)) {
             return BYTE_ARRAY_PARSER;

@@ -16,8 +16,8 @@ public class OverloadableKeywordTest
 
     @BeforeTest
     public void setup() throws Exception {
-        shortOverload = library.getClass().getDeclaredMethod("numberType", new Class[] {short.class});
-        intOverload = library.getClass().getDeclaredMethod("numberType", new Class[] {int.class});
+        shortOverload = library.getClass().getDeclaredMethod("numberType", short.class);
+        intOverload = library.getClass().getDeclaredMethod("numberType", int.class);
         keyword = new OverloadableKeyword(library, shortOverload);
         keyword.addOverload(intOverload);
     }

@@ -65,32 +65,6 @@ public class RemoteServerImplTest {
     }
 
     @Test
-    public void addTwoLibrariesOnDifferentPorts() {
-        server.addLibrary(StaticOne.class, 8270);
-        Exception ex = null;
-        try {
-            server.addLibrary(StaticOne.class, 8271);
-        } catch (Exception e) {
-            ex = e;
-        }
-        Assert.assertEquals(ex.getMessage(),
-                "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
-    }
-
-    @Test
-    public void mixAddLibraryWithSetPort() {
-        server.setPort(8270);
-        Exception ex = null;
-        try {
-            server.addLibrary(StaticOne.class, 8271);
-        } catch (Exception e) {
-            ex = e;
-        }
-        Assert.assertEquals(ex.getMessage(),
-                "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
-    }
-
-    @Test
     public void libraryMap() {
         server.putLibrary("/", new StaticOne());
         Assert.assertTrue(server.getLibraryMap().containsKey("/"));

@@ -17,9 +17,7 @@
  */
 package org.robotframework.remoteserver.javalib;
 
-
 import java.lang.reflect.Method;
-
 import org.robotframework.javalib.keyword.Keyword;
 import org.robotframework.javalib.reflection.ArgumentConverter;
 import org.robotframework.javalib.reflection.ArgumentGrouper;
@@ -28,46 +26,45 @@ import org.robotframework.javalib.reflection.IArgumentGrouper;
 
 public class KeywordOverload implements Keyword {
 
-   private final Method method;
-   private final Object obj;
+    private final Method method;
+    private final Object obj;
 
-   public KeywordOverload(Object obj, Method method) {
-       this.obj = obj;
-       this.method = method;
-   }
+    public KeywordOverload(Object obj, Method method) {
+        this.obj = obj;
+        this.method = method;
+    }
 
-   public Object execute(Object[] args) {
-       try {
-           Object[] groupedArguments = createArgumentGrouper().groupArguments(args);
-           Object[] convertedArguments = createArgumentConverter().convertArguments(groupedArguments);
-           return method.invoke(obj, convertedArguments);
-       } catch (Exception e) {
-           throw new RuntimeException(e);
-       }
-   }
+    public Object execute(Object[] args) {
+        try {
+            Object[] groupedArguments = createArgumentGrouper().groupArguments(args);
+            Object[] convertedArguments = createArgumentConverter().convertArguments(groupedArguments);
+            return method.invoke(obj, convertedArguments);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-   public boolean canExecute(Object[] args) {
-       try {
-           Object[] groupedArguments = createArgumentGrouper().groupArguments(args);
-           Object[] convertedArguments = createArgumentConverter().convertArguments(groupedArguments);
-           for (int i = 0; i < args.length; i++) {
-               if ( (convertedArguments[i] == null) && (args[i] != null) ) {
-                   return false;
-               }
-           }
-           return true;
-       }
-       catch (Exception e) {
-           return false;
-       }
-   }
+    public boolean canExecute(Object[] args) {
+        try {
+            Object[] groupedArguments = createArgumentGrouper().groupArguments(args);
+            Object[] convertedArguments = createArgumentConverter().convertArguments(groupedArguments);
+            for (int i = 0; i < args.length; i++) {
+                if ((convertedArguments[i] == null) && (args[i] != null)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-   protected IArgumentConverter createArgumentConverter() {
-       return new ArgumentConverter(method.getParameterTypes());
-   }
-   
-   protected IArgumentGrouper createArgumentGrouper() {
-       return new ArgumentGrouper(method.getParameterTypes());
-   }
+    protected IArgumentConverter createArgumentConverter() {
+        return new ArgumentConverter(method.getParameterTypes());
+    }
+
+    protected IArgumentGrouper createArgumentGrouper() {
+        return new ArgumentGrouper(method.getParameterTypes());
+    }
 
 }

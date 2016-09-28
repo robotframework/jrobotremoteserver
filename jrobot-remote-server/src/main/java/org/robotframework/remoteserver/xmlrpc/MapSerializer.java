@@ -16,7 +16,6 @@ package org.robotframework.remoteserver.xmlrpc;
 
 import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.xmlrpc.common.TypeFactory;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
 import org.apache.xmlrpc.serializer.TypeSerializer;
@@ -34,41 +33,41 @@ public class MapSerializer extends TypeSerializerImpl {
     private final XmlRpcStreamConfig config;
 
     public MapSerializer(TypeFactory pTypeFactory, XmlRpcStreamConfig pConfig) {
-	typeFactory = pTypeFactory;
-	config = pConfig;
+        typeFactory = pTypeFactory;
+        config = pConfig;
     }
 
     protected void writeEntry(ContentHandler pHandler, Object pKey, Object pValue) throws SAXException {
-	pHandler.startElement("", MEMBER_TAG, MEMBER_TAG, ZERO_ATTRIBUTES);
-	pHandler.startElement("", NAME_TAG, NAME_TAG, ZERO_ATTRIBUTES);
-	String key = pKey == null ? "" : pKey.toString();
-	pHandler.characters(key.toCharArray(), 0, key.length());
-	pHandler.endElement("", NAME_TAG, NAME_TAG);
-	writeValue(pHandler, pValue);
-	pHandler.endElement("", MEMBER_TAG, MEMBER_TAG);
+        pHandler.startElement("", MEMBER_TAG, MEMBER_TAG, ZERO_ATTRIBUTES);
+        pHandler.startElement("", NAME_TAG, NAME_TAG, ZERO_ATTRIBUTES);
+        String key = pKey == null ? "" : pKey.toString();
+        pHandler.characters(key.toCharArray(), 0, key.length());
+        pHandler.endElement("", NAME_TAG, NAME_TAG);
+        writeValue(pHandler, pValue);
+        pHandler.endElement("", MEMBER_TAG, MEMBER_TAG);
     }
 
     private void writeValue(ContentHandler pHandler, Object pValue) throws SAXException {
-	TypeSerializer ts = typeFactory.getSerializer(config, pValue);
-	if (ts == null) {
-	    throw new SAXException("Unsupported Java type: " + pValue.getClass().getName());
-	}
-	ts.write(pHandler, pValue);
+        TypeSerializer ts = typeFactory.getSerializer(config, pValue);
+        if (ts == null) {
+            throw new SAXException("Unsupported Java type: " + pValue.getClass().getName());
+        }
+        ts.write(pHandler, pValue);
     }
 
     protected void writeData(ContentHandler pHandler, Object pData) throws SAXException {
-	Map<?,?> map = (Map<?,?>) pData;
-	for (Iterator<?> iter = map.entrySet().iterator(); iter.hasNext();) {
-	    Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
-	    writeEntry(pHandler, entry.getKey(), entry.getValue());
-	}
+        Map<?, ?> map = (Map<?, ?>) pData;
+        for (Iterator<?> iter = map.entrySet().iterator(); iter.hasNext(); ) {
+            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
+            writeEntry(pHandler, entry.getKey(), entry.getValue());
+        }
     }
 
     public void write(final ContentHandler pHandler, Object pObject) throws SAXException {
-	pHandler.startElement("", VALUE_TAG, VALUE_TAG, ZERO_ATTRIBUTES);
-	pHandler.startElement("", STRUCT_TAG, STRUCT_TAG, ZERO_ATTRIBUTES);
-	writeData(pHandler, pObject);
-	pHandler.endElement("", STRUCT_TAG, STRUCT_TAG);
-	pHandler.endElement("", VALUE_TAG, VALUE_TAG);
+        pHandler.startElement("", VALUE_TAG, VALUE_TAG, ZERO_ATTRIBUTES);
+        pHandler.startElement("", STRUCT_TAG, STRUCT_TAG, ZERO_ATTRIBUTES);
+        writeData(pHandler, pObject);
+        pHandler.endElement("", STRUCT_TAG, STRUCT_TAG);
+        pHandler.endElement("", VALUE_TAG, VALUE_TAG);
     }
 }

@@ -18,13 +18,12 @@
 package org.robotframework.remoteserver.javalib;
 
 import java.lang.reflect.InvocationTargetException;
-
 import org.robotframework.javalib.factory.KeywordFactory;
 import org.robotframework.javalib.library.KeywordDocumentationRepository;
 import org.robotframework.javalib.library.KeywordFactoryBasedLibrary;
 
-public class SingleClassLibrary extends KeywordFactoryBasedLibrary<OverloadableKeyword> implements
-        KeywordDocumentationRepository {
+public class SingleClassLibrary extends KeywordFactoryBasedLibrary<OverloadableKeyword>
+        implements KeywordDocumentationRepository {
 
     private KeywordFactory<OverloadableKeyword> keywordFactory;
     private Object keywordBean;
@@ -33,16 +32,14 @@ public class SingleClassLibrary extends KeywordFactoryBasedLibrary<OverloadableK
         this.keywordBean = keywordBean;
     }
 
-    @Override
-    protected KeywordFactory<OverloadableKeyword> createKeywordFactory() {
+    @Override protected KeywordFactory<OverloadableKeyword> createKeywordFactory() {
         if (keywordFactory == null) {
             keywordFactory = new SimpleKeywordFactory(keywordBean);
         }
         return keywordFactory;
     }
 
-    @Override
-    public Object runKeyword(String keywordName, Object[] args) {
+    @Override public Object runKeyword(String keywordName, Object[] args) {
         try {
             return super.runKeyword(keywordName, args);
         } catch (RuntimeException e) {
@@ -50,13 +47,11 @@ public class SingleClassLibrary extends KeywordFactoryBasedLibrary<OverloadableK
         }
     }
 
-    @Override
-    public String[] getKeywordArguments(String keywordName) {
+    @Override public String[] getKeywordArguments(String keywordName) {
         return createKeywordFactory().createKeyword(keywordName).getArguments();
     }
 
-    @Override
-    public String getKeywordDocumentation(String keywordName) {
+    @Override public String getKeywordDocumentation(String keywordName) {
         return "";
     }
 

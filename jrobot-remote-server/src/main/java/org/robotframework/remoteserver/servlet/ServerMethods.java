@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -27,18 +26,18 @@ import org.robotframework.javalib.util.StdStreamRedirecter;
 
 /**
  * Contains the XML-RPC methods that implement the remote library interface.
- * 
+ *
  * @author David Luu
- * 
  */
 public class ServerMethods {
 
+    private static List<String>
+            genericExceptions =
+            Arrays.asList("AssertionError", "AssertionFailedError", "Exception", "Error", "RuntimeError",
+                    "RuntimeException", "DataError", "TimeoutError", "RemoteError");
+    String[] logLevelPrefixes = new String[] {"*TRACE*", "*DEBUG*", "*INFO*", "*HTML*", "*WARN*"};
     private Log log;
     private RemoteServerServlet servlet;
-    private static List<String> genericExceptions = Arrays.asList(new String[] { "AssertionError",
-            "AssertionFailedError", "Exception", "Error", "RuntimeError", "RuntimeException", "DataError",
-            "TimeoutError", "RemoteError" });
-    String[] logLevelPrefixes = new String[] { "*TRACE*", "*DEBUG*", "*INFO*", "*HTML*", "*WARN*" };
 
     public ServerMethods(RemoteServerServlet servlet) {
         log = LogFactory.getLog(ServerMethods.class);
@@ -48,7 +47,7 @@ public class ServerMethods {
     /**
      * Get an array containing the names of the keywords that the library
      * implements.
-     * 
+     *
      * @return String array containing keyword names in the library
      */
     public String[] get_keyword_names() {
@@ -67,17 +66,14 @@ public class ServerMethods {
 
     /**
      * Run the given keyword and return the results.
-     * 
-     * @param keyword
-     *            keyword to run
-     * @param args
-     *            arguments packed in an array to pass to the keyword method
-     * @param kwargs
-     *            keyword arguments to pass to the keyword method
+     *
+     * @param keyword keyword to run
+     * @param args    arguments packed in an array to pass to the keyword method
+     * @param kwargs  keyword arguments to pass to the keyword method
      * @return remote result Map containing the execution results
      */
     public Map<String, Object> run_keyword(String keyword, Object[] args, Map<String, Object> kwargs) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         StdStreamRedirecter redirector = new StdStreamRedirecter();
         redirector.redirectStdStreams();
         try {
@@ -143,11 +139,9 @@ public class ServerMethods {
 
     /**
      * Run the given keyword and return the results.
-     * 
-     * @param keyword
-     *            keyword to run
-     * @param args
-     *            arguments packed in an array to pass to the keyword method
+     *
+     * @param keyword keyword to run
+     * @param args    arguments packed in an array to pass to the keyword method
      * @return remote result Map containing the execution results
      */
     public Map<String, Object> run_keyword(String keyword, Object[] args) {
@@ -156,9 +150,8 @@ public class ServerMethods {
 
     /**
      * Get an array of argument specifications for the given keyword.
-     * 
-     * @param keyword
-     *            The keyword to lookup.
+     *
+     * @param keyword The keyword to lookup.
      * @return A string array of argument specifications for the given keyword.
      */
     public String[] get_keyword_arguments(String keyword) {
@@ -176,9 +169,8 @@ public class ServerMethods {
 
     /**
      * Get documentation for given keyword.
-     * 
-     * @param keyword
-     *            The keyword to get documentation for.
+     *
+     * @param keyword The keyword to get documentation for.
      * @return A documentation string for the given keyword.
      */
     public String get_keyword_documentation(String keyword) {
@@ -196,7 +188,7 @@ public class ServerMethods {
 
     /**
      * Stops the remote server if it is configured to allow that.
-     * 
+     *
      * @return remote result Map containing the execution results
      */
     public Map<String, Object> stop_remote_server() {
@@ -207,8 +199,8 @@ public class ServerMethods {
         if (servlet.getAllowStop()) {
             System.out.print("Robot Framework remote server stopping");
             new Thread("remote-server-stopper") {
-                @Override
-                public void run() {
+
+                @Override public void run() {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -252,7 +244,7 @@ public class ServerMethods {
             return list;
         } else if (arg instanceof Map<?, ?>) {
             Map<?, ?> oldMap = (Map<?, ?>) arg;
-            Map<Object, Object> newMap = new HashMap<Object, Object>();
+            Map<Object, Object> newMap = new HashMap<>();
             for (Object key : oldMap.keySet())
                 newMap.put(key, arraysToLists(oldMap.get(key)));
             return newMap;

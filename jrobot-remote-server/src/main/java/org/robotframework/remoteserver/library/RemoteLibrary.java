@@ -19,68 +19,61 @@ import java.util.Map;
 /**
  * An interface for handling libraries in jrobotremoteserver. There is no reason
  * for libraries to implement this.
- * <p>
  * User libraries are wrapped so that they can be handled in the same way. Use
  * {@link #getImplementation()} to access the wrapped library.
- * 
  */
 public interface RemoteLibrary {
 
     /**
      * Returns the names of keywords in the library.
-     * 
+     *
      * @return The names of keywords in the library.
      */
-    public String[] getKeywordNames();
+    String[] getKeywordNames();
 
     /**
      * Executes the keyword with the given name. As some library implementations
      * may be case-, space-, or underscore-sensitive, it is best to use the name
      * as returned from {@link #getKeywordNames()}.
-     * 
-     * @param name
-     *            name of the keyword to execute
-     * @param arguments
-     *            positional arguments to the keyword
-     * @param kwargs
-     *            keyword arguments
+     *
+     * @param name      name of the keyword to execute
+     * @param arguments positional arguments to the keyword
+     * @param kwargs    keyword arguments
      * @return value returned by the keyword
      */
-    public Object runKeyword(String name, Object[] arguments, Map<String, Object> kwargs) throws Throwable;
+    Object runKeyword(String name, Object[] arguments, Map<String, Object> kwargs) throws Throwable;
 
     /**
      * Gets the argument descriptors for the given keyword name.
-     * 
-     * @param keyword
-     *            name of the keyword to get argument specifications for
+     *
+     * @param keyword name of the keyword to get argument specifications for
      * @return array of argument specifications
      */
-    public String[] getKeywordArguments(String keyword);
+    String[] getKeywordArguments(String keyword);
 
     /**
      * Gets the documentation string for the given keyword name.
-     * 
-     * @param name
-     *            name of the keyword to get documentation for
+     *
+     * @param name name of the keyword to get documentation for
      * @return keyword documentation string
      */
-    public String getKeywordDocumentation(String name);
+    String getKeywordDocumentation(String name);
 
     /**
      * Gets the name of the remote library.
-     * 
+     *
      * @return The name of the remote library, which is the same as the class
-     *         name
+     * name
      */
-    public String getName();
+    String getName();
 
     /**
      * Gets the underlying library implementation. The {@link RemoteLibrary}
      * interface is intended to be used by wrapper classes. The original user
      * library can be accessed with this method.
-     * 
+     *
      * @return The underlying library implementation
      */
-    public Object getImplementation();
+    Object getImplementation();
 
 }

@@ -16,15 +16,15 @@ package org.robotframework.remoteserver.xmlrpc;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
+import java.util.regex.Pattern;
 import org.apache.ws.commons.util.Base64;
 import org.apache.ws.commons.util.Base64.Encoder;
 import org.apache.xmlrpc.serializer.TypeSerializerImpl;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
-import java.util.regex.Pattern;
 
 public class StringSerializer extends TypeSerializerImpl {
+
     public static final String STRING_TAG = "string";
     public static final String BASE_64_TAG = "base64";
     private static Pattern pattern = Pattern.compile("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]");

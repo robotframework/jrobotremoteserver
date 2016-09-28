@@ -23,6 +23,15 @@ import java.util.Map;
 
 public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
 
+    private static List<Class<?>[]> runKeywordParamArrays = new ArrayList<>();
+
+    static {
+        runKeywordParamArrays.add(new Class<?>[] {String.class, Object[].class, Map.class});
+        runKeywordParamArrays.add(new Class<?>[] {String.class, List.class, Map.class});
+        runKeywordParamArrays.add(new Class<?>[] {String.class, Object[].class});
+        runKeywordParamArrays.add(new Class<?>[] {String.class, List.class});
+    }
+
     public RemoteLibrary createRemoteLibrary(Object library) {
         if (library instanceof RemoteLibrary) {
             return (RemoteLibrary) library;
@@ -40,7 +49,7 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
     }
 
     private List<Method> getPublicMethods(Class<?> clazz) {
-        List<Method> methods = new ArrayList<Method>();
+        List<Method> methods = new ArrayList<>();
         for (Method m : clazz.getMethods()) {
             if (Modifier.isPublic(m.getModifiers())) {
                 methods.add(m);
@@ -51,29 +60,21 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
 
     private Method getGetKeywordNames(List<Method> methods) {
         for (Method m : methods) {
-            if (((m.getName().equals("getKeywordNames") || (m.getName().equals("get_keyword_names")))
-                    && (m.getReturnType() == String[].class || m.getReturnType() == List.class) && m
-                        .getParameterTypes().length == 0)) {
+            if (((m.getName().equals("getKeywordNames") || (m.getName().equals("get_keyword_names"))) && (
+                    m.getReturnType() == String[].class || m.getReturnType() == List.class)
+                    && m.getParameterTypes().length == 0)) {
                 return m;
             }
         }
         return null;
     }
 
-    private static List<Class<?>[]> runKeywordParamArrays = new ArrayList<Class<?>[]>();
-    static {
-        runKeywordParamArrays.add(new Class<?>[] { String.class, Object[].class, Map.class });
-        runKeywordParamArrays.add(new Class<?>[] { String.class, List.class, Map.class });
-        runKeywordParamArrays.add(new Class<?>[] { String.class, Object[].class });
-        runKeywordParamArrays.add(new Class<?>[] { String.class, List.class });
-    }
-
     private Method getRunKeyword(List<Method> methods) {
         Method matchingMethod = null;
         for (Method m : methods) {
             Class<?>[] pTypes = m.getParameterTypes();
-            if ((m.getName().equals("runKeyword") || m.getName().equals("run_keyword"))
-                    && m.getReturnType().equals(Object.class)) {
+            if ((m.getName().equals("runKeyword") || m.getName().equals("run_keyword")) && m.getReturnType()
+                    .equals(Object.class)) {
                 for (Class<?>[] paramArray : runKeywordParamArrays) {
                     if (Arrays.equals(pTypes, paramArray)) {
                         if (pTypes.length == 3) {
@@ -91,9 +92,9 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
 
     private Method getGetKeywordArguments(List<Method> methods) {
         for (Method m : methods) {
-            if ((m.getName().equals("getKeywordArguments") || m.getName().equals("get_keyword_arguments"))
-                    && (m.getReturnType() == String[].class || m.getReturnType() == List.class)
-                    && Arrays.equals(m.getParameterTypes(), new Class<?>[] { String.class }))
+            if ((m.getName().equals("getKeywordArguments") || m.getName().equals("get_keyword_arguments")) && (
+                    m.getReturnType() == String[].class || m.getReturnType() == List.class) && Arrays.equals(
+                    m.getParameterTypes(), new Class<?>[] {String.class}))
                 return m;
         }
         return null;
@@ -102,8 +103,8 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
     private Method getGetKeywordDocumentation(List<Method> methods) {
         for (Method m : methods) {
             if ((m.getName().equals("getKeywordDocumentation") || m.getName().equals("get_keyword_documentation"))
-                    && m.getReturnType() == String.class
-                    && Arrays.equals(m.getParameterTypes(), new Class<?>[] { String.class }))
+                    && m.getReturnType() == String.class && Arrays.equals(m.getParameterTypes(),
+                    new Class<?>[] {String.class}))
                 return m;
         }
         return null;

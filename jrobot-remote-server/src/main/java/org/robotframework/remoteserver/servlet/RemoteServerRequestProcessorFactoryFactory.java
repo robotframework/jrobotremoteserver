@@ -19,6 +19,7 @@ import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.server.RequestProcessorFactoryFactory;
 
 public class RemoteServerRequestProcessorFactoryFactory implements RequestProcessorFactoryFactory {
+
     private final RequestProcessorFactory factory = new RemoteServerRequestProcessorFactory();
     private final ServerMethods serverMethods;
 
@@ -26,12 +27,13 @@ public class RemoteServerRequestProcessorFactoryFactory implements RequestProces
         this.serverMethods = new ServerMethods(servlet);
     }
 
-    @SuppressWarnings("rawtypes")
-    public RequestProcessorFactory getRequestProcessorFactory(Class aClass) throws XmlRpcException {
+    @SuppressWarnings("rawtypes") public RequestProcessorFactory getRequestProcessorFactory(Class aClass)
+            throws XmlRpcException {
         return factory;
     }
 
     private class RemoteServerRequestProcessorFactory implements RequestProcessorFactory {
+
         public Object getRequestProcessor(XmlRpcRequest xmlRpcRequest) throws XmlRpcException {
             return serverMethods;
         }

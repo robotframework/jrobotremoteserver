@@ -24,8 +24,7 @@ public class DynamicApiRemoteLibraryTest {
     public void getDynamicAPILibraryImplementation() throws Exception {
         DynamicOneRunKeywordNoKwargs lib = new DynamicOneRunKeywordNoKwargs();
         Method gkn = DynamicOneRunKeywordNoKwargs.class.getMethod("getKeywordNames");
-        Method rk = DynamicOneRunKeywordNoKwargs.class.getMethod("runKeyword", new Class<?>[] { String.class,
-                Object[].class });
+        Method rk = DynamicOneRunKeywordNoKwargs.class.getMethod("runKeyword", String.class, Object[].class);
         DynamicApiRemoteLibrary wrapper = new DynamicApiRemoteLibrary(lib, gkn, rk, null, null);
         assertEquals(wrapper.getImplementation(), lib);
     }
@@ -34,8 +33,8 @@ public class DynamicApiRemoteLibraryTest {
     public void libraryUsingLists() throws Throwable {
         DynamicUsingLists lib = new DynamicUsingLists();
         Method gkn = DynamicUsingLists.class.getMethod("getKeywordNames");
-        Method rk = DynamicUsingLists.class.getMethod("runKeyword", new Class<?>[] { String.class, List.class });
-        Method gka = DynamicUsingLists.class.getMethod("getKeywordArguments", new Class<?>[] { String.class });
+        Method rk = DynamicUsingLists.class.getMethod("runKeyword", String.class, List.class);
+        Method gka = DynamicUsingLists.class.getMethod("getKeywordArguments", String.class);
         DynamicApiRemoteLibrary wrapper = new DynamicApiRemoteLibrary(lib, gkn, rk, gka, null);
         Assert.assertEquals(wrapper.getKeywordNames(), new String[] { "go" });
         Assert.assertEquals(wrapper.runKeyword("go", new Object[] { "there" }, noKwargs), "there");

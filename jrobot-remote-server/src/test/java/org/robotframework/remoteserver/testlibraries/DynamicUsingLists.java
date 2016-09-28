@@ -7,7 +7,7 @@ import java.util.List;
 public class DynamicUsingLists {
     
     public List<String> getKeywordNames() {
-        return Arrays.asList(new String[] {"go"});
+        return Arrays.asList("go");
     }
 
     public Object runKeyword(String name, List<?> arguments) {
@@ -26,7 +26,7 @@ public class DynamicUsingLists {
 
     public List<String> getKeywordArguments(String name) {
         if (name.equals("go")) {
-            return Arrays.asList(new String[] {"where"});
+            return Arrays.asList("where");
         }
         throw new RuntimeException("bad keyword");
     }

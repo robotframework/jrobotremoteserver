@@ -19,7 +19,7 @@ public class DynamicOneRunKeywordKwargsList extends StaticOne {
     }
 
     public List<String> getKeywordArguments(String name) {
-        return Arrays.asList(new String[] {"*args", "**kwargs"}); 
+        return Arrays.asList("*args", "**kwargs");
     }
 
 }
