@@ -52,6 +52,7 @@
                 <artifactId>robotframework-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <phase>test</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
