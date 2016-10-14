@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.aenniw</groupId>
     <artifactId>jrobot-parent</artifactId>
-    <version>3.2-SNAPSHOT</version>
+    <version>${deploy.version}</version>
     <modules>
         <module>jrobot-remote-server</module>
         <module>jrobot-test-library</module>
@@ -39,6 +39,7 @@
         <version>7</version>
     </parent>
     <properties>
+        <deploy.version>3.3-SNAPSHOT</deploy.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <guava.version>19.0</guava.version>

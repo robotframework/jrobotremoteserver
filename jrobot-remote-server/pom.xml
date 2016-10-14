@@ -6,7 +6,7 @@
     <parent>
         <artifactId>jrobot-parent</artifactId>
         <groupId>com.github.aenniw</groupId>
-        <version>3.2-SNAPSHOT</version>
+        <version>${deploy.version}</version>
     </parent>
     <artifactId>jrobot-remote-server</artifactId>
     <packaging>bundle</packaging>
