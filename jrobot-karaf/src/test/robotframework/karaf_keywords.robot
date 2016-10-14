@@ -65,8 +65,8 @@ Verify Feature Installed On Karaf
 Verify Bundle Installed On Karaf
     [Arguments]    ${bundle_name}
     [Documentation]    Checks if bundle was installed
-    ${output}    Run On Karaf    bundle:list | grep ${bundle_name}
-    Should Contain    ${output}    Installed
+    ${output}    Run On Karaf    bundle:list
+    Should Contain    ${output}    ${bundle_name}
 
 Verify Feature Started On Karaf
     [Arguments]    ${feature_name}
