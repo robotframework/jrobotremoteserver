@@ -15,6 +15,7 @@
 package org.robotframework.remoteserver.servlet;
 
 import com.google.common.base.Preconditions;
+import com.google.common.html.HtmlEscapers;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
@@ -25,7 +26,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
@@ -165,7 +165,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
                 sb.append("<TR><TD>");
                 sb.append(path);
                 sb.append("</TD><TD>");
-                sb.append(StringEscapeUtils.escapeHtml4(map.get(path).getURI()));
+                sb.append(HtmlEscapers.htmlEscaper().escape(map.get(path).getURI()));
                 sb.append("</TD></TR>");
             }
         }

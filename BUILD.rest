@@ -2,10 +2,9 @@ Building
 --------
 
 Maven is used as build tool for jrobotremoteserver.
-You can simply do a 'mvn clean package assembly:single' in the project directory.
+You can simply do a 'mvn clean install' in the project directory.
 
 Robot Tests
 -----------
 
-There are some number of robot acceptance tests under `atest`.
-They are executed by running `run.py`.
+There are some number of robot acceptance tests under `jrobot-kataf/src`.

@@ -14,12 +14,12 @@
  */
 package org.robotframework.remoteserver.servlet;
 
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.robotframework.javalib.util.StdStreamRedirecter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +75,7 @@ public class ServerMethods implements JRobotServlet {
             result.put("status", "FAIL");
             Throwable thrown = e.getCause() == null ? e : e.getCause();
             result.put("error", getError(thrown));
-            result.put("traceback", ExceptionUtils.getStackTrace(thrown));
+            result.put("traceback", Throwables.getStackTraceAsString(thrown));
             boolean continuable = isFlagSet("ROBOT_CONTINUE_ON_FAILURE", thrown);
             if (continuable) {
                 result.put("continuable", true);
@@ -85,8 +85,8 @@ public class ServerMethods implements JRobotServlet {
                 result.put("fatal", true);
             }
         } finally {
-            String stdOut = StringUtils.defaultString(redirector.getStdOutAsString());
-            String stdErr = StringUtils.defaultString(redirector.getStdErrAsString());
+            String stdOut = Strings.nullToEmpty(redirector.getStdOutAsString());
+            String stdErr = Strings.nullToEmpty(redirector.getStdErrAsString());
             if (!stdOut.isEmpty() || !stdErr.isEmpty()) {
                 StringBuilder output = new StringBuilder(stdOut);
                 if (!stdOut.isEmpty() && !stdErr.isEmpty()) {
@@ -129,7 +129,7 @@ public class ServerMethods implements JRobotServlet {
     private String getError(Throwable thrown) {
         final String simpleName = thrown.getClass().getSimpleName();
         if (genericExceptions.contains(simpleName) || isFlagSet("ROBOT_SUPPRESS_NAME", thrown)) {
-            return StringUtils.defaultIfEmpty(thrown.getMessage(), simpleName);
+            return thrown.getMessage() == null || thrown.getMessage().isEmpty() ? simpleName : thrown.getMessage();
         } else {
             return String.format("%s: %s", thrown.getClass().getName(), thrown.getMessage());
         }

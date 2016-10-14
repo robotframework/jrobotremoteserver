@@ -14,9 +14,12 @@
  */
 package org.robotframework.remoteserver.xmlrpc;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.ArrayUtils;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
 import org.apache.xmlrpc.common.XmlRpcController;
@@ -58,6 +61,42 @@ public class TypeFactory extends TypeFactoryImpl {
         super(pController);
     }
 
+    public static Byte[] toObject(final byte[] primitives) {
+        final Byte[] bytes = new Byte[primitives.length];
+        Arrays.setAll(bytes, n -> primitives[n]);
+        return bytes;
+    }
+
+    public static Short[] toObject(final short[] primitives) {
+        final Short[] bytes = new Short[primitives.length];
+        Arrays.setAll(bytes, n -> primitives[n]);
+        return bytes;
+    }
+
+    public static Integer[] toObject(final int[] primitives) {
+        return IntStream.of(primitives).boxed().toArray(Integer[]::new);
+    }
+
+    public static Long[] toObject(final long[] primitives) {
+        return LongStream.of(primitives).boxed().toArray(Long[]::new);
+    }
+
+    public static Float[] toObject(final float[] primitives) {
+        final Float[] bytes = new Float[primitives.length];
+        Arrays.setAll(bytes, n -> primitives[n]);
+        return bytes;
+    }
+
+    public static Double[] toObject(final double[] primitives) {
+        return DoubleStream.of(primitives).boxed().toArray(Double[]::new);
+    }
+
+    public static Boolean[] toObject(final boolean[] primitives) {
+        final Boolean[] bytes = new Boolean[primitives.length];
+        Arrays.setAll(bytes, n -> primitives[n]);
+        return bytes;
+    }
+
     public TypeSerializer getSerializer(XmlRpcStreamConfig pConfig, Object pObject) throws SAXException {
         if (pObject == null)
             return NULL_SERIALIZER;
@@ -79,26 +118,25 @@ public class TypeFactory extends TypeFactoryImpl {
             return new IterableSerializer(this, pConfig);
         else if (pObject instanceof char[])
             return CHAR_ARRAY_SERIALIZER;
-        else if (pObject.getClass().isArray()) { // object[] & char[] handled
-            // before this
+        else if (pObject.getClass().isArray()) {
             return new ObjectArraySerializer(TypeFactory.this, pConfig) {
 
                 @Override protected void writeData(ContentHandler pHandler, Object pObject1) throws SAXException {
                     Object[] array;
                     if (pObject1 instanceof byte[])
-                        array = ArrayUtils.toObject((byte[]) pObject1);
+                        array = toObject((byte[]) pObject1);
                     else if (pObject1 instanceof short[])
-                        array = ArrayUtils.toObject((short[]) pObject1);
+                        array = toObject((short[]) pObject1);
                     else if (pObject1 instanceof int[])
-                        array = ArrayUtils.toObject((int[]) pObject1);
+                        array = toObject((int[]) pObject1);
                     else if (pObject1 instanceof long[])
-                        array = ArrayUtils.toObject((long[]) pObject1);
+                        array = toObject((long[]) pObject1);
                     else if (pObject1 instanceof float[])
-                        array = ArrayUtils.toObject((float[]) pObject1);
+                        array = toObject((float[]) pObject1);
                     else if (pObject1 instanceof double[])
-                        array = ArrayUtils.toObject((double[]) pObject1);
+                        array = toObject((double[]) pObject1);
                     else if (pObject1 instanceof boolean[])
-                        array = ArrayUtils.toObject((boolean[]) pObject1);
+                        array = toObject((boolean[]) pObject1);
                     else
                         // should never happen
                         throw new SAXException(String.format("Array of type %s[] not handled!",
