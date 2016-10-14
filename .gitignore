@@ -6,6 +6,6 @@ test-output
 atest/results
 *.pyc
 .pydevproject
-/.idea/
+.idea/
 /target/
 *.iml
