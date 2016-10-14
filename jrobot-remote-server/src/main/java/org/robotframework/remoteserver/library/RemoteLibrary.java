@@ -15,14 +15,15 @@
 package org.robotframework.remoteserver.library;
 
 import java.util.Map;
+import org.robotframework.javalib.library.KeywordDocumentationRepository;
+import org.robotframework.javalib.library.RobotJavaLibrary;
 
 /**
  * An interface for handling libraries in jrobotremoteserver. There is no reason
  * for libraries to implement this.
- * User libraries are wrapped so that they can be handled in the same way. Use
- * {@link #getImplementation()} to access the wrapped library.
+ * User libraries are wrapped so that they can be handled in the same way.
  */
-public interface RemoteLibrary {
+public interface RemoteLibrary extends KeywordDocumentationRepository, RobotJavaLibrary, AutoCloseable {
 
     /**
      * Returns the names of keywords in the library.
@@ -41,7 +42,7 @@ public interface RemoteLibrary {
      * @param kwargs    keyword arguments
      * @return value returned by the keyword
      */
-    Object runKeyword(String name, Object[] arguments, Map<String, Object> kwargs) throws Throwable;
+    Object runKeyword(String name, Object[] arguments, Map<String, Object> kwargs);
 
     /**
      * Gets the argument descriptors for the given keyword name.
@@ -65,15 +66,7 @@ public interface RemoteLibrary {
      * @return The name of the remote library, which is the same as the class
      * name
      */
-    String getName();
+    String getURI();
 
-    /**
-     * Gets the underlying library implementation. The {@link RemoteLibrary}
-     * interface is intended to be used by wrapper classes. The original user
-     * library can be accessed with this method.
-     *
-     * @return The underlying library implementation
-     */
-    Object getImplementation();
-
+    @Override void close();
 }

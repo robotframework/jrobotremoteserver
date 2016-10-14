@@ -7,10 +7,8 @@ public interface RemoteServer {
 
     /**
      * Stops the remote server immediately.
-     *
-     * @throws Exception If server cannot be stopped
      */
-    void stop() throws Exception;
+    void stop();
 
     /**
      * A non-blocking method for stopping the remote server that allows requests
@@ -19,9 +17,8 @@ public interface RemoteServer {
      *
      * @param timeoutMS the milliseconds to wait for existing request to complete
      *                  before stopping the server
-     * @throws Exception If server cannot be stopped
      */
-    void stop(int timeoutMS) throws Exception;
+    void stop(int timeoutMS);
 
     /**
      * Starts the remote server. Add test libraries first before calling this.
@@ -58,11 +55,9 @@ public interface RemoteServer {
      * </ul>
      * Example: <code>putLibrary("/myLib", new MyLibrary());</code>
      *
-     * @param library instance of the test library
      * @param path    path to map the test library to
-     * @return the previous library mapped to the path, or null if there was no
-     * mapping for the path
+     * @param library instance of the test library
      */
-    RemoteLibrary putLibrary(String path, Object library);
+    void putLibrary(String path, RemoteLibrary library);
 
 }

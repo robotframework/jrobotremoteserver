@@ -21,7 +21,7 @@ import org.apache.xmlrpc.server.RequestProcessorFactoryFactory;
 public class RemoteServerRequestProcessorFactoryFactory implements RequestProcessorFactoryFactory {
 
     private final RequestProcessorFactory factory = new RemoteServerRequestProcessorFactory();
-    private final ServerMethods serverMethods;
+    private final JRobotServlet serverMethods;
 
     public RemoteServerRequestProcessorFactoryFactory(RemoteServerServlet servlet) {
         this.serverMethods = new ServerMethods(servlet);
@@ -34,7 +34,7 @@ public class RemoteServerRequestProcessorFactoryFactory implements RequestProces
 
     private class RemoteServerRequestProcessorFactory implements RequestProcessorFactory {
 
-        public Object getRequestProcessor(XmlRpcRequest xmlRpcRequest) throws XmlRpcException {
+        public JRobotServlet getRequestProcessor(XmlRpcRequest xmlRpcRequest) throws XmlRpcException {
             return serverMethods;
         }
     }

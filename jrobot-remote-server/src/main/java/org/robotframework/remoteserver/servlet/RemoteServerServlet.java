@@ -14,9 +14,10 @@
  */
 package org.robotframework.remoteserver.servlet;
 
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,10 +30,7 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
 import org.apache.xmlrpc.webserver.XmlRpcServletServer;
-import org.robotframework.remoteserver.context.RemoteServerContext;
-import org.robotframework.remoteserver.library.DefaultRemoteLibraryFactory;
 import org.robotframework.remoteserver.library.RemoteLibrary;
-import org.robotframework.remoteserver.library.RemoteLibraryFactory;
 import org.robotframework.remoteserver.xmlrpc.ReflectiveHandlerMapping;
 import org.robotframework.remoteserver.xmlrpc.TypeFactory;
 
@@ -44,11 +42,9 @@ import org.robotframework.remoteserver.xmlrpc.TypeFactory;
  */
 public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerContext {
 
-    private static final long serialVersionUID = -7981676271855172976L;
     private static final ThreadLocal<HttpServletRequest> request = new ThreadLocal<>();
     private static final ThreadLocal<RemoteLibrary> currLibrary = new ThreadLocal<>();
-    private Map<String, RemoteLibrary> libraryMap = new ConcurrentHashMap<>();
-    private boolean allowStop = true;
+    private final Map<String, RemoteLibrary> libraryMap = new ConcurrentHashMap<>();
 
     /**
      * Cleans up the path of an incoming request. Repeating /s are reduced to
@@ -59,18 +55,20 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
      * @return cleaned up path
      */
     private static String cleanPath(String path) {
-        path = path == null ? "/" : path;
+        if (path == null) {
+            return "/";
+        }
         if (!path.startsWith("/")) {
             path = "/" + path;
         }
         path = path.replaceAll("/+", "/");
         if (path.length() > 1 && path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
+            return path.substring(0, path.length() - 1);
         }
         return path;
     }
 
-    private static void checkPath(String path) {
+    private static String checkPath(String path) {
         if (path == null || !path.startsWith("/")) {
             throw new IllegalPathException(String.format("Path [%s] does not start with a /.", path));
         } else if (path.contains("//")) {
@@ -82,13 +80,11 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
                     "Path [%s] contains disallowed characters (must contain only alphanumeric or any of these: -._~/).",
                     path));
         }
+        return path;
     }
 
-    public RemoteLibrary putLibrary(String path, Object library) {
-        checkPath(path);
-        RemoteLibraryFactory libraryFactory = createLibraryFactory();
-        RemoteLibrary remoteLibrary = libraryFactory.createRemoteLibrary(library);
-        return libraryMap.put(path, remoteLibrary);
+    public RemoteLibrary putLibrary(String path, RemoteLibrary library) {
+        return libraryMap.put(checkPath(path), Preconditions.checkNotNull(library));
     }
 
     public RemoteLibrary removeLibrary(String path) {
@@ -96,15 +92,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
     }
 
     public Map<String, RemoteLibrary> getLibraryMap() {
-        return new HashMap<>(libraryMap);
-    }
-
-    public boolean getAllowStop() {
-        return allowStop;
-    }
-
-    public void setAllowStop(boolean allowed) {
-        allowStop = allowed;
+        return Collections.unmodifiableMap(libraryMap);
     }
 
     @Override protected XmlRpcServletServer newXmlRpcServer(ServletConfig pConfig) throws XmlRpcException {
@@ -123,8 +111,8 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
 
     @Override protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        request.set(req);
         try {
+            request.set(req);
             super.service(req, resp);
         } finally {
             request.remove();
@@ -177,7 +165,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
                 sb.append("<TR><TD>");
                 sb.append(path);
                 sb.append("</TD><TD>");
-                sb.append(StringEscapeUtils.escapeHtml4(map.get(path).getName()));
+                sb.append(StringEscapeUtils.escapeHtml4(map.get(path).getURI()));
                 sb.append("</TD></TR>");
             }
         }
@@ -194,10 +182,6 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
      */
     public RemoteLibrary getLibrary() {
         return currLibrary.get();
-    }
-
-    protected RemoteLibraryFactory createLibraryFactory() {
-        return new DefaultRemoteLibraryFactory();
     }
 
 }

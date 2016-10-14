@@ -14,7 +14,6 @@
  */
 package org.robotframework.remoteserver.xmlrpc;
 
-import java.util.Iterator;
 import java.util.Map;
 import org.apache.xmlrpc.common.TypeFactory;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
@@ -57,9 +56,8 @@ public class MapSerializer extends TypeSerializerImpl {
 
     protected void writeData(ContentHandler pHandler, Object pData) throws SAXException {
         Map<?, ?> map = (Map<?, ?>) pData;
-        for (Iterator<?> iter = map.entrySet().iterator(); iter.hasNext(); ) {
-            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
-            writeEntry(pHandler, entry.getKey(), entry.getValue());
+        for (Map.Entry<?, ?> entry1 : map.entrySet()) {
+            writeEntry(pHandler, entry1.getKey(), entry1.getValue());
         }
     }
 

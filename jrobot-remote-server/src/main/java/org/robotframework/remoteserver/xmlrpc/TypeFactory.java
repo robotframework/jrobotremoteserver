@@ -53,7 +53,6 @@ public class TypeFactory extends TypeFactoryImpl {
         }
     };
     private static final TypeParser BYTE_ARRAY_PARSER = new ByteArrayToStringParser();
-    private TypeSerializer primitiveArraySerializer;
 
     public TypeFactory(XmlRpcController pController) {
         super(pController);
@@ -82,32 +81,31 @@ public class TypeFactory extends TypeFactoryImpl {
             return CHAR_ARRAY_SERIALIZER;
         else if (pObject.getClass().isArray()) { // object[] & char[] handled
             // before this
-            primitiveArraySerializer = new ObjectArraySerializer(this, pConfig) {
+            return new ObjectArraySerializer(TypeFactory.this, pConfig) {
 
-                @Override protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {
+                @Override protected void writeData(ContentHandler pHandler, Object pObject1) throws SAXException {
                     Object[] array;
-                    if (pObject instanceof byte[])
-                        array = ArrayUtils.toObject((byte[]) pObject);
-                    else if (pObject instanceof short[])
-                        array = ArrayUtils.toObject((short[]) pObject);
-                    else if (pObject instanceof int[])
-                        array = ArrayUtils.toObject((int[]) pObject);
-                    else if (pObject instanceof long[])
-                        array = ArrayUtils.toObject((long[]) pObject);
-                    else if (pObject instanceof float[])
-                        array = ArrayUtils.toObject((float[]) pObject);
-                    else if (pObject instanceof double[])
-                        array = ArrayUtils.toObject((double[]) pObject);
-                    else if (pObject instanceof boolean[])
-                        array = ArrayUtils.toObject((boolean[]) pObject);
+                    if (pObject1 instanceof byte[])
+                        array = ArrayUtils.toObject((byte[]) pObject1);
+                    else if (pObject1 instanceof short[])
+                        array = ArrayUtils.toObject((short[]) pObject1);
+                    else if (pObject1 instanceof int[])
+                        array = ArrayUtils.toObject((int[]) pObject1);
+                    else if (pObject1 instanceof long[])
+                        array = ArrayUtils.toObject((long[]) pObject1);
+                    else if (pObject1 instanceof float[])
+                        array = ArrayUtils.toObject((float[]) pObject1);
+                    else if (pObject1 instanceof double[])
+                        array = ArrayUtils.toObject((double[]) pObject1);
+                    else if (pObject1 instanceof boolean[])
+                        array = ArrayUtils.toObject((boolean[]) pObject1);
                     else
                         // should never happen
                         throw new SAXException(String.format("Array of type %s[] not handled!",
-                                pObject.getClass().getComponentType().getName()));
+                                pObject1.getClass().getComponentType().getName()));
                     super.writeData(pHandler, array);
                 }
             };
-            return primitiveArraySerializer;
         } else
             return STRING_SERIALIZER;
     }

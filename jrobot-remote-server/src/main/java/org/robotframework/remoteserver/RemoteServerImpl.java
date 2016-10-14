@@ -14,16 +14,18 @@
  */
 package org.robotframework.remoteserver;
 
+import com.google.common.base.Preconditions;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.robotframework.remoteserver.library.RemoteLibrary;
+import org.robotframework.remoteserver.servlet.RemoteServerContext;
 import org.robotframework.remoteserver.servlet.RemoteServerServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Remote server for Robot Framework implemented in Java. Takes one or more test
@@ -40,10 +42,10 @@ import org.robotframework.remoteserver.servlet.RemoteServerServlet;
  */
 public class RemoteServerImpl implements RemoteServer {
 
-    private static Log log = LogFactory.getLog(RemoteServer.class);
-    protected Server server = new Server();
-    private RemoteServerServlet servlet = new RemoteServerServlet();
-    private SelectChannelConnector connector = new SelectChannelConnector();
+    protected static final Logger LOG = LoggerFactory.getLogger(RemoteServerImpl.class.getName());
+    protected final Server server = new Server();
+    private final RemoteServerContext servlet = new RemoteServerServlet();
+    private final SelectChannelConnector connector = new SelectChannelConnector();
 
     public RemoteServerImpl() {
         connector.setName("jrobotremoteserver");
@@ -73,24 +75,6 @@ public class RemoteServerImpl implements RemoteServer {
     }
 
     /**
-     * Returns <code>true</code> if this server allows remote stopping.
-     *
-     * @return <code>true</code> if this server allows remote stopping
-     */
-    public boolean getAllowStop() {
-        return servlet.getAllowStop();
-    }
-
-    /**
-     * Allow or disallow stopping the server remotely.
-     *
-     * @param allowed <code>true</code> to allow stopping the server remotely
-     */
-    public void setAllowStop(boolean allowed) {
-        servlet.setAllowStop(allowed);
-    }
-
-    /**
      * Returns the hostname set with {@link #setHost(String)}.
      *
      * @return the hostname set with {@link #setHost(String)}
@@ -111,11 +95,15 @@ public class RemoteServerImpl implements RemoteServer {
         connector.setHost(hostName);
     }
 
-    @Override public RemoteLibrary putLibrary(String path, Object library) {
-        RemoteLibrary oldLibrary = servlet.putLibrary(path, library);
-        String name = servlet.getLibraryMap().get(path).getName();
-        log.info(String.format("Mapped path %s to library %s.", path, name));
-        return oldLibrary;
+    @Override public void putLibrary(String path, RemoteLibrary library) {
+        final RemoteLibrary
+                oldLibrary =
+                servlet.putLibrary(Preconditions.checkNotNull(path), Preconditions.checkNotNull(library));
+        if (oldLibrary != null) {
+            oldLibrary.close();
+            LOG.info("Closed library {} om path {}", library.getClass().getSimpleName(), path);
+        }
+        LOG.info("Mapped path {} to library {}", path, library.getClass().getSimpleName());
     }
 
     @Override public RemoteLibrary removeLibrary(String path) {
@@ -126,33 +114,27 @@ public class RemoteServerImpl implements RemoteServer {
         return servlet.getLibraryMap();
     }
 
-    @Override public void stop(int timeoutMS) throws Exception {
-        log.info("Robot Framework remote server stopping");
-        if (timeoutMS > 0) {
-            server.setGracefulShutdown(timeoutMS);
-            Thread stopper = new Thread() {
-
-                @Override public void run() {
-                    try {
-                        server.stop();
-                    } catch (Throwable e) {
-                        log.error(String.format("Failed to stop the server: %s", e.getMessage()), e);
-                    }
-                }
-            };
-            stopper.start();
-        } else {
+    @Override public void stop(int timeoutMS) {
+        LOG.info("Robot Framework remote server stopping");
+        try {
+            if (timeoutMS > 0) {
+                server.setGracefulShutdown(timeoutMS);
+            }
             server.stop();
+        } catch (Throwable e) {
+            LOG.error("Failed to stop the server: {}", e.getMessage(), e);
+        } finally {
+            servlet.getLibraryMap().values().forEach(RemoteLibrary::close);
         }
     }
 
-    @Override public void stop() throws Exception {
+    @Override public void stop() {
         stop(0);
     }
 
     @Override public void start() throws Exception {
-        log.info("Robot Framework remote server starting");
+        LOG.info("Robot Framework remote server starting");
         server.start();
-        log.info(String.format("Robot Framework remote server started on port %d.", getPort()));
+        LOG.info("Robot Framework remote server started on port {}", getPort());
     }
 }

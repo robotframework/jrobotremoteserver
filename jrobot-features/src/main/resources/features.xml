@@ -6,6 +6,7 @@
     <feature name='jrobot-remote-server' version='${project.version}'
              description='RobotFramework  :: Remote library server'>
         <bundle>mvn:com.github.aenniw/jrobot-remote-server/${project.version}</bundle>
+        <bundle>mvn:com.google.guava/guava/${guava.version}</bundle>
         <feature>jetty</feature>
     </feature>
 </features>

@@ -12,27 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.robotframework.remoteserver.context;
+package org.robotframework.remoteserver.servlet;
 
 import java.util.Map;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import org.robotframework.remoteserver.library.RemoteLibrary;
 
-public interface RemoteServerContext {
-
-    /**
-     * Returns <code>true</code> if this server allows remote stopping.
-     *
-     * @return <code>true</code> if this server allows remote stopping
-     */
-    boolean getAllowStop();
-
-    /**
-     * Allow or disallow stopping the server remotely.
-     *
-     * @param allowed <code>true</code> to allow stopping the server remotely
-     */
-    void setAllowStop(boolean allowed);
+public interface RemoteServerContext extends Servlet {
 
     /**
      * Gets a copy of the current library map. Keys in the map are the paths and
@@ -67,7 +54,7 @@ public interface RemoteServerContext {
      * @return the previous library mapped to the path, or null if there was no
      * mapping for the path
      */
-    RemoteLibrary putLibrary(String path, Object library);
+    RemoteLibrary putLibrary(String path, RemoteLibrary library);
 
     /**
      * Removes the library mapped to the given path if the mapping exists
