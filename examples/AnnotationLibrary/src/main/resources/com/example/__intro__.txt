@@ -1,5 +1,0 @@
-MyRemoteLibrary is an example library that demonstrates how to use jrobotremoteserver and AnnotationLibrary from JavaLib Core together.
-
-This library exposes a LinkedBlockingQueue to Robot Framework that will store whatever Robot Framework sends.
-
-jrobotremoteserver aims to make returning Java objects to Robot Framework painless. Note that `Get Queue` returns a LinkedBlockingQueue, which does not implement List but does, however, implement Iterable. Iterables are converted to arrays during serialization. See the [https://github.com/ombre42/jrobotremoteserver/wiki/User-Guide|User Guide] for more information on type conversions.

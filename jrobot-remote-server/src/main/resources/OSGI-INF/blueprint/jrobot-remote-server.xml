@@ -1,0 +1,12 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <!-- References -->
+    <!-- Beans -->
+    <bean id="robot-remote-server" class="org.robotframework.remoteserver.RemoteServerImpl" init-method="start"
+          destroy-method="stop">
+        <property name="port" value="8270"/>
+        <property name="host" value="0.0.0.0"/>
+    </bean>
+    <!-- Services -->
+    <service ref="robot-remote-server" interface="org.robotframework.remoteserver.RemoteServer"/>
+</blueprint>
+
