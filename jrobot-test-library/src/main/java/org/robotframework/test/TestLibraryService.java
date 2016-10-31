@@ -12,6 +12,10 @@ import org.robotframework.javalib.annotation.RobotKeywords;
 
     @RobotKeywordOverload int add(int a, int b);
 
+    @RobotKeyword double sub(double a, double b);
+
+    @RobotKeywordOverload int sub(int a, int b);
+
     @RobotKeyword String concat(String input1, String input2);
 
     @RobotKeywordOverload String concat(String input1, int input2);

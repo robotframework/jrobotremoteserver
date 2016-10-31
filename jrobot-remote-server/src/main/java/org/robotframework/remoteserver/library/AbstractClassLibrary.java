@@ -17,8 +17,8 @@
  */
 package org.robotframework.remoteserver.library;
 
-import com.google.common.base.Preconditions;
 import java.util.Map;
+import java.util.Objects;
 import org.robotframework.javalib.annotation.RobotKeyword;
 import org.robotframework.javalib.annotation.RobotKeywords;
 import org.robotframework.javalib.factory.KeywordFactory;
@@ -34,7 +34,7 @@ import org.robotframework.remoteserver.keywords.OverloadedKeywordFactory;
     private KeywordFactory<OverloadedKeyword> keywordFactory;
 
     protected AbstractClassLibrary(RemoteServer server) {
-        Preconditions.checkNotNull(server).putLibrary("/" + getURI().trim().replace(" ", "_"), this);
+        Objects.requireNonNull(server).putLibrary("/" + getURI().trim().replace(" ", "_"), this);
     }
 
     @Override protected synchronized KeywordFactory<OverloadedKeyword> createKeywordFactory() {
@@ -45,8 +45,13 @@ import org.robotframework.remoteserver.keywords.OverloadedKeywordFactory;
     }
 
     @Override public synchronized Object runKeyword(String keywordName, Object[] args, Map<String, Object> kwargs) {
-        if (kwargs != null && !kwargs.isEmpty()) {
-            throw new RuntimeException("Keyword arguments not yet supported for static API libraries.");
+        if (Objects.nonNull(kwargs) && !kwargs.isEmpty()) {
+            String[] argsNames = getKeywordArguments(keywordName);
+            for (int i = 0; i < argsNames.length; i++) {
+                if (kwargs.containsKey(argsNames[i])) {
+                    args[i] = kwargs.get(argsNames[i]);
+                }
+            }
         }
         return runKeyword(keywordName, args);
     }

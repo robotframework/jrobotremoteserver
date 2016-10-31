@@ -17,9 +17,11 @@ package org.robotframework.remoteserver.servlet;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.robotframework.javalib.util.StdStreamRedirecter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,8 +114,13 @@ public class ServerMethods implements JRobotServlet {
     }
 
     @Override public Map<String, Object> run_keyword(String keyword, Object[] args) {
-        //TODO implement varargs
-        return run_keyword(keyword, args, null);
+        Map<String, Object> kwargs = new HashMap<>();
+        for (Object arg : Objects.requireNonNull(args)) {
+            if (arg.toString().contains("=")) {
+                kwargs.put(arg.toString().split("=")[0] + "=", arg.toString().split("=")[1]);
+            }
+        }
+        return run_keyword(keyword, args, kwargs.isEmpty() ? Collections.emptyMap() : kwargs);
     }
 
     @Override public String[] get_keyword_arguments(String keyword) {
@@ -163,7 +170,7 @@ public class ServerMethods implements JRobotServlet {
     }
 
     private boolean illegalArgumentIn(Throwable t) {
-        if (t.getClass().equals(IllegalArgumentException.class)) {
+        if (!Objects.nonNull(t) || t.getClass().equals(IllegalArgumentException.class)) {
             return true;
         }
         Throwable inner = t;

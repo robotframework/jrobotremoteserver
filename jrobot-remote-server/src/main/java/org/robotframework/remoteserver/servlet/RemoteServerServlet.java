@@ -14,12 +14,12 @@
  */
 package org.robotframework.remoteserver.servlet;
 
-import com.google.common.base.Preconditions;
 import com.google.common.html.HtmlEscapers;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.ServletConfig;
@@ -84,7 +84,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
     }
 
     public RemoteLibrary putLibrary(String path, RemoteLibrary library) {
-        return libraryMap.put(checkPath(path), Preconditions.checkNotNull(library));
+        return libraryMap.put(checkPath(path), Objects.requireNonNull(library));
     }
 
     public RemoteLibrary removeLibrary(String path) {

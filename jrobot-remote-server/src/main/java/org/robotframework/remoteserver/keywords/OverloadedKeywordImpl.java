@@ -48,15 +48,12 @@ public class OverloadedKeywordImpl implements OverloadedKeyword {
                 if (checkedKeyword.canExecute(arguments))
                     return checkedKeyword.execute(arguments);
             }
-        }
-        if (keywordMap.size() == 1) {
+        } else if (keywordMap.size() == 1) {
             throw new IllegalArgumentException(String.format("%s takes %d argument(s), received %d.", keywordName,
                     Iterables.get(keywordMap.keySet(), 0), argCount));
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("No overload of %s takes %d argument(s).", keywordName, argCount));
         }
-
+        throw new IllegalArgumentException(
+                String.format("No overload of %s takes %d argument(s).", keywordName, argCount));
     }
 
     @Override public void addOverload(Method method) {
@@ -78,7 +75,7 @@ public class OverloadedKeywordImpl implements OverloadedKeyword {
         final String[] arguments = new String[max], minNames = Iterables.get(keywordMap.get(min), 0).getArgumentNames(),
                 maxNames =
                         Iterables.get(keywordMap.get(max), 0).getArgumentNames();
-        for (int i = min; i < max; i++) {
+        for (int i = 0; i < max; i++) {
             if (i < min)
                 arguments[i] = minNames[i];
             else

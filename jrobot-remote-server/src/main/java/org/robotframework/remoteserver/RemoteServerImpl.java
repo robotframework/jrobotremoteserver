@@ -14,8 +14,8 @@
  */
 package org.robotframework.remoteserver;
 
-import com.google.common.base.Preconditions;
 import java.util.Map;
+import java.util.Objects;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
@@ -98,7 +98,7 @@ public class RemoteServerImpl implements RemoteServer {
     @Override public void putLibrary(String path, RemoteLibrary library) {
         final RemoteLibrary
                 oldLibrary =
-                servlet.putLibrary(Preconditions.checkNotNull(path), Preconditions.checkNotNull(library));
+                servlet.putLibrary(Objects.requireNonNull(path), Objects.requireNonNull(library));
         if (oldLibrary != null) {
             oldLibrary.close();
             LOG.info("Closed library {} om path {}", library.getClass().getSimpleName(), path);

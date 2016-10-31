@@ -28,6 +28,14 @@ public class BaseLibrary extends AbstractClassLibrary implements TestLibraryServ
         return a + b;
     }
 
+    @Override public double sub(double a, double b) {
+        return a - b;
+    }
+
+    @Override public int sub(int a, int b) {
+        return a - b;
+    }
+
     @Override public String concat(String input1, String input2) {
         return input1 + " " + input2;
     }

@@ -17,12 +17,12 @@
  */
 package org.robotframework.remoteserver.keywords;
 
-import com.google.common.base.Preconditions;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.robotframework.javalib.annotation.RobotKeyword;
@@ -59,7 +59,7 @@ public class OverloadedKeywordExtractor implements KeywordExtractor<OverloadedKe
     }
 
     @Override public Map<String, OverloadedKeyword> extractKeywords(final RemoteLibrary keywordBean) {
-        Preconditions.checkNotNull(keywordBean);
+        Objects.requireNonNull(keywordBean);
         LOG.warn("Extracting {}", keywordBean.getURI());
         IKeywordNameNormalizer keywordNameNormalizer = new KeywordNameNormalizer();
         final Map<String, OverloadedKeyword> overloadableKeywords = new HashMap<>();

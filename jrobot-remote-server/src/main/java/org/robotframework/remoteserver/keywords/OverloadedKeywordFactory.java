@@ -17,9 +17,9 @@
  */
 package org.robotframework.remoteserver.keywords;
 
-import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.robotframework.javalib.factory.KeywordFactory;
 import org.robotframework.javalib.util.IKeywordNameNormalizer;
 import org.robotframework.javalib.util.KeywordNameNormalizer;
@@ -32,8 +32,8 @@ public class OverloadedKeywordFactory implements KeywordFactory<OverloadedKeywor
     private final IKeywordNameNormalizer keywordNameNormalizer = new KeywordNameNormalizer();
 
     public OverloadedKeywordFactory(RemoteLibrary keywordBean, KeywordExtractor<OverloadedKeyword> extractor) {
-        this.extractor = Preconditions.checkNotNull(extractor);
-        extractKeywordsFromKeywordBean(Preconditions.checkNotNull(keywordBean));
+        this.extractor = Objects.requireNonNull(extractor);
+        extractKeywordsFromKeywordBean(Objects.requireNonNull(keywordBean));
     }
 
     @Override public OverloadedKeyword createKeyword(String keywordName) {
