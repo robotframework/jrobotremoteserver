@@ -61,17 +61,15 @@ for entry in libraries:
         args.extend(['--include', 'kwargs'])
     else:
         args.extend(['--exclude', 'kwargs'])
-    args.extend(['--loglevel','DEBUG'])
+    args.extend(['--loglevel', 'DEBUG'])
     args.extend([join(BASE, 'tests')])
-    print 'Running tests with command:\n%s' % ' '.join(args)
+    print("".join('Running tests with command:\n{0}'.format(' '.join(args))))
     subprocess.call(args)
 
-    print
-    statuschecker.process_output(OUTPUT)
-    
+    print(statuschecker.process_output(OUTPUT))
 servercontroller.stop(8270, "/Static")
 rc = robot.rebot(*outputs, outputdir=RESULTS)
 if rc == 0:
-    print 'All tests passed'
+    print('All tests passed')
 else:
-    print '%d test%s failed' % (rc, 's' if rc != 1 else '')
+    print('{0} test{1} failed'.format(rc, 's' if rc != 1 else ''))
