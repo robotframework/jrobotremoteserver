@@ -1,6 +1,7 @@
+'''d'''
+from xmlrpc import client
+from http import client as httpclient
 from robot.libraries.Remote import Remote, XmlRpcRemoteClient
-import xmlrpclib
-import httplib
 
 
 class ProxyableRemote(Remote):
@@ -19,10 +20,10 @@ class ProxyableXmlRpcRemoteClient(XmlRpcRemoteClient):
         if proxy is not None:
             tp = ProxiedTransport()
             tp.set_proxy(proxy)
-        self._server = xmlrpclib.ServerProxy(uri, transport=tp, encoding='UTF-8')
+        self._server = client.ServerProxy(uri, transport=tp, encoding='UTF-8')
 
 
-class ProxiedTransport(xmlrpclib.Transport):
+class ProxiedTransport(server.Transport):
 
     def set_proxy(self, proxy):
         self.proxy = proxy
@@ -30,9 +31,9 @@ class ProxiedTransport(xmlrpclib.Transport):
     def make_connection(self, host):
         self.realhost = host
         if self.proxy is None:
-            h = httplib.HTTPConnection()
+            h = httpclient.HTTPConnection()
         else:
-            h = httplib.HTTPConnection(self.proxy)
+            h = httpclient.HTTPConnection(self.proxy)
         self._connection = host, h
         return h
 

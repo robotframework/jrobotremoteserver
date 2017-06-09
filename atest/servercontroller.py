@@ -18,7 +18,7 @@ Note: Starting from CLI leaves the terminal in a messed up state.
 """
 
 from __future__ import with_statement
-import xmlrpclib
+from xmlrpc import client
 import time
 import subprocess
 import socket
@@ -82,10 +82,11 @@ def test(port, path, attempts=1):
         if i > 0:
             time.sleep(1)
         try:
-            ret = xmlrpclib.ServerProxy(url).run_keyword('get_server_language', [])
+            ret = client.ServerProxy(url).run_keyword('get_server_language', [])
         except socket.error as serr:
+            errmsg = serr.errno
             pass
-        except xmlrpclib.Error as err:
+        except client.Fault as err:
             errmsg = err.faultString
             break
         else:
@@ -97,7 +98,7 @@ def test(port, path, attempts=1):
 
 def stop(port=8270, path="/"):
     if test(port, path):
-        server = xmlrpclib.ServerProxy('http://localhost:%s%s' % (port, path))
+        server = client.ServerProxy('http://localhost:{0}{1}'.format(port, path))
         server.stop_remote_server()
         print("Remote server on port {0} path {1} stopped".format(port, path))
 
