@@ -45,6 +45,7 @@ public interface RemoteLibrary {
      * @param kwargs
      *            keyword arguments
      * @return value returned by the keyword
+     * @throws Exception Standalone declaration
      */
     public Object runKeyword(String name, Object[] arguments, Map<String, Object> kwargs) throws Throwable;
 

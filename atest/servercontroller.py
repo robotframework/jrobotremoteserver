@@ -39,7 +39,7 @@ def start(libraries=
         cmd = 'mvn -f "%s" clean package' % os.path.join(BASE, 'libs', 'pom.xml')
         print 'Building the test libraries with command:\n%s' % cmd
         subprocess.call(cmd, shell=True)
-    files = glob.glob(os.path.join(dirname(BASE), 'target') + os.sep + '*jar-with-dependencies.jar')
+    files = glob.glob(os.path.join(BASE, 'libs', 'target','examplelib-jar-with-dependencies.jar'))
     if not files:
         raise Exception('Build jrobotremoteserver including the standalone jar first')
     rs_path = os.path.join(dirname(BASE), 'target', files[0])

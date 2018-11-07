@@ -127,8 +127,8 @@ public class RemoteServer {
     /**
      * Main method for command line usage.
      * 
-     * @param args
-     * @throws Exception
+     * @param args The command line arguments
+     * @throws Exception Library map error
      */
     public static void main(String[] args) throws Exception {
         configureLogging();
@@ -271,6 +271,7 @@ public class RemoteServer {
      * @param timeoutMS
      *            the milliseconds to wait for existing request to complete
      *            before stopping the server
+     * @throws Exception Fails to stop server
      */
     public void stop(int timeoutMS) throws Exception {
         log.info("Robot Framework remote server stopping");
@@ -295,7 +296,7 @@ public class RemoteServer {
     /**
      * Stops the remote server immediately.
      * 
-     * @throws Exception
+     * @throws Exception Stop
      */
     public void stop() throws Exception {
         stop(0);
@@ -304,7 +305,6 @@ public class RemoteServer {
     /**
      * Starts the remote server. Add test libraries first before calling this.
      * 
-     * @throws Exception
      */
     public void start() throws Exception {
         log.info("Robot Framework remote server starting");
