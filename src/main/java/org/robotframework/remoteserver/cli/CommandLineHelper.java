@@ -74,16 +74,20 @@ public class CommandLineHelper {
         try {
             while (idx < args.length) {
                 if (args[idx].equals("-l") || args[idx].equals("--library")) {
-                    String[] parts = getValue("library").split(":", 2);
+                    String[] parts = getValue("library").split(":", 3);
                     String className = parts[0];
                     String path = "/";
-                    if (parts.length == 2) {
+                    if (parts.length > 1) {
                         path = parts[1];
                     }
                     if (path.equals("") || path.matches("\\s+")) {
                         throw new RuntimeException("Missing path for library " + className);
                     }
-                    putLibrary(path, className);
+                    String arg = null;
+                    if (parts.length > 2) {
+                        arg = parts[2];
+                    }
+                    putLibrary(path, className, arg);
                 } else if (args[idx].equals("-p") || args[idx].equals("--port")) {
                     String portString = getValue("port");
                     setPort(portString);
@@ -118,7 +122,7 @@ public class CommandLineHelper {
             return args[idx++ + 1];
     }
 
-    private void putLibrary(String path, String className) {
+    private void putLibrary(String path, String className, String arg) {
         className = className.trim();
         if (path.matches("\\d+")) {
             setPort(path);
@@ -132,10 +136,18 @@ public class CommandLineHelper {
             throw new RuntimeException("Failed to load class with name " + className + ": " + e.toString());
         }
         Object library;
-        try {
-            library = clazz.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create library instance: " + e.toString());
+        if (arg == null) {
+            try {
+                library = clazz.newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create library instance: " + e.toString());
+            }
+        } else {
+            try {
+                library = clazz.getDeclaredConstructor(String.class).newInstance(arg);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create library instance: " + e.toString() + " with argument " + arg);
+            }
         }
         if (libraryMap.containsKey(path))
             throw new RuntimeException(String.format("Duplicate path [%s]", path));
