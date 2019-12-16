@@ -41,7 +41,8 @@ public class DynamicApiRemoteLibrary implements RemoteLibrary {
         try {
             Object names = getKeywordNames.invoke(library, new Object[] {});
             if (names instanceof List) {
-                return (String[]) ((List<?>) names).toArray();
+                Object[] nameArray = ((List<?>) names).toArray();
+                return Arrays.copyOf(nameArray, nameArray.length, String[].class);
             } else {
                 return (String[]) names;
             }

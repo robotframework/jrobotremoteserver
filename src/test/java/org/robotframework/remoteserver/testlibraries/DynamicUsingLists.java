@@ -6,8 +6,8 @@ import java.util.List;
 
 public class DynamicUsingLists {
     
-    public List<String> getKeywordNames() {
-        return Arrays.asList(new String[] {"go"});
+    public List<Object> getKeywordNames() {
+        return Arrays.asList(new Object[] {"go"});
     }
 
     public Object runKeyword(String name, List<?> arguments) {
