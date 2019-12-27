@@ -41,8 +41,8 @@ public class SimpleKeywordFactory implements KeywordFactory<OverloadableKeyword>
         return keywords.get(normalizedKeywordName);
     }
 
-    public String[] getKeywordNames() {
-        return (String[]) keywordNames.toArray(new String[0]);
+    public List<String> getKeywordNames() {
+        return keywordNames;
     }
 
     protected void extractKeywordsFromKeywordBean(Object keywordBean) {
