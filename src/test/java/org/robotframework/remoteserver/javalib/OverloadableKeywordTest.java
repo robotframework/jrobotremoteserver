@@ -1,6 +1,7 @@
 package org.robotframework.remoteserver.javalib;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import org.robotframework.remoteserver.testlibraries.OverloadedMethods;
 import org.testng.Assert;
@@ -26,9 +27,9 @@ public class OverloadableKeywordTest
     // order of methods returned by getMethods()
     @Test
     public void picksFirstCompatibleOverload() throws Exception { 
-        String result = (String) keyword.execute(new Object[] {"32767"});
+        String result = (String) keyword.execute(Arrays.asList("32767"));
         Assert.assertEquals(result, "short overload");
-        result = (String) keyword.execute(new Object[] {"32768"});
+        result = (String) keyword.execute(Arrays.asList("32768"));
         Assert.assertEquals(result, "int overload");
     }
 
@@ -37,7 +38,7 @@ public class OverloadableKeywordTest
         String message = null;
         Class<?> exceptionClass = null;
         try {
-            keyword.execute(new Object[] {"SNARF"});
+            keyword.execute(Arrays.asList("SNARF"));
         } catch (Exception e) {
             exceptionClass = e.getClass();
             message = e.getMessage();

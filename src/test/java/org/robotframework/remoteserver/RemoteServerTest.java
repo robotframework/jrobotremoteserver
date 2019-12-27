@@ -55,40 +55,14 @@ public class RemoteServerTest {
     @Test
     public void ephemeralPort() throws Exception {
         RemoteServer server = new RemoteServer();
-        Assert.assertEquals(server.getLocalPort(), new Integer(-1));
+        Assert.assertEquals(server.getLocalPort(),-1);
         server.putLibrary("/", new StaticOne());
         server.start();
         int port = server.getLocalPort();
         String result = (String) runKeyword(port, "/", "getName").get("return");
         Assert.assertEquals(result, "StaticOne");
         server.stop();
-        Assert.assertEquals(server.getLocalPort(), new Integer(-2));
-    }
-
-    @Test
-    public void addTwoLibrariesOnDifferentPorts() {
-        server.addLibrary(StaticOne.class, 8270);
-        Exception ex = null;
-        try {
-            server.addLibrary(StaticOne.class, 8271);
-        } catch (Exception e) {
-            ex = e;
-        }
-        Assert.assertEquals(ex.getMessage(),
-                "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
-    }
-
-    @Test
-    public void mixAddLibraryWithSetPort() {
-        server.setPort(8270);
-        Exception ex = null;
-        try {
-            server.addLibrary(StaticOne.class, 8271);
-        } catch (Exception e) {
-            ex = e;
-        }
-        Assert.assertEquals(ex.getMessage(),
-                "Serving on multiple ports is no longer supported. Please use putLibrary with different paths instead.");
+        Assert.assertEquals(server.getLocalPort(), -2);
     }
 
     @Test
@@ -108,8 +82,7 @@ public class RemoteServerTest {
 
     @BeforeMethod
     public void setup() throws Exception {
-        server = new RemoteServer();
-        server.setPort(8270);
+        server = new RemoteServer(8270);
     }
 
     @AfterMethod

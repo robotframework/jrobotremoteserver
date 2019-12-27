@@ -19,12 +19,13 @@ package org.robotframework.remoteserver.javalib;
 
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 import org.robotframework.javalib.keyword.Keyword;
-import org.robotframework.javalib.reflection.ArgumentConverter;
-import org.robotframework.javalib.reflection.ArgumentGrouper;
-import org.robotframework.javalib.reflection.IArgumentConverter;
-import org.robotframework.javalib.reflection.IArgumentGrouper;
+import org.robotframework.javalib.reflection.ArgumentCollector;
+import org.robotframework.javalib.reflection.IArgumentCollector;
+import org.robotframework.javalib.reflection.KeywordInvoker;
 
 public class KeywordOverload implements Keyword {
 
@@ -36,22 +37,26 @@ public class KeywordOverload implements Keyword {
        this.method = method;
    }
 
-   public Object execute(Object[] args) {
+   public Object execute(List args, Map kwargs) {
        try {
-           Object[] groupedArguments = createArgumentGrouper().groupArguments(args);
-           Object[] convertedArguments = createArgumentConverter().convertArguments(groupedArguments);
-           return method.invoke(obj, convertedArguments);
+           List collectedArguments = createArgumentCollector().collectArguments(args, kwargs);
+           Object[] reflectionArgsArray = collectedArguments != null ? collectedArguments.toArray() : null;
+           return method.invoke(obj, reflectionArgsArray);
        } catch (Exception e) {
            throw new RuntimeException(e);
        }
    }
 
-   public boolean canExecute(Object[] args) {
+    @Override
+    public List<String> getArgumentTypes() {
+        return null;
+    }
+
+    public boolean canExecute(List args, Map kwargs) {
        try {
-           Object[] groupedArguments = createArgumentGrouper().groupArguments(args);
-           Object[] convertedArguments = createArgumentConverter().convertArguments(groupedArguments);
-           for (int i = 0; i < args.length; i++) {
-               if ( (convertedArguments[i] == null) && (args[i] != null) ) {
+           List collectedArguments = createArgumentCollector().collectArguments(args, kwargs);
+           for (int i = 0; i < args.size(); i++) {
+               if ( (collectedArguments.get(i) == null) && (args.get(i) != null) ) {
                    return false;
                }
            }
@@ -62,12 +67,8 @@ public class KeywordOverload implements Keyword {
        }
    }
 
-   protected IArgumentConverter createArgumentConverter() {
-       return new ArgumentConverter(method.getParameterTypes());
-   }
-   
-   protected IArgumentGrouper createArgumentGrouper() {
-       return new ArgumentGrouper(method.getParameterTypes());
+   protected IArgumentCollector createArgumentCollector() {
+       return new ArgumentCollector(method.getParameterTypes(), new KeywordInvoker(this.obj, this.method).getParameterNames());
    }
 
 }
