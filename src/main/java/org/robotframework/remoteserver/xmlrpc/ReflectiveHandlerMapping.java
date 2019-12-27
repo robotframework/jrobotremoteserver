@@ -26,7 +26,7 @@ public class ReflectiveHandlerMapping extends AbstractReflectiveHandlerMapping {
 
     /**
      * Removes the prefixes from all keys in this handler mapping assuming a String was used as the key and period was
-     * used as a separator. Example: AccountsReceivable.Billing.getInvoice -> getInvoice
+     * used as a separator. Example: AccountsReceivable.Billing.getInvoice to getInvoice
      */
     @SuppressWarnings("unchecked")
     public void removePrefixes() {
@@ -52,6 +52,7 @@ public class ReflectiveHandlerMapping extends AbstractReflectiveHandlerMapping {
      *            The class key, which is passed to {@link #registerPublicMethods(String, Class)}.
      * @param pClass
      *            Class, which is responsible for handling the request.
+	 * @throws XmlRpcException Performing the request failed.
      */
     public void addHandler(String pKey, Class<?> pClass) throws XmlRpcException {
 	registerPublicMethods(pKey, pClass);

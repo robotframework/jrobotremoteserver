@@ -1,11 +1,11 @@
 /* Copyright 2014 Kevin Ormbrek
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,17 +19,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.robotframework.javalib.util.StdStreamRedirecter;
 
 /**
  * Contains the XML-RPC methods that implement the remote library interface.
- * 
+ *
  * @author David Luu
- * 
+ *
  */
 public class ServerMethods {
 
@@ -48,17 +48,16 @@ public class ServerMethods {
     /**
      * Get an array containing the names of the keywords that the library
      * implements.
-     * 
+     *
      * @return String array containing keyword names in the library
      */
-    public String[] get_keyword_names() {
+    public List<String> get_keyword_names() {
         try {
-            String[] names = servlet.getLibrary().getKeywordNames();
-            if (names == null || names.length == 0)
+            List<String> names = servlet.getLibrary().getKeywordNames();
+            if (names == null || names.size() == 0)
                 throw new RuntimeException("No keywords found in the test library");
-            String[] newNames = Arrays.copyOf(names, names.length + 1);
-            newNames[names.length] = "stop_remote_server";
-            return newNames;
+            names.add("stop_remote_server");
+            return names;
         } catch (Throwable e) {
             log.warn("", e);
             throw new RuntimeException(e);
@@ -67,7 +66,7 @@ public class ServerMethods {
 
     /**
      * Run the given keyword and return the results.
-     * 
+     *
      * @param keyword
      *            keyword to run
      * @param args
@@ -76,7 +75,7 @@ public class ServerMethods {
      *            keyword arguments to pass to the keyword method
      * @return remote result Map containing the execution results
      */
-    public Map<String, Object> run_keyword(String keyword, Object[] args, Map<String, Object> kwargs) {
+    public Map<String, Object> run_keyword(String keyword, List<String> args, Map<String, Object> kwargs) {
         Map<String, Object> result = new HashMap<String, Object>();
         StdStreamRedirecter redirector = new StdStreamRedirecter();
         redirector.redirectStdStreams();
@@ -90,8 +89,6 @@ public class ServerMethods {
                     retObj = servlet.getLibrary().runKeyword(keyword, args, kwargs);
                 } catch (Exception e) {
                     if (illegalArgumentIn(e)) {
-                        for (int i = 0; i < args.length; i++)
-                            args[i] = arraysToLists(args[i]);
                         retObj = servlet.getLibrary().runKeyword(keyword, args, kwargs);
                     } else {
                         throw (e);
@@ -143,31 +140,31 @@ public class ServerMethods {
 
     /**
      * Run the given keyword and return the results.
-     * 
+     *
      * @param keyword
      *            keyword to run
      * @param args
      *            arguments packed in an array to pass to the keyword method
      * @return remote result Map containing the execution results
      */
-    public Map<String, Object> run_keyword(String keyword, Object[] args) {
+    public Map<String, Object> run_keyword(String keyword, List<String> args) {
         return run_keyword(keyword, args, null);
     }
 
     /**
      * Get an array of argument specifications for the given keyword.
-     * 
+     *
      * @param keyword
      *            The keyword to lookup.
      * @return A string array of argument specifications for the given keyword.
      */
-    public String[] get_keyword_arguments(String keyword) {
+    public List<String> get_keyword_arguments(String keyword) {
         if (keyword.equalsIgnoreCase("stop_remote_server")) {
-            return new String[0];
+            return Arrays.asList();
         }
         try {
-            String[] args = servlet.getLibrary().getKeywordArguments(keyword);
-            return args == null ? new String[0] : args;
+            List<String> args = servlet.getLibrary().getKeywordArguments(keyword);
+            return args == null ? Arrays.<String>asList() : args;
         } catch (Throwable e) {
             log.warn("", e);
             throw new RuntimeException(e);
@@ -176,7 +173,7 @@ public class ServerMethods {
 
     /**
      * Get documentation for given keyword.
-     * 
+     *
      * @param keyword
      *            The keyword to get documentation for.
      * @return A documentation string for the given keyword.
@@ -196,7 +193,7 @@ public class ServerMethods {
 
     /**
      * Stops the remote server if it is configured to allow that.
-     * 
+     *
      * @return remote result Map containing the execution results
      */
     public Map<String, Object> stop_remote_server() {

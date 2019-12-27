@@ -1,11 +1,11 @@
 /* Copyright 2014 Kevin Ormbrek
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,7 @@
  */
 package org.robotframework.remoteserver.library;
 
+import java.util.List;
 import java.util.Map;
 
 import org.robotframework.remoteserver.javalib.SingleClassLibrary;
@@ -29,12 +30,12 @@ public class StaticApiRemoteLibrary implements RemoteLibrary {
     }
 
     @Override
-    public String[] getKeywordNames() {
+    public List<String> getKeywordNames() {
         return handler.getKeywordNames();
     }
 
     @Override
-    public Object runKeyword(String keywordName, Object[] args, Map<String, Object> kwargs) throws Throwable {
+    public Object runKeyword(String keywordName, List<String> args, Map<String, Object> kwargs) throws Throwable {
         if (kwargs != null && !kwargs.isEmpty()) {
             throw new RuntimeException("Keyword arguments not yet supported for static API libraries.");
         }
@@ -42,7 +43,7 @@ public class StaticApiRemoteLibrary implements RemoteLibrary {
     }
 
     @Override
-    public String[] getKeywordArguments(String keyword) {
+    public List<String> getKeywordArguments(String keyword) {
         return handler.getKeywordArguments(keyword);
     }
 

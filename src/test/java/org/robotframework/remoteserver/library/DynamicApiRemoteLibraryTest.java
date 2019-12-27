@@ -3,9 +3,7 @@ package org.robotframework.remoteserver.library;
 import static org.testng.Assert.assertEquals;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.testng.Assert;
 
@@ -17,7 +15,7 @@ import org.testng.annotations.Test;
 
 public class DynamicApiRemoteLibraryTest {
 
-    private static Object[] noPosArgs = new Object[] {};
+    private static List noPosArgs = new ArrayList();
     private static Map<String, Object> noKwargs = new HashMap<String, Object>();
 
     @Test
@@ -25,7 +23,7 @@ public class DynamicApiRemoteLibraryTest {
         DynamicOneRunKeywordNoKwargs lib = new DynamicOneRunKeywordNoKwargs();
         Method gkn = DynamicOneRunKeywordNoKwargs.class.getMethod("getKeywordNames");
         Method rk = DynamicOneRunKeywordNoKwargs.class.getMethod("runKeyword", new Class<?>[] { String.class,
-                Object[].class });
+                List.class });
         DynamicApiRemoteLibrary wrapper = new DynamicApiRemoteLibrary(lib, gkn, rk, null, null);
         assertEquals(wrapper.getImplementation(), lib);
     }
@@ -37,9 +35,9 @@ public class DynamicApiRemoteLibraryTest {
         Method rk = DynamicUsingLists.class.getMethod("runKeyword", new Class<?>[] { String.class, List.class });
         Method gka = DynamicUsingLists.class.getMethod("getKeywordArguments", new Class<?>[] { String.class });
         DynamicApiRemoteLibrary wrapper = new DynamicApiRemoteLibrary(lib, gkn, rk, gka, null);
-        Assert.assertEquals(wrapper.getKeywordNames(), new String[] { "go" });
-        Assert.assertEquals(wrapper.runKeyword("go", new Object[] { "there" }, noKwargs), "there");
-        Assert.assertEquals(wrapper.getKeywordArguments("go"), new String[] { "where" });
+        Assert.assertEquals(wrapper.getKeywordNames(), Arrays.asList("go"));
+        Assert.assertEquals(wrapper.runKeyword("go", Arrays.asList("there"), noKwargs), "there");
+        Assert.assertEquals(wrapper.getKeywordArguments("go"), Arrays.asList("where"));
     }
 
     @Test
@@ -57,14 +55,14 @@ public class DynamicApiRemoteLibraryTest {
     @Test
     public void oneRunKeywordNoKwargs() throws Throwable {
         DynamicApiRemoteLibrary wrapper = getWrapper(DynamicOneRunKeywordNoKwargs.class);
-        String result = (String) wrapper.runKeyword("getArgs", new Object[] { "eggs" }, new HashMap<String, Object>());
+        String result = (String) wrapper.runKeyword("getArgs", Arrays.asList("eggs"), new HashMap<String, Object>());
         Assert.assertEquals(result, "['eggs']");
     }
 
     @Test
     public void oneRunKeywordWithKwargs() throws Throwable {
         DynamicApiRemoteLibrary wrapper = getWrapper(DynamicOneRunKeywordKwargs.class);
-        String result = (String) wrapper.runKeyword("getArgs", new Object[] { "spam" }, noKwargs);
+        String result = (String) wrapper.runKeyword("getArgs", Arrays.asList("spam"), noKwargs);
         Assert.assertEquals(result, "['spam']{}");
         result = (String) wrapper.runKeyword("getArgs", noPosArgs, getKwargs("number", 42));
         Assert.assertEquals(result, "[]{'number':'42'}");
@@ -73,7 +71,7 @@ public class DynamicApiRemoteLibraryTest {
     @Test
     public void oneRunKeywordWithKwargsWithList() throws Throwable {
         DynamicApiRemoteLibrary wrapper = getWrapper(DynamicOneRunKeywordKwargsList.class);
-        String result = (String) wrapper.runKeyword("getArgs", new Object[] { "spam" }, noKwargs);
+        String result = (String) wrapper.runKeyword("getArgs", Arrays.asList("spam"), noKwargs);
         Assert.assertEquals(result, "['spam']{}");
         result = (String) wrapper.runKeyword("getArgs", noPosArgs, getKwargs("number", 42));
         Assert.assertEquals(result, "[]{'number':'42'}");

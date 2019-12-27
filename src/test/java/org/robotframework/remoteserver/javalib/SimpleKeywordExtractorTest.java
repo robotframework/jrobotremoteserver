@@ -1,5 +1,6 @@
 package org.robotframework.remoteserver.javalib;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.robotframework.javalib.keyword.Keyword;
@@ -16,7 +17,7 @@ public class SimpleKeywordExtractorTest {
         SimpleKeywordExtractor keywordExtractor = new SimpleKeywordExtractor();
         Map<String, OverloadableKeyword> keywordMap = keywordExtractor.extractKeywords(new OverloadedMethods());
         try {
-            keywordMap.get("myKeyword").execute(new Object[] {"name", 42});
+            keywordMap.get("myKeyword").execute(Arrays.asList("name", 42));
         } catch (RuntimeException e) {
             Assert.assertEquals(e.getMessage(), "No overload of myKeyword takes 2 argument(s).");
             return;
@@ -29,7 +30,7 @@ public class SimpleKeywordExtractorTest {
         SimpleKeywordExtractor keywordExtractor = new SimpleKeywordExtractor();
         Map<String, OverloadableKeyword> keywordMap = keywordExtractor.extractKeywords(new StaticOne());
         try {
-            keywordMap.get("getName").execute(new Object[] {"badArg"});
+            keywordMap.get("getName").execute(Arrays.asList("badArg"));
         } catch (RuntimeException e) {
             Assert.assertEquals(e.getMessage(), "getName takes 0 argument(s), received 1.");
             return;

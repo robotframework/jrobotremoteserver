@@ -26,7 +26,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
 import org.apache.xmlrpc.webserver.XmlRpcServlet;
@@ -152,7 +152,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
                 sb.append("<TR><TD>");
                 sb.append(path.toString());
                 sb.append("</TD><TD>");
-                sb.append(StringEscapeUtils.escapeHtml(map.get(path).getName()));
+                sb.append(StringEscapeUtils.escapeHtml4(map.get(path).getName()));
                 sb.append("</TD></TR>");
             }
         }

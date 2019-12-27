@@ -1,5 +1,5 @@
 /* Copyright 2014 Kevin Ormbrek
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,12 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* This code is derived from JavalibCore 
+/* This code is derived from JavalibCore
  * Copyright 2008 Nokia Siemens Networks Oyj
  */
 package org.robotframework.remoteserver.javalib;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 import org.robotframework.javalib.factory.KeywordFactory;
 import org.robotframework.javalib.library.KeywordDocumentationRepository;
@@ -41,8 +42,7 @@ public class SingleClassLibrary extends KeywordFactoryBasedLibrary<OverloadableK
         return keywordFactory;
     }
 
-    @Override
-    public Object runKeyword(String keywordName, Object[] args) {
+    public Object runKeyword(String keywordName, List args) {
         try {
             return super.runKeyword(keywordName, args);
         } catch (RuntimeException e) {
@@ -51,7 +51,7 @@ public class SingleClassLibrary extends KeywordFactoryBasedLibrary<OverloadableK
     }
 
     @Override
-    public String[] getKeywordArguments(String keywordName) {
+    public List<String> getKeywordArguments(String keywordName) {
         return createKeywordFactory().createKeyword(keywordName).getArguments();
     }
 
