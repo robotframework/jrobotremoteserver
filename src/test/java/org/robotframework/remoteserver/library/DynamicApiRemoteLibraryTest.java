@@ -35,9 +35,21 @@ public class DynamicApiRemoteLibraryTest {
         Method rk = DynamicUsingLists.class.getMethod("runKeyword", new Class<?>[] { String.class, List.class });
         Method gka = DynamicUsingLists.class.getMethod("getKeywordArguments", new Class<?>[] { String.class });
         DynamicApiRemoteLibrary wrapper = new DynamicApiRemoteLibrary(lib, gkn, rk, gka, null, null, null);
-        Assert.assertEquals(wrapper.getKeywordNames(), Arrays.asList("go"));
+        Assert.assertEquals(wrapper.getKeywordNames(), Arrays.asList("go","goList"));
         Assert.assertEquals(wrapper.runKeyword("go", Arrays.asList("there"), noKwargs), "there");
         Assert.assertEquals(wrapper.getKeywordArguments("go"), Arrays.asList("where"));
+    }
+
+    @Test
+    public void libraryUsingList() throws Throwable {
+        DynamicUsingLists lib = new DynamicUsingLists();
+        Method gkn = DynamicUsingLists.class.getMethod("getKeywordNames");
+        Method rk = DynamicUsingLists.class.getMethod("runKeyword", new Class<?>[] { String.class, List.class });
+        Method gka = DynamicUsingLists.class.getMethod("getKeywordArguments", new Class<?>[] { String.class });
+        DynamicApiRemoteLibrary wrapper = new DynamicApiRemoteLibrary(lib, gkn, rk, gka, null, null, null);
+        List testList = Arrays.asList("list");
+        List submitList = Collections.singletonList(testList);
+        Assert.assertEquals(wrapper.runKeyword("goList", submitList, noKwargs), testList);
     }
 
     @Test

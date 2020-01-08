@@ -63,7 +63,7 @@ for entry in libraries:
         args.extend(['--exclude', 'kwargs'])
     args.extend(['--loglevel','DEBUG'])
     args.extend([join(BASE, 'tests')])
-    print 'Running tests with command:\n%s' % ' '.join(args)
+    print('Running tests with command:\n%s' % ' '.join(args))
     subprocess.call(args)
 
     print
@@ -72,6 +72,6 @@ for entry in libraries:
 servercontroller.stop(8270, "/Static")
 rc = robot.rebot(*outputs, outputdir=RESULTS)
 if rc == 0:
-    print 'All tests passed'
+    print('All tests passed')
 else:
-    print '%d test%s failed' % (rc, 's' if rc != 1 else '')
+    print('%d test%s failed' % (rc, 's' if rc != 1 else ''))

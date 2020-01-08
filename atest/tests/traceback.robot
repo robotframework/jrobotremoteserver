@@ -1,7 +1,7 @@
 | *** Settings *** |
 | Suite Setup    | Set Debug Log Level |
 | Suite Teardown | Reset Log Level |
-| Resource       | resource.txt |
+| Resource       | resource.robot |
 
 | *** Test Cases *** |
 | Remote Traceback Is Shown In Log |

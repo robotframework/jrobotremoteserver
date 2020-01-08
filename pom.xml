@@ -1,11 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.ombre42</groupId>
+	<groupId>com.github.robotframework</groupId>
 	<artifactId>jrobotremoteserver</artifactId>
-	<version>4.0-SNAPSHOT</version>
+	<version>4.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jrobotremoteserver</name>
-	<url>https://github.com/ombre42/jrobotremoteserver</url>
+	<description>Serves remote test libraries for Robot Framework that are implemented in Java.</description>
+	<url>https://github.com/robotframework/jrobotremoteserver</url>
+
 	<licenses>
 		<license>
 			<name>Apache 2</name>
@@ -13,16 +16,33 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
 	<developers>
 		<developer>
-			<name>Kevin Ormbrek</name>
-			<email>kormbrek@gmail.com</email>
-		</developer>
-		<developer>
-			<name>David Luu</name>
-			<email>mangaroo@gmail.com</email>
+			<name>Robot Framework Developers</name>
+			<email>robotframework@gmail.com</email>
 		</developer>
 	</developers>
+
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/robotframework/jrobotremoteserver/issues</url>
+	</issueManagement>
+
+	<distributionManagement>
+		<!-- Central Repository -->
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:git:git@github.com:robotframework/jrobotremoteserver.git</connection>
+		<developerConnection>scm:git:git@github.com:robotframework/jrobotremoteserver.git</developerConnection>
+		<url>git@github.com:robotframework/jrobotremoteserver.git</url>
+	</scm>
+
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
@@ -65,7 +85,7 @@
 		<dependency>
 			<groupId>org.robotframework</groupId>
 			<artifactId>javalib-core</artifactId>
-			<version>2.0.2</version>
+			<version>2.0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>xmlrpc</groupId>
@@ -95,7 +115,34 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 				<version>3.2.0</version>
 				<configuration>
 					<descriptorRefs>
@@ -105,7 +152,7 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
+				<artifactId>maven-source-plugin</artifactId>
 				<version>3.2.1</version>
 				<executions>
 					<execution>
@@ -137,12 +184,208 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>define-classpath</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<exportAntProperties>true</exportAntProperties>
+							<target>
+								<property name="maven.runtime.classpath" refid="maven.runtime.classpath" />
+								<property name="maven.test.classpath" refid="maven.test.classpath" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.robotframework</groupId>
+				<artifactId>robotframework-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<id>FullDynamic</id>
+						<goals>
+							<goal>acceptance-test</goal>
+						</goals>
+						<configuration>
+							<console>dotted</console>
+							<excludes>
+								<exclude>kwargs</exclude>
+								<exclude>argsknown</exclude>
+								<exclude>fatal</exclude>
+								<exclude>todo</exclude>
+							</excludes>
+							<extraPathDirectories>
+								<extraPathDirectory>target/jrobotremoteserver-${project.version}.jar</extraPathDirectory>
+							</extraPathDirectories>
+							<report>NONE</report>
+							<log>NONE</log>
+							<logLevel>TRACE:INFO</logLevel>
+							<name>FullDynamic</name>
+							<output>${project.build.directory}/robotframework-reports/output-FullDynamic.xml</output>
+							<variables>
+								<variable>LIBRARY:/FullDynamic</variable>
+								<variable>maven.runtime.classpath:${maven.runtime.classpath}</variable>
+								<variable>maven.test.classpath:${maven.test.classpath}</variable>
+								<classpath />
+							</variables>
+							<externalRunner>
+								<excludeDependencies>false</excludeDependencies>
+							</externalRunner>
+						</configuration>
+					</execution>
+					<execution>
+						<id>MinDynamic</id>
+						<goals>
+							<goal>acceptance-test</goal>
+						</goals>
+						<configuration>
+							<console>dotted</console>
+							<excludes>
+								<exclude>kwargs</exclude>
+								<exclude>argsknown</exclude>
+								<exclude>fatal</exclude>
+								<exclude>todo</exclude>
+							</excludes>
+							<extraPathDirectories>
+								<extraPathDirectory>target/jrobotremoteserver-${project.version}.jar</extraPathDirectory>
+							</extraPathDirectories>
+							<report>NONE</report>
+							<log>NONE</log>
+							<logLevel>TRACE:INFO</logLevel>
+							<name>MinDynamic</name>
+							<output>${project.build.directory}/robotframework-reports/output-MinDynamic.xml</output>
+							<variables>
+								<variable>LIBRARY:/MinDynamic</variable>
+								<variable>maven.runtime.classpath:${maven.runtime.classpath}</variable>
+								<variable>maven.test.classpath:${maven.test.classpath}</variable>
+								<classpath />
+							</variables>
+							<externalRunner>
+								<excludeDependencies>false</excludeDependencies>
+							</externalRunner>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Static</id>
+						<goals>
+							<goal>acceptance-test</goal>
+						</goals>
+						<configuration>
+							<console>dotted</console>
+							<excludes>
+								<exclude>kwargs</exclude>
+								<exclude>argsknown</exclude>
+								<exclude>fatal</exclude>
+								<exclude>todo</exclude>
+							</excludes>
+							<extraPathDirectories>
+								<extraPathDirectory>target/jrobotremoteserver-${project.version}.jar</extraPathDirectory>
+							</extraPathDirectories>
+							<report>NONE</report>
+							<log>NONE</log>
+							<logLevel>TRACE:INFO</logLevel>
+							<name>Static</name>
+							<output>${project.build.directory}/robotframework-reports/output-Static.xml</output>
+							<variables>
+								<variable>LIBRARY:/Static</variable>
+								<variable>maven.runtime.classpath:${maven.runtime.classpath}</variable>
+								<variable>maven.test.classpath:${maven.test.classpath}</variable>
+								<classpath />
+							</variables>
+							<externalRunner>
+								<excludeDependencies>false</excludeDependencies>
+							</externalRunner>
+						</configuration>
+					</execution>
+					<execution>
+						<id>MinDynamicKwargs</id>
+						<goals>
+							<goal>acceptance-test</goal>
+						</goals>
+						<configuration>
+							<console>dotted</console>
+							<includes>
+								<include>kwargs</include>
+							</includes>
+							<extraPathDirectories>
+								<extraPathDirectory>target/jrobotremoteserver-${project.version}.jar</extraPathDirectory>
+							</extraPathDirectories>
+							<report>NONE</report>
+							<log>NONE</log>
+							<logLevel>TRACE:INFO</logLevel>
+							<name>MinDynamicKwargs</name>
+							<output>${project.build.directory}/robotframework-reports/output-MinDynamicKwargs.xml</output>
+							<variables>
+								<variable>LIBRARY:/MinDynamicKwargs</variable>
+								<variable>maven.runtime.classpath:${maven.runtime.classpath}</variable>
+								<variable>maven.test.classpath:${maven.test.classpath}</variable>
+								<classpath />
+							</variables>
+							<externalRunner>
+								<excludeDependencies>false</excludeDependencies>
+							</externalRunner>
+						</configuration>
+					</execution>
+					<execution>
+						<id>mergeResults</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>rebot</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>verifyResults</id>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<xunitFile>${project.build.directory}/robotframework-reports/rebot-xunit-results.xml</xunitFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-	<description>Serves remote test libraries for Robot Framework that are implemented in Java.</description>
-	<scm>
-		<connection>scm:git:git@github.com:ombre42/jrobotremoteserver.git</connection>
-		<developerConnection>scm:git:git@github.com:ombre42/jrobotremoteserver.git</developerConnection>
-		<url>git@github.com:ombre42/jrobotremoteserver.git</url>
-	</scm>
+
+	<profiles>
+		<profile>
+			<id>deploy</id>
+			<build>
+				<plugins>
+					<!-- GPG plugin -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<!-- Prevent `gpg` from using pinentry programs -->
+									<gpgArguments>
+										<arg>--pinentry-mode</arg>
+										<arg>loopback</arg>
+									</gpgArguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
