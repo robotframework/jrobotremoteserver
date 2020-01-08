@@ -1,5 +1,5 @@
 *** Settings ***
-Resource         resource.txt
+Resource         resource.robot
 Test Template    Arguments Should Be Accepted
 
 *** Test Cases ***

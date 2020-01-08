@@ -22,6 +22,7 @@ import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
 import org.apache.xmlrpc.common.XmlRpcController;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
+import org.apache.xmlrpc.parser.ObjectArrayParser;
 import org.apache.xmlrpc.parser.TypeParser;
 import org.apache.xmlrpc.serializer.BooleanSerializer;
 import org.apache.xmlrpc.serializer.ByteArraySerializer;
@@ -80,7 +81,9 @@ public class TypeFactory extends TypeFactoryImpl {
             return new IterableSerializer(this, pConfig);
         else if (pObject instanceof char[])
             return CHAR_ARRAY_SERIALIZER;
-        else if (pObject.getClass().isArray()) { // object[] & char[] handled
+        else if (pObject instanceof byte[])
+            return new ByteArraySerializer();
+        else if (pObject.getClass().isArray()) { // object[], char[] and byte[] handled
                                                  // before this
             primitiveArraySerializer = new ObjectArraySerializer(this, pConfig) {
                 @Override
@@ -115,8 +118,8 @@ public class TypeFactory extends TypeFactoryImpl {
     @Override
     public TypeParser getParser(XmlRpcStreamConfig pConfig, NamespaceContextImpl pContext, String pURI,
             String pLocalName) {
-        if (ByteArraySerializer.BASE_64_TAG.equals(pLocalName)) {
-            return BYTE_ARRAY_PARSER;
+        if (ObjectArraySerializer.ARRAY_TAG.equals(pLocalName)) {
+            return new ArrayToListParser(pConfig, pContext, this);
         }
         return super.getParser(pConfig, pContext, pURI, pLocalName);
     }

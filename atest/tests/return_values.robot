@@ -1,6 +1,6 @@
 | *** Settings *** |
 | Test Template  | Return Value Should Be |
-| Resource       | resource.txt |
+| Resource       | resource.robot |
 
 | *** Test Cases *** |
 | Return String |
