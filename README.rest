@@ -2,11 +2,34 @@
 jrobotremoteserver
 ******************
 
-jrobotremoteserver is a `remote server <https://code.google.com/p/robotframework/wiki/RemoteLibrary>`_ for `Robot Framework <http://robotframework.googlecode.com/>`_ implemented in Java.
+jrobotremoteserver is a `remote server <https://code.google.com/p/robotframework/wiki/RemoteLibrary>`_ for `Robot Framework <http://robotframework.org/>`_ implemented in Java.
 
-Documentation can be found on the project `wiki <https://github.com/ombre42/jrobotremoteserver/wiki>`_.
+Documentation can be found on the project `wiki <https://github.com/robotframework/jrobotremoteserver/wiki>`_.
 
 The original jrobotremoteserver can be found on `Google Code <http://code.google.com/p/jrobotremoteserver/>`_.
+
+Importing
+---------
+
+New version:
+
+.. code:: xml
+
+    <dependency>
+        <groupId>org.robotframework</groupId>
+        <artifactId>jrobotremoteserver</artifactId>
+        <version>4.0.0</version>
+    </dependency>
+
+Old version
+
+.. code:: xml
+
+    <dependency>
+        <groupId>com.github.ombre42</groupId>
+        <artifactId>jrobotremoteserver</artifactId>
+        <version>3.0</version>
+    </dependency>
 
 License
 -------
