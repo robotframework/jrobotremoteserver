@@ -1,5 +1,5 @@
 *** Settings ***
-Resource         resource.txt
+Resource         resource.robot
 
 *** Variables ***
 ${COUNT}    100

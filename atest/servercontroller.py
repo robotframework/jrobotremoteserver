@@ -18,7 +18,8 @@ Note: Starting from CLI leaves the terminal in a messed up state.
 """
 
 from __future__ import with_statement
-import xmlrpclib
+import xmlrpc
+import xmlrpc.client
 import time
 import subprocess
 import socket
@@ -37,7 +38,7 @@ def start(libraries=
         'org.robotframework.examplelib.Static:/Static' ):
     if not os.path.exists(os.path.join(BASE, 'libs', 'target', 'examplelib-jar-with-dependencies.jar')):
         cmd = 'mvn -f "%s" clean package' % os.path.join(BASE, 'libs', 'pom.xml')
-        print 'Building the test libraries with command:\n%s' % cmd
+        print('Building the test libraries with command:\n%s' % cmd)
         subprocess.call(cmd, shell=True)
     files = glob.glob(os.path.join(dirname(BASE), 'target') + os.sep + '*jar-with-dependencies.jar')
     if not files:
@@ -45,7 +46,7 @@ def start(libraries=
     rs_path = os.path.join(dirname(BASE), 'target', files[0])
     tl_path = os.path.join(BASE, 'libs', 'target', 'examplelib-jar-with-dependencies.jar')
     os.environ['CLASSPATH'] = rs_path + os.pathsep + tl_path
-    print 'CLASSPATH: %s' % os.environ['CLASSPATH']
+    print('CLASSPATH: %s' % os.environ['CLASSPATH'])
     results = _get_result_directory()
     port = "8270"
     args = ['java', 'org.robotframework.remoteserver.RemoteServer', '--port', port]
@@ -53,7 +54,7 @@ def start(libraries=
     paths = [x.partition(':')[2] for x in libraries]
     for lib in libraries:
         args.extend(['--library', lib])
-        print 'adding library %s on path %s' % (lib.split(':')[0], lib.split(':')[1])
+        print('adding library %s on path %s' % (lib.split(':')[0], lib.split(':')[1]))
     with open(join(results, 'server.txt'), 'w') as output:
         server = subprocess.Popen(args,
                                   stdout=output, stderr=subprocess.STDOUT,
@@ -82,16 +83,16 @@ def test(port, path, attempts=1):
         if i > 0:
             time.sleep(1)
         try:
-            ret = xmlrpclib.ServerProxy(url).run_keyword('get_server_language', [])
-        except socket.error, (errno, errmsg):
+            ret = xmlrpc.client.ServerProxy(url).run_keyword('get_server_language', [])
+        except socket.error:
             pass
-        except xmlrpclib.Error, err:
+        except xmlrpc.Error:
             errmsg = err.faultString
             break
         else:
-            print "Remote server running on port %s, path %s" % (port, path)
+            print("Remote server running on port %s, path %s" % (port, path))
             return True
-    print "Failed to connect to remote server on port %s path %s: %s" % (port, path, errmsg)
+    print("Failed to connect to remote server on port %s path %s: %s" % (port, path, errmsg))
     return False
 
 
@@ -99,7 +100,7 @@ def stop(port=8270, path="/"):
     if test(port, path):
         server = xmlrpclib.ServerProxy('http://localhost:%s%s' % (port, path))
         server.stop_remote_server()
-        print "Remote server on port %s path %s stopped" % (port, path)
+        print("Remote server on port %s path %s stopped" % (port, path))
 
 
 if __name__ == '__main__':

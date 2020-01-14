@@ -35,8 +35,10 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
         }
         Method getKeywordArguments = getGetKeywordArguments(methods);
         Method getKeywordDocumentation = getGetKeywordDocumentation(methods);
+        Method getKeywordTags = getGetKeywordTags(methods);
+        Method getKeywordTypes = getGetKeywordTypes(methods);
         return new DynamicApiRemoteLibrary(library, getKeywordNames, runKeyword, getKeywordArguments,
-                getKeywordDocumentation);
+                getKeywordDocumentation, getKeywordTags, getKeywordTypes);
     }
 
     private List<Method> getPublicMethods(Class<?> clazz) {
@@ -103,6 +105,26 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
         for (Method m : methods) {
             if ((m.getName().equals("getKeywordDocumentation") || m.getName().equals("get_keyword_documentation"))
                     && m.getReturnType() == String.class
+                    && Arrays.equals(m.getParameterTypes(), new Class<?>[] { String.class }))
+                return m;
+        }
+        return null;
+    }
+
+    private Method getGetKeywordTags(List<Method> methods) {
+        for (Method m : methods) {
+            if ((m.getName().equals("getKeywordTags") || m.getName().equals("get_keyword_tags"))
+                    && m.getReturnType() == List.class
+                    && Arrays.equals(m.getParameterTypes(), new Class<?>[] { String.class }))
+                return m;
+        }
+        return null;
+    }
+
+    private Method getGetKeywordTypes(List<Method> methods) {
+        for (Method m : methods) {
+            if ((m.getName().equals("getKeywordTypes") || m.getName().equals("get_keyword_types"))
+                    && m.getReturnType() == List.class
                     && Arrays.equals(m.getParameterTypes(), new Class<?>[] { String.class }))
                 return m;
         }

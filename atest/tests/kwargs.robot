@@ -1,6 +1,6 @@
 *** Settings ***
 Force Tags        kwargs
-Resource          resource.txt
+Resource          resource.robot
 
 *** Test Cases ***
 Kwargs Are Handled

@@ -1,6 +1,6 @@
 *** Settings ***
 Default Tags  argsknown
-Resource    resource.txt
+Resource    resource.robot
 
 *** Test Cases ***
 

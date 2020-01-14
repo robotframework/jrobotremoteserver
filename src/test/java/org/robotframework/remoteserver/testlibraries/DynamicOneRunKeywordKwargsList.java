@@ -10,16 +10,16 @@ public class DynamicOneRunKeywordKwargsList extends StaticOne {
         return new String[] {"getArgs"};
     }
 
-    public Object runKeyword(String name, List<?> args, Map kwargs) {
+    public Object runKeyword(String name, List<String> args, Map kwargs) {
         if (name.equals("getArgs")) {
-            return getArgs(args.toArray(), kwargs);
+            return getArgs(args, kwargs);
         } else {
             throw new RuntimeException();
         }
     }
 
     public List<String> getKeywordArguments(String name) {
-        return Arrays.asList(new String[] {"*args", "**kwargs"}); 
+        return Arrays.asList("*args", "**kwargs");
     }
 
 }
