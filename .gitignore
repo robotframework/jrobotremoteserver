@@ -10,3 +10,5 @@ atest/results
 .vscode
 .idea
 *.iml
+/.apt_generated/
+/.apt_generated_tests/
