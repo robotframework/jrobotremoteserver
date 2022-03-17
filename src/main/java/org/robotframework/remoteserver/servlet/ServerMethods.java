@@ -15,6 +15,7 @@
 package org.robotframework.remoteserver.servlet;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -196,6 +197,20 @@ public class ServerMethods {
     public List<String> get_keyword_types(String keyword) {
         List<String> types = servlet.getLibrary().getKeywordTypes(keyword);
         return types == null ? new ArrayList<String>() : types;
+    }
+
+    public Map<String, Object> get_library_information() {
+        return get_keyword_names().stream().map(k->new AbstractMap.SimpleEntry<>(k, getLibraryInformation(k)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private Object getLibraryInformation(String keyword) {
+        Map<String, Object> info = new HashMap<>();
+        info.put("args", get_keyword_arguments(keyword));
+        info.put("types", get_keyword_types(keyword));
+        info.put("tags", get_keyword_tags(keyword));
+        info.put("doc", get_keyword_documentation(keyword));
+        return info;
     }
 
     /**
