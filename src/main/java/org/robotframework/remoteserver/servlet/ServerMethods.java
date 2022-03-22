@@ -200,8 +200,10 @@ public class ServerMethods {
     }
 
     public Map<String, Object> get_library_information() {
-        return get_keyword_names().stream().map(k->new AbstractMap.SimpleEntry<>(k, getLibraryInformation(k)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return get_keyword_names().stream()
+			.filter(k->!"stop_remote_server".equals(k))
+			.map(k->new AbstractMap.SimpleEntry<>(k, getLibraryInformation(k)))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Object getLibraryInformation(String keyword) {
