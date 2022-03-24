@@ -235,7 +235,7 @@ public class RemoteServer {
     }
 
     /**
-     * Configures logging systems used by <tt>RemoteServer</tt> and its
+     * Configures logging systems used by <i>RemoteServer</i> and its
      * dependencies. Specifically,
      * <ul>
      * <li>Configure Log4J to log to the console</li>

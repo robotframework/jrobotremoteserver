@@ -12,3 +12,4 @@ atest/results
 *.iml
 /.apt_generated/
 /.apt_generated_tests/
+__pycache__

@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.example</groupId>
 	<artifactId>MyRemoteLibrary</artifactId>
@@ -15,28 +15,33 @@
 		<dependency>
 			<groupId>org.robotframework</groupId>
 			<artifactId>javalib-core</artifactId>
-			<version>0.9.1</version>
+			<version>2.0.3</version>
 		</dependency>
 
 		<!-- serve the library remotely -->
 		<dependency>
-			<groupId>com.github.ombre42</groupId>
+			<groupId>org.robotframework</groupId>
 			<artifactId>jrobotremoteserver</artifactId>
-			<version>2.0-BETA</version>
+			<version>4.1.0</version>
 		</dependency>
 
 		<!-- escape text for HTML and copy IO streams -->
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.12.0</version>
+		</dependency>
+		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.3</version>
+			<version>2.11.0</version>
 		</dependency>
 
 		<!-- used to generate the library documentation -->
 		<dependency>
 			<groupId>org.robotframework</groupId>
 			<artifactId>robotframework</artifactId>
-			<version>2.7.0</version>
+			<version>4.1.2</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -44,13 +49,21 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>6.3.1</version>
+			<version>7.5</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
 			<!-- create a jar with all dependencies i.e. a standalone jar -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -81,9 +94,9 @@
 
 			<!-- execute Robot Framework tests during the build -->
 			<plugin>
-				<groupId>com.googlecode.robotframework-maven-plugin</groupId>
+				<groupId>org.robotframework</groupId>
 				<artifactId>robotframework-maven-plugin</artifactId>
-				<version>1.1.1</version>
+				<version>2.1.0</version>
 				<executions>
 					<execution>
 						<phase>test</phase>
@@ -93,7 +106,8 @@
 					</execution>
 				</executions>
 				<configuration>
-
+					<logLevel>TRACE:INFO</logLevel>
+					<testCasesDirectory>src/test/resources/robotframework/tests</testCasesDirectory>
 					<!-- communicate to the acceptance tests that the library is being built -->
 					<variables>
 						<variable>BUILDING:True</variable>

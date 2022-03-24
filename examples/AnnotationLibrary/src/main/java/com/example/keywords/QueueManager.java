@@ -1,6 +1,6 @@
 package com.example.keywords;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+import static org.apache.commons.lang3.StringEscapeUtils.*;
 
 import java.util.Iterator;
 import java.util.Queue;
@@ -47,7 +47,7 @@ public class QueueManager
         Iterator<Object> iter = queue.iterator();
         while (iter.hasNext()) {
             Object element = iter.next();
-            String value = escapeHtml(element.toString());
+            String value = escapeHtml4(element.toString());
             sb.append("<tr>");
             sb.append("<td>" + value + "</td>");
             sb.append("<td>" + element.getClass().getName() + "</td>");

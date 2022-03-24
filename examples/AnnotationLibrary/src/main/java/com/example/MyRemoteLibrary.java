@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
+
 import org.robotframework.javalib.library.AnnotationLibrary;
 import org.robotframework.remoteserver.RemoteServer;
 
@@ -26,8 +27,8 @@ public class MyRemoteLibrary extends AnnotationLibrary {
      */
     public static void main(String[] args) throws Exception {
         RemoteServer.configureLogging();
-        RemoteServer server = new RemoteServer();
-        server.addLibrary(MyRemoteLibrary.class, 8270);
+        RemoteServer server = new RemoteServer(8270);
+        server.putLibrary("/", new MyRemoteLibrary());
         server.start();
     }
 
