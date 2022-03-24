@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.robotframework</groupId>
 	<artifactId>jrobotremoteserver</artifactId>
-	<version>4.1.0</version>
+	<version>4.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jrobotremoteserver</name>
 	<description>Serves remote test libraries for Robot Framework that are implemented in Java.</description>
