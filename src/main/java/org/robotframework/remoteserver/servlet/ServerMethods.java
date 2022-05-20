@@ -42,6 +42,8 @@ public class ServerMethods {
         log = LogFactory.getLog(ServerMethods.class);
         this.servlet = servlet;
     }
+    
+    private static final String STOP_REMOTE_SERVER = "stop_remote_server";
 
     /**
      * Get an array containing the names of the keywords that the library
@@ -54,7 +56,9 @@ public class ServerMethods {
             List<String> names = servlet.getLibrary().getKeywordNames();
             if (names == null || names.size() == 0)
                 throw new RuntimeException("No keywords found in the test library");
-            names.add("stop_remote_server");
+            if (!names.contains(STOP_REMOTE_SERVER)) {
+            	names.add(STOP_REMOTE_SERVER);
+            }
             return names;
         } catch (Throwable e) {
             log.warn("", e);

@@ -1,10 +1,15 @@
 package org.robotframework.examplelib;
 
 import org.robotframework.javalib.library.AnnotationLibrary;
+import org.robotframework.javalib.library.RobotFrameworkDynamicAPI;
 
 import java.util.List;
+import java.util.Map;
 
-public class FullDynamic {
+public class FullDynamic implements RobotFrameworkDynamicAPI
+{
+    private final AnnotationLibrary lib;
+    
     public FullDynamic() {
         lib = new AnnotationLibrary();
         lib.addKeywordPattern("org/robotframework/examplelib/impl/**.class");
@@ -18,13 +23,15 @@ public class FullDynamic {
      * AnnotationLibrary re-throws all exceptions as RuntimeExceptions. Unwrap
      * it to obtain the original exception.
      */
-    public Object runKeyword(String keywordName, List<String> args) throws Throwable {
-        try {
-            return lib.runKeyword(keywordName, args, null);
-        } catch (RuntimeException e) {
-            throw e.getCause();
-        }
+    @Override
+    public Object runKeyword(String keywordName, List args) {
+        return lib.runKeyword(keywordName, args, null);
     }
+
+	@Override
+	public Object runKeyword(String keywordName, List args, Map kwargs) {
+        return lib.runKeyword(keywordName, args, kwargs);
+	}
 
     public List<String> getKeywordArguments(String keywordName) {
         return lib.getKeywordArguments(keywordName);
@@ -37,6 +44,9 @@ public class FullDynamic {
             return lib.getKeywordDocumentation(keywordName);
     }
 
-    private AnnotationLibrary lib;
+
+	public AnnotationLibrary getLib() {
+		return lib;
+	}
 
 }
