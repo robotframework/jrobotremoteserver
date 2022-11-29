@@ -33,6 +33,8 @@ import org.robotframework.remoteserver.logging.Jetty2Log4J;
 import org.robotframework.remoteserver.servlet.IllegalPathException;
 import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 
+//import org.eclipse.jetty.servlet.ServletHandler;
+
 /**
  * Remote server for Robot Framework implemented in Java. Takes one or more test
  * libraries and exposes their methods via XML-RPC using an embedded web server.
@@ -73,6 +75,13 @@ public class RemoteServer {
         }
         ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
         servletContextHandler.addServlet(new ServletHolder(servlet), "/");
+        
+
+        //ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/");
+
+        //ServletHandler handler = new ServletHandler();
+        //server.setHandler(handler);
+        //handler.addServletWithMapping(RemoteServerServlet.class,"/*");        
     }
 
     public int getLocalPort() {
