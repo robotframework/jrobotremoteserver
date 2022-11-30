@@ -75,13 +75,6 @@ public class RemoteServer {
         }
         ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/", false, false);
         servletContextHandler.addServlet(new ServletHolder(servlet), "/");
-        
-
-        //ServletContextHandler servletContextHandler = new ServletContextHandler(server, "/");
-
-        //ServletHandler handler = new ServletHandler();
-        //server.setHandler(handler);
-        //handler.addServletWithMapping(RemoteServerServlet.class,"/*");        
     }
 
     public int getLocalPort() {
