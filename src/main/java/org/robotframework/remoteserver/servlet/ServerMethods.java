@@ -54,7 +54,7 @@ public class ServerMethods {
             List<String> names = servlet.getLibrary().getKeywordNames();
             if (names == null || names.size() == 0)
                 throw new RuntimeException("No keywords found in the test library");
-            names.add("stop_remote_server");
+            if (!names.contains("stop_remote_server")) names.add("stop_remote_server");
             return names;
         } catch (Throwable e) {
             log.warn("", e);
