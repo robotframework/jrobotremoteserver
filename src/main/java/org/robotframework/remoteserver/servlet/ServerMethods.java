@@ -200,9 +200,15 @@ public class ServerMethods {
     }
 
     public Map<String, Object> get_library_information() {
-        return get_keyword_names().stream()
+        Map<String, Object> result=new HashMap<String, Object>();
+        List<String> keywords=get_keyword_names();
+        for (String k: keywords) {
+            result.put(k,getLibraryInformation(k));
+        }
+	return result;
+	/*    return get_keyword_names().stream()
 			.map(k->new AbstractMap.SimpleEntry<>(k, getLibraryInformation(k)))
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));*/
     }
 
     private Object getLibraryInformation(String keyword) {
