@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         # test against LTS java versions:
-        java: [ 8 ]
+        java: [ 11 ]
     name: Test with Java ${{ matrix.java }}
     steps:
     - uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         distribution: 'zulu'
-        java-version: '8'
+        java-version: '11'
         cache: 'maven'
     - name: Release Maven package
       uses: samuelmeuli/action-maven-publish@201a45a3f311b2ee888f252ba9f4194257545709 # tag=v1.4.0
