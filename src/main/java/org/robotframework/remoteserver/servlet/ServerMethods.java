@@ -52,8 +52,10 @@ public class ServerMethods {
     public List<String> get_keyword_names() {
         try {
             List<String> names = servlet.getLibrary().getKeywordNames();
-            if (names == null || names.size() == 0)
+            if (names == null || names.isEmpty())
                 throw new RuntimeException("No keywords found in the test library");
+            if (!names.contains("__intro__")) names.add("__intro__");
+            if (!names.contains("__init__")) names.add("__init__");
             if (!names.contains("stop_remote_server")) names.add("stop_remote_server");
             return names;
         } catch (Throwable e) {
@@ -157,12 +159,12 @@ public class ServerMethods {
      * @return A string array of argument specifications for the given keyword.
      */
     public List<String> get_keyword_arguments(String keyword) {
-        if (keyword.equalsIgnoreCase("stop_remote_server")) {
-            return Arrays.asList();
-        }
+        if (keyword.equalsIgnoreCase("stop_remote_server"))  return Collections.emptyList();
+        if (keyword.equalsIgnoreCase("__intro__"))  return Collections.emptyList();
+        if (keyword.equalsIgnoreCase("__init__"))  return Collections.emptyList();
         try {
             List<String> args = servlet.getLibrary().getKeywordArguments(keyword);
-            return args == null ? Arrays.<String>asList() : args;
+            return args == null ? Collections.emptyList() : args;
         } catch (Throwable e) {
             log.warn("", e);
             throw new RuntimeException(e);
@@ -177,6 +179,9 @@ public class ServerMethods {
      * @return A documentation string for the given keyword.
      */
     public String get_keyword_documentation(String keyword) {
+        if (keyword.equalsIgnoreCase("__init__")) {
+            return "";
+        }
         if (keyword.equalsIgnoreCase("stop_remote_server")) {
             return "Stops the remote server.\n\nThe server may be configured so that users cannot stop it.";
         }
