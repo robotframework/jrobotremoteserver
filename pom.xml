@@ -29,20 +29,18 @@
 		<url>https://github.com/robotframework/jrobotremoteserver/issues</url>
 	</issueManagement>
 
-	<distributionManagement>
-		<!-- Central Repository -->
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<scm>
 		<connection>scm:git:git@github.com:robotframework/jrobotremoteserver.git</connection>
 		<developerConnection>scm:git:git@github.com:robotframework/jrobotremoteserver.git</developerConnection>
 		<url>git@github.com:robotframework/jrobotremoteserver.git</url>
 	</scm>
-
+    <distributionManagement>
+		<!-- Central Repository -->
+		<snapshotRepository>
+			<id>central</id>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -113,6 +111,15 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>0.12.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<publishingServerId>central</publishingServerId>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -384,14 +391,12 @@
 						</executions>
 					</plugin>
 					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.7.0</version>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>0.12.0</version>
 						<extensions>true</extensions>
 						<configuration>
-							<serverId>ossrh</serverId>
-							<nexusUrl>https://ossrh-staging-api.central.sonatype.com/</nexusUrl>
-							<autoReleaseAfterClose>true</autoReleaseAfterClose>
+							<publishingServerId>central</publishingServerId>
 						</configuration>
 					</plugin>
 				</plugins>
