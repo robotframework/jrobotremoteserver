@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.robotframework</groupId>
 			<artifactId>jrobotremoteserver</artifactId>
-			<version>4.1.1</version>
+			<version>4.1.2</version>
 		</dependency>
 
 		<!-- escape text for HTML and copy IO streams -->
