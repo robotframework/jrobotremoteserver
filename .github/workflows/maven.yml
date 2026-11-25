@@ -12,9 +12,9 @@ jobs:
         java: [ 25 ]
     name: Test with Java ${{ matrix.java }}
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v6
+      uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
       with:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
@@ -27,9 +27,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Release package
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Set up JDK
-      uses: actions/setup-java@v6
+      uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
       with:
         distribution: 'zulu'
         java-version: '25'
@@ -37,6 +37,7 @@ jobs:
     - name: Release Maven package
       uses: samuelmeuli/action-maven-publish@201a45a3f311b2ee888f252ba9f4194257545709 # tag=v1.4.0
       with:
+        server_id: central
         gpg_private_key: ${{ secrets.gpg_private_key }}
         gpg_passphrase: ${{ secrets.gpg_passphrase }}
         nexus_username: ${{ secrets.nexus_username }}
