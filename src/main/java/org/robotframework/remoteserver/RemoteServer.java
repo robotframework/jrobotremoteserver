@@ -29,7 +29,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.robotframework.remoteserver.cli.CommandLineHelper;
 import org.robotframework.remoteserver.library.RemoteLibrary;
-import org.robotframework.remoteserver.logging.Jetty2Log4J;
 import org.robotframework.remoteserver.servlet.IllegalPathException;
 import org.robotframework.remoteserver.servlet.RemoteServerServlet;
 
@@ -110,7 +109,6 @@ public class RemoteServer {
      * @throws Exception in case of failure
      */
     public static void main(String[] args) throws Exception {
-        configureLogging();
         CommandLineHelper helper = new CommandLineHelper(args);
         if (helper.getHelpRequested()) {
             System.out.print(helper.getUsage());
@@ -234,31 +232,6 @@ public class RemoteServer {
         log.info("Robot Framework remote server starting");
         server.start();
         log.info(String.format("Robot Framework remote server started on port %d.", getLocalPort()));
-    }
-
-    /**
-     * Configures logging systems used by <i>RemoteServer</i> and its
-     * dependencies. Specifically,
-     * <ul>
-     * <li>Configure Log4J to log to the console</li>
-     * <li>Set Log4J's log level to INFO</li>
-     * <li>Redirect the Jetty's logging to Log4J</li>
-     * <li>Set Jakarta Commons Logging to log to Log4J</li>
-     * </ul>
-     * This is convenient if you do not want to configure the logging yourself.
-     * This will only affect future instances of
-     * {@link org.eclipse.jetty.util.log.Logger} and
-     * {@link org.apache.commons.logging.Log}, so this should be called as early
-     * as possible.
-     */
-    public static void configureLogging() {
-        Configurator.initialize(new DefaultConfiguration());
-        Configurator.setRootLevel(Level.INFO);
-        org.eclipse.jetty.util.log.Log.setLog(new Jetty2Log4J());
-        LogFactory.releaseAll();
-        LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
-                "org.apache.commons.logging.impl.Log4JLogger");
-        log = LogFactory.getLog(RemoteServer.class);
     }
 
 }

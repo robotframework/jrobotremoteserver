@@ -133,7 +133,7 @@ public class CommandLineHelper {
         }
         Object library;
         try {
-            library = clazz.newInstance();
+            library = clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException("Failed to create library instance: " + e.toString());
         }

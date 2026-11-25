@@ -1,12 +1,5 @@
 package org.robotframework.remoteserver.servlet;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.SocketException;
-
-import org.robotframework.remoteserver.RemoteServer;
 import org.robotframework.remoteserver.library.RemoteLibrary;
 import org.robotframework.remoteserver.testlibraries.StaticOne;
 import org.robotframework.remoteserver.testlibraries.StaticTwo;
