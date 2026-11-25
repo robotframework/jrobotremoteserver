@@ -16,9 +16,9 @@ package org.robotframework.remoteserver.context;
 
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.robotframework.remoteserver.library.RemoteLibrary;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface RemoteServerContext {
 
@@ -59,9 +59,9 @@ public interface RemoteServerContext {
      * Example: <code>putLibrary("/myLib", new MyLibrary());</code>
      * 
      * @param library
-     *            instance of the test library
+     *                instance of the test library
      * @param path
-     *            path to map the test library to
+     *                path to map the test library to
      * @return the previous library mapped to the path, or null if there was no
      *         mapping for the path
      */
@@ -71,7 +71,7 @@ public interface RemoteServerContext {
      * Removes the library mapped to the given path if the mapping exists
      * 
      * @param path
-     *            path for the library whose mapping is to be removed
+     *             path for the library whose mapping is to be removed
      * @return the previous library associated with the path, or null if there
      *         was no mapping for the path.
      */
@@ -81,7 +81,7 @@ public interface RemoteServerContext {
      * Allow or disallow stopping the server remotely.
      * 
      * @param allowed
-     *            <code>true</code> to allow stopping the server remotely
+     *                <code>true</code> to allow stopping the server remotely
      */
     public void setAllowStop(boolean allowed);
 

@@ -17,7 +17,6 @@
  */
 package org.robotframework.remoteserver.javalib;
 
-
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -29,23 +28,23 @@ import org.robotframework.javalib.reflection.KeywordInvoker;
 
 public class KeywordOverload implements Keyword {
 
-   private final Method method;
-   private final Object obj;
+    private final Method method;
+    private final Object obj;
 
-   public KeywordOverload(Object obj, Method method) {
-       this.obj = obj;
-       this.method = method;
-   }
+    public KeywordOverload(Object obj, Method method) {
+        this.obj = obj;
+        this.method = method;
+    }
 
-   public Object execute(List args, Map kwargs) {
-       try {
-           List collectedArguments = createArgumentCollector().collectArguments(args, kwargs);
-           Object[] reflectionArgsArray = collectedArguments != null ? collectedArguments.toArray() : null;
-           return method.invoke(obj, reflectionArgsArray);
-       } catch (Exception e) {
-           throw new RuntimeException(e);
-       }
-   }
+    public Object execute(List args, Map kwargs) {
+        try {
+            List collectedArguments = createArgumentCollector().collectArguments(args, kwargs);
+            Object[] reflectionArgsArray = collectedArguments != null ? collectedArguments.toArray() : null;
+            return method.invoke(obj, reflectionArgsArray);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public List<String> getArgumentTypes() {
@@ -53,22 +52,22 @@ public class KeywordOverload implements Keyword {
     }
 
     public boolean canExecute(List args, Map kwargs) {
-       try {
-           List collectedArguments = createArgumentCollector().collectArguments(args, kwargs);
-           for (int i = 0; i < args.size(); i++) {
-               if ( (collectedArguments.get(i) == null) && (args.get(i) != null) ) {
-                   return false;
-               }
-           }
-           return true;
-       }
-       catch (Exception e) {
-           return false;
-       }
-   }
+        try {
+            List collectedArguments = createArgumentCollector().collectArguments(args, kwargs);
+            for (int i = 0; i < args.size(); i++) {
+                if ((collectedArguments.get(i) == null) && (args.get(i) != null)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-   protected IArgumentCollector createArgumentCollector() {
-       return new ArgumentCollector(method.getParameterTypes(), new KeywordInvoker(this.obj, this.method).getParameterNames());
-   }
+    protected IArgumentCollector createArgumentCollector() {
+        return new ArgumentCollector(method.getParameterTypes(),
+                new KeywordInvoker(this.obj, this.method).getParameterNames());
+    }
 
 }

@@ -19,20 +19,32 @@ import java.util.Iterator;
 import org.apache.xmlrpc.common.TypeFactory;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
 import org.apache.xmlrpc.serializer.ObjectArraySerializer;
-import org.xml.sax.ContentHandler;
+import org.apache.xmlrpc.serializer.SerializerHandler;
+import org.apache.xmlrpc.serializer.TypeSerializer;
 import org.xml.sax.SAXException;
 
 public class IterableSerializer extends ObjectArraySerializer {
 
-    public IterableSerializer(TypeFactory pTypeFactory, XmlRpcStreamConfig pConfig) {
-	super(pTypeFactory, pConfig);
-    }
+	private final TypeFactory typeFactory;
+	private final XmlRpcStreamConfig config;
 
-    protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {
-	Iterable<?> obj = (Iterable<?>) pObject;
-	Iterator<?> iter = obj.iterator();
-	while (iter.hasNext()) {
-	    writeObject(pHandler, iter.next());
+	public IterableSerializer(TypeFactory pTypeFactory, XmlRpcStreamConfig pConfig) {
+		super(pTypeFactory, pConfig);
+		typeFactory = pTypeFactory;
+		config = pConfig;
 	}
-    }
+
+	@Override
+	protected void writeData(SerializerHandler pHandler, Object pObject)
+			throws SAXException {
+
+		Iterable<?> obj = (Iterable<?>) pObject;
+		Iterator<?> iter = obj.iterator();
+
+		while (iter.hasNext()) {
+			Object value = iter.next();
+			TypeSerializer serializer = typeFactory.getSerializer(config, value);
+			serializer.write(pHandler, value);
+		}
+	}
 }

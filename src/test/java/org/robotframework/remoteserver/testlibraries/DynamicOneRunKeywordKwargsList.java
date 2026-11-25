@@ -7,7 +7,7 @@ import java.util.Map;
 public class DynamicOneRunKeywordKwargsList extends StaticOne {
 
     public String[] getKeywordNames() {
-        return new String[] {"getArgs"};
+        return new String[] { "getArgs" };
     }
 
     public Object runKeyword(String name, List<String> args, Map kwargs) {

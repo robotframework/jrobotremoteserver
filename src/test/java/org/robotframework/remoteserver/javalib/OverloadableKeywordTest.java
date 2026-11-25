@@ -8,8 +8,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-public class OverloadableKeywordTest
-{
+public class OverloadableKeywordTest {
     private OverloadedMethods library = new OverloadedMethods();
     private Method shortOverload;
     private Method intOverload;
@@ -17,8 +16,8 @@ public class OverloadableKeywordTest
 
     @BeforeTest
     public void setup() throws Exception {
-        shortOverload = library.getClass().getDeclaredMethod("numberType", new Class[] {short.class});
-        intOverload = library.getClass().getDeclaredMethod("numberType", new Class[] {int.class});
+        shortOverload = library.getClass().getDeclaredMethod("numberType", new Class[] { short.class });
+        intOverload = library.getClass().getDeclaredMethod("numberType", new Class[] { int.class });
         keyword = new OverloadableKeyword(library, shortOverload);
         keyword.addOverload(intOverload);
     }
@@ -26,7 +25,7 @@ public class OverloadableKeywordTest
     // this needs to be tested here because there are no guarantees about the
     // order of methods returned by getMethods()
     @Test
-    public void picksFirstCompatibleOverload() throws Exception { 
+    public void picksFirstCompatibleOverload() throws Exception {
         String result = (String) keyword.execute(Arrays.asList("32767"));
         Assert.assertEquals(result, "short overload");
         result = (String) keyword.execute(Arrays.asList("32768"));
@@ -34,7 +33,7 @@ public class OverloadableKeywordTest
     }
 
     @Test
-    public void noCompatibleOverload() throws Exception { 
+    public void noCompatibleOverload() throws Exception {
         String message = null;
         Class<?> exceptionClass = null;
         try {

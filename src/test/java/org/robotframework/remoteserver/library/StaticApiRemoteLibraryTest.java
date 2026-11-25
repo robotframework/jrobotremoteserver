@@ -1,11 +1,10 @@
 package org.robotframework.remoteserver.library;
 
-import static org.testng.Assert.assertEquals;
+import java.util.ArrayList;
 
 import org.robotframework.remoteserver.testlibraries.StaticOne;
+import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
 
 public class StaticApiRemoteLibraryTest {
 

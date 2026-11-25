@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>com.evolvedbinary.thirdparty.org.apache.xmlrpc</groupId>
 			<artifactId>xmlrpc-server</artifactId>
-			<version>5.0.0</version>
+			<version>6.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -91,9 +91,9 @@
 			<version>2.0.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.xmlrpc</groupId>
+			<groupId>com.evolvedbinary.thirdparty.org.apache.xmlrpc</groupId>
 			<artifactId>xmlrpc-client</artifactId>
-			<version>3.1.3</version>
+			<version>6.1.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

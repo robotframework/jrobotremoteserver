@@ -21,12 +21,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.server.XmlRpcHandlerMapping;
@@ -38,6 +32,11 @@ import org.robotframework.remoteserver.library.RemoteLibrary;
 import org.robotframework.remoteserver.library.RemoteLibraryFactory;
 import org.robotframework.remoteserver.xmlrpc.ReflectiveHandlerMapping;
 import org.robotframework.remoteserver.xmlrpc.TypeFactory;
+
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This servlet can be used with servlet containers such as GlassFish,
@@ -182,7 +181,7 @@ public class RemoteServerServlet extends XmlRpcServlet implements RemoteServerCo
      * converted to /.
      * 
      * @param path
-     *            the path the client requested
+     *             the path the client requested
      * @return cleaned up path
      */
     private static String cleanPath(String path) {

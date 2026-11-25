@@ -1,9 +1,8 @@
 package org.robotframework.remoteserver;
 
-import static org.robotframework.remoteserver.RemoteLibraryClient.runKeyword;
-
 import java.util.Map;
 
+import static org.robotframework.remoteserver.RemoteLibraryClient.runKeyword;
 import org.robotframework.remoteserver.testlibraries.StaticOne;
 import org.robotframework.remoteserver.testlibraries.StaticTwo;
 import org.testng.Assert;
@@ -55,7 +54,7 @@ public class RemoteServerTest {
     @Test
     public void ephemeralPort() throws Exception {
         RemoteServer server = new RemoteServer();
-        Assert.assertEquals(server.getLocalPort(),-1);
+        Assert.assertEquals(server.getLocalPort(), -1);
         server.putLibrary("/", new StaticOne());
         server.start();
         int port = server.getLocalPort();

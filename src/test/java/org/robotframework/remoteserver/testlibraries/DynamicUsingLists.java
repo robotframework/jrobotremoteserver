@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DynamicUsingLists {
-    
+
     public List<String> getKeywordNames() {
         return Arrays.asList("go", "goList");
     }

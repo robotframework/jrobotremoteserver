@@ -14,41 +14,39 @@
  */
 package org.robotframework.remoteserver.xmlrpc;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactory;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
 import org.apache.xmlrpc.parser.RecursiveTypeParserImpl;
+import org.apache.xmlrpc.serializer.ObjectArraySerializer;
+import org.apache.xmlrpc.serializer.TypeSerializerImpl;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.namespace.QName;
-import java.util.List;
-
 /**
- * A parser for base64 elements that converts to String.
- */
-import java.util.ArrayList;
-
-import org.apache.xmlrpc.serializer.ObjectArraySerializer;
-import org.apache.xmlrpc.serializer.TypeSerializerImpl;
-
-
-/** Parser for an array of objects, as created by
+ * Parser for an array of objects, as created by
  * {@link org.apache.xmlrpc.serializer.ObjectArraySerializer}.
  */
 public class ArrayToListParser extends RecursiveTypeParserImpl {
     private int level = 0;
     private List list;
 
-    /** Creates a new instance.
+    /**
+     * Creates a new instance.
+     * 
      * @param pContext The namespace context.
-     * @param pConfig The request or response configuration.
+     * @param pConfig  The request or response configuration.
      * @param pFactory The type factory.
      */
     public ArrayToListParser(XmlRpcStreamConfig pConfig,
-                             NamespaceContextImpl pContext,
-                             TypeFactory pFactory) {
+            NamespaceContextImpl pContext,
+            TypeFactory pFactory) {
         super(pConfig, pContext, pFactory);
     }
 
@@ -80,21 +78,21 @@ public class ArrayToListParser extends RecursiveTypeParserImpl {
     public void startElement(String pURI, String pLocalName, String pQName, Attributes pAttrs) throws SAXException {
         switch (level++) {
             case 0:
-                if (!"".equals(pURI)  ||  !ObjectArraySerializer.ARRAY_TAG.equals(pLocalName)) {
+                if (!"".equals(pURI) || !ObjectArraySerializer.ARRAY_TAG.equals(pLocalName)) {
                     throw new SAXParseException("Expected array element, got "
                             + new QName(pURI, pLocalName),
                             getDocumentLocator());
                 }
                 break;
             case 1:
-                if (!"".equals(pURI)  ||  !ObjectArraySerializer.DATA_TAG.equals(pLocalName)) {
+                if (!"".equals(pURI) || !ObjectArraySerializer.DATA_TAG.equals(pLocalName)) {
                     throw new SAXParseException("Expected data element, got "
                             + new QName(pURI, pLocalName),
                             getDocumentLocator());
                 }
                 break;
             case 2:
-                if (!"".equals(pURI)  ||  !TypeSerializerImpl.VALUE_TAG.equals(pLocalName)) {
+                if (!"".equals(pURI) || !TypeSerializerImpl.VALUE_TAG.equals(pLocalName)) {
                     throw new SAXParseException("Expected data element, got "
                             + new QName(pURI, pLocalName),
                             getDocumentLocator());

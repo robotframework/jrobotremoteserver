@@ -29,9 +29,9 @@ import org.apache.xmlrpc.serializer.DoubleSerializer;
 import org.apache.xmlrpc.serializer.I4Serializer;
 import org.apache.xmlrpc.serializer.ListSerializer;
 import org.apache.xmlrpc.serializer.ObjectArraySerializer;
+import org.apache.xmlrpc.serializer.SerializerHandler;
 import org.apache.xmlrpc.serializer.TypeSerializer;
 import org.apache.xmlrpc.serializer.TypeSerializerImpl;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public class TypeFactory extends TypeFactoryImpl {
@@ -40,25 +40,28 @@ public class TypeFactory extends TypeFactoryImpl {
     private static final TypeSerializer I4_SERIALIZER = new I4Serializer();
     private static final TypeSerializer DOUBLE_SERIALIZER = new DoubleSerializer();
     private static final TypeSerializer BOOLEAN_SERIALIZER = new BooleanSerializer();
-    private static final TypeSerializer NULL_SERIALIZER = new org.apache.xmlrpc.serializer.StringSerializer() {
+    private static final TypeSerializer NULL_SERIALIZER = new StringSerializer() {
         @Override
-        public void write(ContentHandler pHandler, Object pObject) throws SAXException {
+        public void write(SerializerHandler pHandler, Object pObject)
+                throws SAXException {
             write(pHandler, null, "");
         }
     };
     private static final TypeSerializer CHAR_ARRAY_SERIALIZER = new TypeSerializerImpl() {
-        public void write(ContentHandler pHandler, Object pObject) throws SAXException {
+        @Override
+        public void write(SerializerHandler pHandler, Object pObject)
+                throws SAXException {
             char[] chars = (char[]) pObject;
             write(pHandler, null, chars);
         }
     };
     private TypeSerializer primitiveArraySerializer;
-    private static final TypeParser BYTE_ARRAY_PARSER = new ByteArrayToStringParser();
 
     public TypeFactory(XmlRpcController pController) {
         super(pController);
     }
 
+    @Override
     public TypeSerializer getSerializer(XmlRpcStreamConfig pConfig, Object pObject) throws SAXException {
         if (pObject == null)
             return NULL_SERIALIZER;
@@ -86,7 +89,8 @@ public class TypeFactory extends TypeFactoryImpl {
                                                  // before this
             primitiveArraySerializer = new ObjectArraySerializer(this, pConfig) {
                 @Override
-                protected void writeData(ContentHandler pHandler, Object pObject) throws SAXException {
+                protected void writeData(SerializerHandler pHandler, Object pObject)
+                        throws SAXException {
                     Object[] array;
                     if (pObject instanceof byte[])
                         array = ArrayUtils.toObject((byte[]) pObject);

@@ -10,6 +10,7 @@ public class OverloadedMethods {
     public String numberType(short number) {
         return "short overload";
     }
+
     public String numberType(int number) {
         return "int overload";
     }

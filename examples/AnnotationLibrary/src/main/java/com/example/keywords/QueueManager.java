@@ -1,6 +1,6 @@
 package com.example.keywords;
 
-import static org.apache.commons.lang3.StringEscapeUtils.*;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 import java.util.Iterator;
 import java.util.Queue;
@@ -11,8 +11,7 @@ import org.robotframework.javalib.annotation.RobotKeyword;
 import org.robotframework.javalib.annotation.RobotKeywords;
 
 @RobotKeywords
-public class QueueManager
-{
+public class QueueManager {
     private Queue<Object> queue = new LinkedBlockingQueue<Object>();
 
     @RobotKeyword("Clears the queue.")
@@ -22,7 +21,7 @@ public class QueueManager
     }
 
     @RobotKeyword("Adds the given `element` to tail of the queue.")
-    @ArgumentNames({"element"})
+    @ArgumentNames({ "element" })
     public void addToQueue(Object element) {
         queue.add(element);
     }

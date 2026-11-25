@@ -19,9 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -41,7 +38,8 @@ import org.robotframework.remoteserver.servlet.RemoteServerServlet;
  * {@link org.robotframework.remoteserver.servlet.RemoteServerServlet} instead.
  * 
  * @see <a
- *      href="https://github.com/ombre42/jrobotremoteserver/wiki">jrobotremoteserver
+ *      href=
+ *      "https://github.com/ombre42/jrobotremoteserver/wiki">jrobotremoteserver
  *      wiki</a>
  * @see <a
  *      href="http://code.google.com/p/robotframework/wiki/RemoteLibrary">Remote
@@ -77,8 +75,8 @@ public class RemoteServer {
     }
 
     public int getLocalPort() {
-        for (Connector connector: server.getConnectors()) {
-            serverPort = ((ServerConnector)connector).getLocalPort();
+        for (Connector connector : server.getConnectors()) {
+            serverPort = ((ServerConnector) connector).getLocalPort();
         }
         return serverPort;
     }
@@ -96,7 +94,7 @@ public class RemoteServer {
      * Allow or disallow stopping the server remotely.
      *
      * @param allowed
-     *            <code>true</code> to allow stopping the server remotely
+     *                <code>true</code> to allow stopping the server remotely
      */
     public void setAllowStop(boolean allowed) {
         servlet.setAllowStop(allowed);
@@ -148,9 +146,9 @@ public class RemoteServer {
      * Example: <code>putLibrary("/myLib", new MyLibrary());</code>
      *
      * @param library
-     *            instance of the test library
+     *                instance of the test library
      * @param path
-     *            path to map the test library to
+     *                path to map the test library to
      * @return the previous library mapped to the path, or null if there was no
      *         mapping for the path
      */
@@ -165,7 +163,7 @@ public class RemoteServer {
      * Removes the library mapped to the given path if the mapping exists.
      *
      * @param path
-     *            path for the library whose mapping is to be removed
+     *             path for the library whose mapping is to be removed
      * @return the previous library associated with the path, or null if there
      *         was no mapping for the path.
      */
@@ -190,8 +188,8 @@ public class RemoteServer {
      * connections will not be accepted after calling this.
      *
      * @param timeoutMS
-     *            the milliseconds to wait for existing request to complete
-     *            before stopping the server
+     *                  the milliseconds to wait for existing request to complete
+     *                  before stopping the server
      * @throws Exception Exception thrown if server fails to stop without timeout
      */
     public void stop(int timeoutMS) throws Exception {
