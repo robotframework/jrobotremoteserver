@@ -38,9 +38,10 @@ public class SimpleKeywordExtractor implements IKeywordExtractor<OverloadableKey
         return overloadableKeywords;
     }
 
-    private void createOrUpdateKeyword(Map<String, OverloadableKeyword> extractedKeywords, Object keywordBean, Method method) {
+    private void createOrUpdateKeyword(Map<String, OverloadableKeyword> extractedKeywords, Object keywordBean,
+            Method method) {
         String name = method.getName();
-        if(extractedKeywords.containsKey(name)){
+        if (extractedKeywords.containsKey(name)) {
             extractedKeywords.get(name).addOverload(method);
         } else {
             extractedKeywords.put(name, new OverloadableKeyword(keywordBean, method));

@@ -14,7 +14,11 @@
  */
 package org.robotframework.remoteserver.servlet;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -53,7 +57,8 @@ public class ServerMethods {
             List<String> names = servlet.getLibrary().getKeywordNames();
             if (names == null || names.size() == 0)
                 throw new RuntimeException("No keywords found in the test library");
-            if (!names.contains("stop_remote_server")) names.add("stop_remote_server");
+            if (!names.contains("stop_remote_server"))
+                names.add("stop_remote_server");
             return names;
         } catch (Throwable e) {
             log.warn("", e);
@@ -65,11 +70,11 @@ public class ServerMethods {
      * Run the given keyword and return the results.
      *
      * @param keyword
-     *            keyword to run
+     *                keyword to run
      * @param args
-     *            arguments packed in an array to pass to the keyword method
+     *                arguments packed in an array to pass to the keyword method
      * @param kwargs
-     *            keyword arguments to pass to the keyword method
+     *                keyword arguments to pass to the keyword method
      * @return remote result Map containing the execution results
      */
     public Map<String, Object> run_keyword(String keyword, List<String> args, Map<String, Object> kwargs) {
@@ -139,9 +144,9 @@ public class ServerMethods {
      * Run the given keyword and return the results.
      *
      * @param keyword
-     *            keyword to run
+     *                keyword to run
      * @param args
-     *            arguments packed in an array to pass to the keyword method
+     *                arguments packed in an array to pass to the keyword method
      * @return remote result Map containing the execution results
      */
     public Map<String, Object> run_keyword(String keyword, List<String> args) {
@@ -152,7 +157,7 @@ public class ServerMethods {
      * Get an array of argument specifications for the given keyword.
      *
      * @param keyword
-     *            The keyword to lookup.
+     *                The keyword to lookup.
      * @return A string array of argument specifications for the given keyword.
      */
     public List<String> get_keyword_arguments(String keyword) {
@@ -172,7 +177,7 @@ public class ServerMethods {
      * Get documentation for given keyword.
      *
      * @param keyword
-     *            The keyword to get documentation for.
+     *                The keyword to get documentation for.
      * @return A documentation string for the given keyword.
      */
     public String get_keyword_documentation(String keyword) {
@@ -199,15 +204,17 @@ public class ServerMethods {
     }
 
     public Map<String, Object> get_library_information() {
-        Map<String, Object> result=new HashMap<String, Object>();
-        List<String> keywords=get_keyword_names();
-        for (String k: keywords) {
-            result.put(k,getLibraryInformation(k));
+        Map<String, Object> result = new HashMap<String, Object>();
+        List<String> keywords = get_keyword_names();
+        for (String k : keywords) {
+            result.put(k, getLibraryInformation(k));
         }
-	return result;
-	/*    return get_keyword_names().stream()
-			.map(k->new AbstractMap.SimpleEntry<>(k, getLibraryInformation(k)))
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));*/
+        return result;
+        /*
+         * return get_keyword_names().stream()
+         * .map(k->new AbstractMap.SimpleEntry<>(k, getLibraryInformation(k)))
+         * .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+         */
     }
 
     private Object getLibraryInformation(String keyword) {

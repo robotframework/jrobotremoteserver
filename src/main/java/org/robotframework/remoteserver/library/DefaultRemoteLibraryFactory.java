@@ -55,7 +55,7 @@ public class DefaultRemoteLibraryFactory implements RemoteLibraryFactory {
         for (Method m : methods) {
             if (((m.getName().equals("getKeywordNames") || (m.getName().equals("get_keyword_names")))
                     && (m.getReturnType() == String[].class || m.getReturnType() == List.class) && m
-                        .getParameterTypes().length == 0)) {
+                            .getParameterTypes().length == 0)) {
                 return m;
             }
         }

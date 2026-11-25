@@ -1,12 +1,12 @@
 package org.robotframework.remoteserver.javalib;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.robotframework.remoteserver.testlibraries.OverloadedMethods;
 import org.robotframework.remoteserver.testlibraries.StaticOne;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class SingleClassLibraryTest {
 

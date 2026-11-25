@@ -40,11 +40,11 @@ public interface RemoteLibrary {
      * as returned from {@link #getKeywordNames()}.
      *
      * @param name
-     *            name of the keyword to execute
+     *                  name of the keyword to execute
      * @param arguments
-     *            positional arguments to the keyword
+     *                  positional arguments to the keyword
      * @param kwargs
-     *            keyword arguments
+     *                  keyword arguments
      * @return value returned by the keyword
      * @throws Throwable exception thrown in case of error
      */
@@ -54,7 +54,7 @@ public interface RemoteLibrary {
      * Gets the argument descriptors for the given keyword name.
      *
      * @param keyword
-     *            name of the keyword to get argument specifications for
+     *                name of the keyword to get argument specifications for
      * @return array of argument specifications
      */
     public List<String> getKeywordArguments(String keyword);
@@ -63,7 +63,7 @@ public interface RemoteLibrary {
      * Gets the documentation string for the given keyword name.
      *
      * @param name
-     *            name of the keyword to get documentation for
+     *             name of the keyword to get documentation for
      * @return keyword documentation string
      */
     public String getKeywordDocumentation(String name);
@@ -72,7 +72,7 @@ public interface RemoteLibrary {
      * Gets the list of tags for the given keyword name.
      *
      * @param name
-     *            name of the keyword to get list of tags for
+     *             name of the keyword to get list of tags for
      * @return keyword list of tags
      */
     public List<String> getKeywordTags(String name);
@@ -81,7 +81,7 @@ public interface RemoteLibrary {
      * Gets the list of argument types for the given keyword name.
      *
      * @param name
-     *            name of the keyword to get argument types for
+     *             name of the keyword to get argument types for
      * @return keyword argument types list
      */
     public List<String> getKeywordTypes(String name);
