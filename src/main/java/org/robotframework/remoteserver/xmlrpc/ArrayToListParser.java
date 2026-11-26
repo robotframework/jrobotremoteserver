@@ -14,38 +14,24 @@
  */
 package org.robotframework.remoteserver.xmlrpc;
 
-import org.apache.ws.commons.util.Base64;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactory;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
-import org.apache.xmlrpc.parser.ObjectArrayParser;
 import org.apache.xmlrpc.parser.RecursiveTypeParserImpl;
-import org.apache.xmlrpc.parser.TypeParserImpl;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.namespace.QName;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 /**
  * A parser for base64 elements that converts to String.
  */
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.apache.ws.commons.util.NamespaceContextImpl;
-import org.apache.xmlrpc.common.TypeFactory;
-import org.apache.xmlrpc.common.XmlRpcStreamConfig;
 import org.apache.xmlrpc.serializer.ObjectArraySerializer;
 import org.apache.xmlrpc.serializer.TypeSerializerImpl;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 
 /** Parser for an array of objects, as created by

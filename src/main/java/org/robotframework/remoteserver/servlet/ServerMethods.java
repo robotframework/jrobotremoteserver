@@ -15,7 +15,6 @@
 package org.robotframework.remoteserver.servlet;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;

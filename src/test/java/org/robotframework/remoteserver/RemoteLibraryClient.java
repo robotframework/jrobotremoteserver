@@ -1,7 +1,8 @@
 package org.robotframework.remoteserver;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -17,8 +18,8 @@ public class RemoteLibraryClient {
     public static XmlRpcClient getClient(String path, int port) {
         XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
         try {
-            config.setServerURL(new URL("http://127.0.0.1:" + Integer.toString(port) + path));
-        } catch (MalformedURLException e) {
+            config.setServerURL(new URI("http://127.0.0.1:" + Integer.toString(port) + path).toURL());
+        } catch (MalformedURLException | URISyntaxException e) {
             // ignore
         }
         XmlRpcClient client = new XmlRpcClient();

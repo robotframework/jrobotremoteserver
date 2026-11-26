@@ -26,7 +26,6 @@ public class MyRemoteLibrary extends AnnotationLibrary {
      * web server's threads exit.
      */
     public static void main(String[] args) throws Exception {
-        RemoteServer.configureLogging();
         RemoteServer server = new RemoteServer(8270);
         server.putLibrary("/", new MyRemoteLibrary());
         server.start();

@@ -22,7 +22,6 @@ import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.apache.xmlrpc.common.TypeFactoryImpl;
 import org.apache.xmlrpc.common.XmlRpcController;
 import org.apache.xmlrpc.common.XmlRpcStreamConfig;
-import org.apache.xmlrpc.parser.ObjectArrayParser;
 import org.apache.xmlrpc.parser.TypeParser;
 import org.apache.xmlrpc.serializer.BooleanSerializer;
 import org.apache.xmlrpc.serializer.ByteArraySerializer;
