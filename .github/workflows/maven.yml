@@ -32,14 +32,17 @@ jobs:
       uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
       with:
         distribution: 'zulu'
-        java-version: '25'
+        java-version: 25
         cache: 'maven'
+        server-id: central
+        server-username-env-var: CENTRAL_USERNAME
+        server-password-env-var: CENTRAL_PASSWORD
+        gpg-private-key: ${{ secrets.gpg_private_key }}
+        gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
+
     - name: Release Maven package
-      uses: samuelmeuli/action-maven-publish@201a45a3f311b2ee888f252ba9f4194257545709 # tag=v1.4.0
-      with:
-        server_id: central
-        gpg_private_key: ${{ secrets.gpg_private_key }}
-        gpg_passphrase: ${{ secrets.gpg_passphrase }}
-        nexus_username: ${{ secrets.nexus_username }}
-        nexus_password: ${{ secrets.nexus_password }}
-        maven_args: -DskipTests
+      run: mvn --batch-mode -Pdeploy deploy -DskipTests --file pom.xml
+      env:
+        CENTRAL_USERNAME: ${{ secrets.nexus_username }}
+        CENTRAL_PASSWORD: ${{ secrets.nexus_password }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
